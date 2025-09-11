@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -111,15 +110,24 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        TimeCounters();
+    }
+
+    // 시간 카운터들
+    private void TimeCounters()
+    {
+        // 점프 버퍼 (예약) & 코요테 타임
         jumpBufferCounter -= Time.deltaTime;
         if (isGrounded)
         {
             coyoteTimeCounter = coyoteTime;
             dashCount = maxDashCount;
         }
-            
+
         else
             coyoteTimeCounter -= Time.deltaTime;
+
+        // 일정 시간 대시함, 대시 끝나면 Damping 줌
         if (isDashing)
         {
             dashTimeCounter -= Time.deltaTime;
@@ -128,7 +136,7 @@ public class PlayerController : MonoBehaviour
                 isDashing = false;
                 dampAfterDash();
             }
-        } 
+        }
     }
 
     private void FixedUpdate()
@@ -147,31 +155,7 @@ public class PlayerController : MonoBehaviour
         //Debug.Log($"x: {rb.linearVelocity.x:F2}, y: {rb.linearVelocity.y:F2}");
     }
 
-    //private void Move()
-    //{
-    //    // 목표 속도 (입력 × 최대 속도)
-    //    float targetSpeed = moveInput.x * maxSpeed;
-
-    //    // 현재 가속/감속 계수 결정
-    //    float accel = speedAcceleration;
-    //    float decel = SpeedDeceleration;
-
-    //    if (!isGrounded) // 공중이면 배수 적용
-    //    {
-    //        accel *= airAccelMulti;
-    //        decel *= airDecelMulti;
-    //    }
-
-    //    // Lerp 비율 계산 (가속과 감속 구분)
-    //    float lerpFactor = (Mathf.Abs(moveInput.x) > 0.01f) ? accel : decel;
-
-    //    // 속도 보간
-    //    targetSpeed = Mathf.Lerp(rb.linearVelocity.x, targetSpeed, lerpFactor * Time.fixedDeltaTime);
-
-    //    // y속도 유지
-    //    rb.linearVelocity = new Vector2(targetSpeed, rb.linearVelocity.y);
-    //}
-
+    // 이동
     private void Move() 
     {
         float accel = speedAcceleration;
@@ -181,11 +165,14 @@ public class PlayerController : MonoBehaviour
             accel *= airAccelMulti;
             decel *= airDecelMulti;
         }
-        float targetX = moveInput.x * maxSpeed; 
-        float newX = Mathf.MoveTowards(rb.linearVelocity.x, targetX, (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime); // 기존 y 속도 유지
+        float targetX = moveInput.x * maxSpeed;
+        float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
+        // 속도가 빠를수록 가속도 감소
+        float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
         rb.linearVelocity = new Vector2(newX, rb.linearVelocity.y); 
     }
 
+    // 바닥 감지 (BoxCast)
     private void DetectGround()
     {
         Bounds bounds = col.bounds;
@@ -204,15 +191,19 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // 중력
     private void ApplyGravity()
     {
         float newY;
         if (isJumping)
         {
+            // 점프 중 중력(올라갈 때)
             newY = rb.linearVelocity.y - jumpDcceleration * Time.fixedDeltaTime;
         }
         else
         {
+            // 점프 후 중력(떨어질 때)
+            // 점프 중 중력(약함)에서 점프 후 중력(강함)으로 연속적으로 증가
             if (currentGravity < maxGravity)
                 currentGravity += gravityAcceleration * Time.fixedDeltaTime;
             else
@@ -221,19 +212,23 @@ public class PlayerController : MonoBehaviour
             newY = rb.linearVelocity.y - currentGravity * Time.fixedDeltaTime;
         }
 
+        // 벽잡고 있으면 중력 낮음
         if (isTouchingWall)
             if (newY < -wallSlideMaxSpeed)
                 newY = -wallSlideMaxSpeed;
 
+        // y축 최대 속도
         newY = Mathf.Clamp(newY, -maxDownSpeed, maxJumpSpeed);
 
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, newY);
     }
 
+    // 점프
     private void Jump()
     {
         if (jumpBufferCounter > 0 && coyoteTimeCounter > 0)
         {
+            // +y로 linearVelocity 설정
             Debug.Log("Jump!");
             isJumping = true;
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, maxJumpSpeed);
@@ -242,16 +237,16 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // 점프 키 때면 isJumping = false -> 중력 강해짐 -> 빨리 떨어짐
     private void FastFall()
     {
         if (isJumping)
         {
             isJumping = false;
-            //rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
         }
     }
 
-
+    // 벽 감지 (Raycast)
     private void WallCheck()
     {
         Vector2 origin = transform.position;
@@ -271,6 +266,7 @@ public class PlayerController : MonoBehaviour
         isTouchingWall = hitWall.collider != null;
     }
 
+    // 벽점프 키 입력 반대 위로 linearVelocity 설정
     private void WallJump()
     {
         if (isTouchingWall && jumpBufferCounter > 0 && !isGrounded)
@@ -281,6 +277,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // 대시, 대시 중 모든 변수 무시하고 linearVelocity는 무조건 moveInput.normalized * dashSpeed됨.
     private void Dash()
     {
         if (moveInput == Vector2.zero) return;
@@ -291,6 +288,7 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocity = moveInput.normalized * dashSpeed;
     }
 
+    // 대시 후 댐핑, 대시 끝나면 최대속도 조절
     private void dampAfterDash()
     {
         float dampedSpeedX = rb.linearVelocity.x;
