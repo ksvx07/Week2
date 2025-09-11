@@ -169,7 +169,7 @@ public class PlayerController : MonoBehaviour
         float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
         // 속도가 빠를수록 가속도 감소
         float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
-        rb.linearVelocity = new Vector2(newX, rb.linearVelocity.y); 
+        rb.linearVelocityX = newX; 
     }
 
     // 바닥 감지 (BoxCast)
