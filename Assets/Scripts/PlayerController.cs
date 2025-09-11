@@ -48,8 +48,8 @@ public class PlayerController : MonoBehaviour
     private float jumpBufferCounter; // 점프 입력 유지 시간
     private float dashTimeCounter;
     // 내부 상태
-    private bool isGrounded;
-    private bool isJumping;
+    public bool IsGrounded { get; private set; }
+    public bool IsJumping { get; private set; }
     private bool isTouchingWall;
     private bool isDashing;
     private int dashCount;
@@ -118,7 +118,7 @@ public class PlayerController : MonoBehaviour
     {
         // 점프 버퍼 (예약) & 코요테 타임
         jumpBufferCounter -= Time.deltaTime;
-        if (isGrounded)
+        if (IsGrounded)
         {
             coyoteTimeCounter = coyoteTime;
             dashCount = maxDashCount;
@@ -160,7 +160,7 @@ public class PlayerController : MonoBehaviour
     {
         float accel = speedAcceleration;
         float decel = SpeedDeceleration;
-        if (!isGrounded) // 공중이면 배수 적용
+        if (!IsGrounded) // 공중이면 배수 적용
         {
             accel *= airAccelMulti;
             decel *= airDecelMulti;
@@ -181,12 +181,12 @@ public class PlayerController : MonoBehaviour
         RaycastHit2D hit = Physics2D.BoxCast(bounds.center, bounds.size, 0f, Vector2.down,
             extraHeight, wallLayer);
 
-        isGrounded = hit.collider != null;
+        IsGrounded = hit.collider != null;
         
 
-        if (isJumping && rb.linearVelocity.y <= 0)
+        if (IsJumping && rb.linearVelocity.y <= 0)
         {
-            isJumping = false;
+            IsJumping = false;
             currentGravity = jumpDcceleration;
         }
     }
@@ -195,7 +195,7 @@ public class PlayerController : MonoBehaviour
     private void ApplyGravity()
     {
         float newY;
-        if (isJumping)
+        if (IsJumping)
         {
             // 점프 중 중력(올라갈 때)
             newY = rb.linearVelocity.y - jumpDcceleration * Time.fixedDeltaTime;
@@ -230,7 +230,7 @@ public class PlayerController : MonoBehaviour
         {
             // +y로 linearVelocity 설정
             Debug.Log("Jump!");
-            isJumping = true;
+            IsJumping = true;
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, maxJumpSpeed);
             jumpBufferCounter = 0;
             coyoteTimeCounter = 0;
@@ -240,9 +240,9 @@ public class PlayerController : MonoBehaviour
     // 점프 키 때면 isJumping = false -> 중력 강해짐 -> 빨리 떨어짐
     private void FastFall()
     {
-        if (isJumping)
+        if (IsJumping)
         {
-            isJumping = false;
+            IsJumping = false;
         }
     }
 
@@ -269,9 +269,9 @@ public class PlayerController : MonoBehaviour
     // 벽점프 키 입력 반대 위로 linearVelocity 설정
     private void WallJump()
     {
-        if (isTouchingWall && jumpBufferCounter > 0 && !isGrounded)
+        if (isTouchingWall && jumpBufferCounter > 0 && !IsGrounded)
         {
-            isJumping = true;
+            IsJumping = true;
             rb.linearVelocity = new Vector2(wallJumpXSpeed * -Mathf.Sign(moveInput.x), wallJumpYSpeed);
             Debug.Log("Wall Jump");
         }
