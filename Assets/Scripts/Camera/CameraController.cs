@@ -10,13 +10,15 @@ public class CameraController : MonoBehaviour
     [Header("Zoom In Out")]
     [SerializeField] private float MaxZoomIn = 3f;
     [SerializeField] private float MaxZoomOut = 10f;
-    [SerializeField] private float ZoomLerpSpeed = 2f;
-    [SerializeField] private float TestSpeed;
+    [SerializeField] private float ZoomLerpSpeed = 1f;
+    [SerializeField] private float SpeedThreshold = 5f;
 
     private Vector3 _offset = new Vector3(0, 0, -10);
     private Vector3 _velocity = new Vector3(2, 2, 2);
+    private float targetZoom;
 
-    private static CameraController instance = null;
+    public static CameraController instance = null;
+    public bool IsTriggerZoom { get; private set; }
 
     private void Awake()
     {
@@ -38,7 +40,10 @@ public class CameraController : MonoBehaviour
 
         transform.position = Clamp.HandleClamp(desiredPos);
 
-        HandleZoomInOut();
+        if (!IsTriggerZoom)
+        {
+            HandleZoomInOut();
+        }
     }
 
     private Vector3 HandleFollow()
@@ -56,9 +61,31 @@ public class CameraController : MonoBehaviour
     {
         var playerVelocity = Player.GetComponent<Rigidbody2D>().linearVelocity;
 
+        if (Player.GetComponent<PlayerController>().IsJumping || !Player.GetComponent<PlayerController>().IsGrounded) return;
+        _velocity = playerVelocity;
         // 원의 경우 속도 ~ 이상일 때 줌 아웃 효과
         float speed = playerVelocity.magnitude;
-        float targetZoom = Mathf.Lerp(MaxZoomIn, MaxZoomOut, speed / 10f);
+        if (speed > SpeedThreshold)
+        {
+            targetZoom = MaxZoomOut;
+        }
+        else
+        {
+            targetZoom = MaxZoomIn;
+        }
+
         cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, targetZoom, Time.deltaTime * ZoomLerpSpeed);
+    }
+
+    public void TriggerZoomOut(float targetZoom)
+    {
+        IsTriggerZoom = true;
+        cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, targetZoom, Time.deltaTime * ZoomLerpSpeed);
+    }
+
+    public void TriggerZoomIn(float targetZoom)
+    {
+        cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, targetZoom, Time.deltaTime * ZoomLerpSpeed);
+        IsTriggerZoom = false;
     }
 }

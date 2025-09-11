@@ -5,10 +5,10 @@ public class CameraClamp : MonoBehaviour
     [SerializeField] private Camera cam;
 
     [Header("Map Bounds")]
-    [SerializeField] public float _minX;
-    [SerializeField] public float _maxX;
-    [SerializeField] public float _minY;
-    [SerializeField] public float _maxY;
+    [SerializeField] public float _minX = -10.23f;
+    [SerializeField] public float _maxX = 41.7f;
+    [SerializeField] public float _minY = -21.3f;
+    [SerializeField] public float _maxY = 13.35f;
 
     public Vector3 HandleClamp(Vector3 desiredPos)
     {
