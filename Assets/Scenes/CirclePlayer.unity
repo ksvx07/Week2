@@ -1084,8 +1084,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f15a077eee3b3b409c3053cfac93aea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 10
-  speedAcceleration: 5
+  maxSpeed: 5
+  speedAcceleration: 3
   SpeedDeceleration: 5
   maxJumpSpeed: 5
   jumpDcceleration: 5
@@ -1800,8 +1800,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rb: {fileID: 1104248574}
   controller: {fileID: 1104248575}
-  rotationTimeInMinSpeed: 3
-  rotationTimeInMaxSpeed: 1
+  rotationTimeInMinSpeed: 1
+  rotationTimeInMaxSpeed: 0.1
 --- !u!1 &1433967136
 GameObject:
   m_ObjectHideFlags: 0

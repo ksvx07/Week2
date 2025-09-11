@@ -118,6 +118,10 @@ public class CircleController : MonoBehaviour
     private void Update()
     {
         TimeCounters();
+        if (rb.linearVelocityX - 1f <= maxSpeed)
+        {
+            print(rb.linearVelocityX);
+        }
     }
 
     // 시간 카운터들
@@ -129,10 +133,7 @@ public class CircleController : MonoBehaviour
         {
             coyoteTimeCounter = coyoteTime;
             dashCount = maxDashCount;
-        }
-
-        else
-            coyoteTimeCounter -= Time.deltaTime;
+        }else  coyoteTimeCounter -= Time.deltaTime;
 
         // 일정 시간 대시함, 대시 끝나면 Damping 줌
         if (isDashing)
@@ -173,7 +174,7 @@ public class CircleController : MonoBehaviour
         float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
         // 속도가 빠를수록 가속도 감소
         float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
-        rb.linearVelocityX = newX;
+        rb.linearVelocityX = newX;       
     }
 
     // 바닥 감지 (BoxCast)

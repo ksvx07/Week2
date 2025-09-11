@@ -20,7 +20,7 @@ public class CircleSpining : MonoBehaviour
 
     void Update()
     {
-        if (rb == null || rb.linearVelocity.magnitude < 0.1f)
+        if (rb == null || rb.linearVelocity.magnitude < 0.2f)
         {
             return;
         }
