@@ -1,12 +1,16 @@
+using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 
-public class PlayerController : MonoBehaviour
+public class StarController : MonoBehaviour
 {
     private PlayerInput inputActions;
     private Vector2 moveInput;
     private Rigidbody2D rb;
-    private BoxCollider2D col;
+    private CircleCollider2D col;
 
     // Inspector 조절 가능 변수들
     [Header("Move")]
@@ -40,8 +44,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float airAccelMulti = 0.65f;
     [SerializeField] private float airDecelMulti = 0.65f;
 
+    [Header("Star")]
+    [SerializeField] private float starRayGravityDistance = 1f;
+    [SerializeField] private float starWallJumpSpeed = 5f;
+    [SerializeField] private Transform starPivotTransform;
+
+    
     private LayerMask wallLayer;
 
+    private RaycastHit2D[] hitWalls = new RaycastHit2D[60];
     private float currentGravity;
     private float coyoteTimeCounter; // 땅을 떠난 후 남은 점프 가능 시간
     private float jumpBufferCounter; // 점프 입력 유지 시간
@@ -52,11 +63,15 @@ public class PlayerController : MonoBehaviour
     private bool isTouchingWall;
     private bool isDashing;
     private int dashCount;
+    private bool isStarClimbing;
+
+
+    private Vector2? selectedWallNormal;
 
     private void Awake()
     {
         inputActions = new PlayerInput();
-        col = GetComponent<BoxCollider2D>();
+        col = GetComponent<CircleCollider2D>();
         rb = GetComponent<Rigidbody2D>();
         currentGravity = jumpDcceleration;
         wallLayer = LayerMask.GetMask("Ground");
@@ -99,12 +114,12 @@ public class PlayerController : MonoBehaviour
 
     private void OffJump(InputAction.CallbackContext ctx)
     {
-        FastFall();
+        StarFastFall();
     }
 
     private void OnDash(InputAction.CallbackContext ctx)
     {
-        Dash();
+        StarDash();
     }
 
     private void Update()
@@ -133,57 +148,192 @@ public class PlayerController : MonoBehaviour
             if (dashTimeCounter < 0)
             {
                 isDashing = false;
-                dampAfterDash();
+                StardampAfterDash();
             }
         }
     }
 
     private void FixedUpdate()
     {
-        WallCheck();
-        DetectGround();
+        //WallCheck();
+        StarDetectWalls();
+        StarRoll();
+        StarDetectGround();
         if (!isDashing)
         {
-            Jump();
-            WallJump();
-            ApplyGravity();
-            Move();
+            StarApplyGravity();
+            //Move();
+            StarAirControl();
+            StarWallClimbing();
+            StarJump();
+            StarWallJump();
+
         }
 
 
         //Debug.Log($"x: {rb.linearVelocity.x:F2}, y: {rb.linearVelocity.y:F2}");
     }
 
-    // 이동
-    private void Move() 
+    private void StarWallClimbing()
     {
+        if (isJumping) return;
+
+        if (hitWalls.All(hit => hit.collider == null))
+            return;
+
+        Vector2 bestTangent = Vector2.zero;
+        selectedWallNormal = null;
+
+
+        foreach (RaycastHit2D hitWall in hitWalls)
+        {
+            if (hitWall.collider != null)
+            {
+                if (selectedWallNormal == null)
+                    selectedWallNormal = hitWall.normal;
+                else
+                {
+                    float normalsAngle = Vector2.SignedAngle(selectedWallNormal.Value, hitWall.normal);
+                    if (normalsAngle * moveInput.x > 0)
+                        selectedWallNormal = hitWall.normal;
+                }
+            }
+        }
+
+        if (selectedWallNormal == null)
+            return;
+
+        // 4. tangent 계산 (벽 타는 방향)
+        Vector2 wallNormal = selectedWallNormal.Value;
+        Vector2 tangent = (moveInput.x > 0)
+            ? new Vector2(wallNormal.y, -wallNormal.x)   // 시계 방향
+            : new Vector2(-wallNormal.y, wallNormal.x);  // 반시계 방향
+
+
+        Vector2 moveDir = tangent.normalized;
+        //Vector2 moveDir = bestTangent.normalized;
+
+        // 가속/감속 계수 결정
         float accel = speedAcceleration;
         float decel = SpeedDeceleration;
-        if (!isGrounded) // 공중이면 배수 적용
+        if (!isStarClimbing) // 공중일 때 배수 적용
         {
             accel *= airAccelMulti;
             decel *= airDecelMulti;
         }
-        float targetX = moveInput.x * maxSpeed;
-        float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
-        // 속도가 빠를수록 가속도 감소
-        float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
-        rb.linearVelocity = new Vector2(newX, rb.linearVelocity.y); 
+
+        // 목표 속도 = tangent 방향 * 최대 속도 * 입력 크기
+        Vector2 targetVel = moveDir * maxSpeed * Mathf.Abs(moveInput.x);
+        //Vector2 targetVel = moveDir * maxSpeed * moveInput.magnitude;
+
+        // Lerp 비율 (가속 or 감속)
+        float lerpAmount = ((moveInput.x != 0) ? accel : decel) * Time.fixedDeltaTime;
+
+        // 현재 속도 → 목표 속도로 부드럽게 변경
+        Vector2 newVel = Vector2.Lerp(rb.linearVelocity, targetVel, lerpAmount);
+
+        // 최종 속도 적용
+        rb.linearVelocity = newVel;
     }
 
-    // 바닥 감지 (BoxCast)
-    private void DetectGround()
+    private void StarRoll()
     {
-        Bounds bounds = col.bounds;
-        float extraHeight = 0.05f;
+        if (hitWalls.All(hit => hit.collider == null))
+            return; // 전부 충돌 없음 → 함수 종료
+        if (Mathf.Abs(moveInput.x) < 0.01f)
+            return;
 
-        RaycastHit2D hit = Physics2D.BoxCast(bounds.center, bounds.size, 0f, Vector2.down,
-            extraHeight, wallLayer);
+        float scale = Mathf.Max(starPivotTransform.lossyScale.x, starPivotTransform.lossyScale.y);
+        float radius = col.radius * scale;
 
-        isGrounded = hit.collider != null;
-        
+        // 선속도 크기
+        float speed = rb.linearVelocity.magnitude;
 
-        if (isJumping && rb.linearVelocity.y <= 0)
+        // 각속도 (라디안/초 → 도/초 변환)
+        float angularSpeed = speed / radius * Mathf.Rad2Deg;
+
+        // 이동 방향에 따라 부호 결정
+        float dir = Mathf.Sign(moveInput.x);
+
+        //starPivotTransform.Rotate()
+        starPivotTransform.Rotate(Vector3.forward, -angularSpeed * dir * Time.fixedDeltaTime);
+
+        // Rigidbody2D 회전 적용
+        //rb.MoveRotation(rb.rotation - angularSpeed * dir * Time.fixedDeltaTime);
+    }
+
+    private void StarDetectWalls()
+    {
+        Vector2 origin = starPivotTransform.position;
+
+        for (int i = 0; i < 60; i++)
+        {
+            float angle = 6f * i; // 0,72,144,216,288도
+            // starSpriteTransform.up을 Z축 기준으로 angle만큼 회전
+            Vector3 dir3 = Quaternion.Euler(0f, 0f, angle) * starPivotTransform.up;
+            Vector2 dir = new Vector2(dir3.x, dir3.y);
+
+            RaycastHit2D hit = Physics2D.Raycast(origin, dir, starRayGravityDistance, wallLayer);
+            hitWalls[i] = hit;
+
+            Debug.DrawRay(origin, dir * starRayGravityDistance,
+                hitWalls[i] ? Color.red : Color.green,
+                Time.fixedDeltaTime); // 한 물리 프레임 동안 표시
+
+        }
+        isStarClimbing = hitWalls.Any(hit => hit.collider != null);
+    }
+
+    // 이동
+    //private void Move() 
+    //{
+    //    float accel = speedAcceleration;
+    //    float decel = SpeedDeceleration;
+    //    if (!isGrounded) // 공중이면 배수 적용
+    //    {
+    //        accel *= airAccelMulti;
+    //        decel *= airDecelMulti;
+    //    }
+    //    float targetX = moveInput.x * maxSpeed;
+    //    float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
+    //    // 속도가 빠를수록 가속도 감소
+    //    float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
+    //    rb.linearVelocity = new Vector2(newX, rb.linearVelocity.y); 
+    //}
+
+    private void StarAirControl()
+    {
+        if (!isStarClimbing) // 공중이면 배수 적용
+        {
+            float accel = speedAcceleration;
+            float decel = SpeedDeceleration;
+            accel *= airAccelMulti;
+            decel *= airDecelMulti;
+            float targetX = moveInput.x * maxSpeed;
+            float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
+            // 속도가 빠를수록 가속도 감소
+            float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
+            rb.linearVelocity = new Vector2(newX, rb.linearVelocity.y);
+        }
+    }
+
+    // 바닥 감지 (법선벡터 Vector.up일때)
+    private void StarDetectGround()
+    {
+        bool hasUpNormal = hitWalls.Any(hit =>
+        hit.collider != null &&
+        Vector2.Dot(hit.normal.normalized, Vector2.up) > 0.99f
+);
+
+        if (hasUpNormal)
+        {
+            isGrounded = true;
+        }
+        else
+            isGrounded = false;
+
+
+        if (isJumping && rb.linearVelocity.y <= 0.05f)
         {
             isJumping = false;
             currentGravity = jumpDcceleration;
@@ -191,7 +341,7 @@ public class PlayerController : MonoBehaviour
     }
 
     // 중력
-    private void ApplyGravity()
+    private void StarApplyGravity()
     {
         float newY;
         if (isJumping)
@@ -216,6 +366,13 @@ public class PlayerController : MonoBehaviour
             if (newY < -wallSlideMaxSpeed)
                 newY = -wallSlideMaxSpeed;
 
+        if (hitWalls.Any(hit => hit.collider != null))
+        {
+            if (newY < 0)
+                newY = 0;
+        }
+
+
         // y축 최대 속도
         newY = Mathf.Clamp(newY, -maxDownSpeed, maxJumpSpeed);
 
@@ -223,21 +380,26 @@ public class PlayerController : MonoBehaviour
     }
 
     // 점프
-    private void Jump()
+    private void StarJump()
     {
         if (jumpBufferCounter > 0 && coyoteTimeCounter > 0)
         {
-            // +y로 linearVelocity 설정
-            Debug.Log("Jump!");
-            isJumping = true;
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, maxJumpSpeed);
-            jumpBufferCounter = 0;
-            coyoteTimeCounter = 0;
+            if (selectedWallNormal != null)
+            {
+                // +y로 linearVelocity 설정
+                Debug.Log("Jump!");
+                isJumping = true;
+
+                //rb.linearVelocity = new Vector2(rb.linearVelocity.x, maxJumpSpeed);
+                rb.linearVelocity = selectedWallNormal.Value * maxJumpSpeed;
+                jumpBufferCounter = 0;
+                coyoteTimeCounter = 0;
+            }
         }
     }
 
     // 점프 키 때면 isJumping = false -> 중력 강해짐 -> 빨리 떨어짐
-    private void FastFall()
+    private void StarFastFall()
     {
         if (isJumping)
         {
@@ -246,7 +408,7 @@ public class PlayerController : MonoBehaviour
     }
 
     // 벽 감지 (Raycast)
-    private void WallCheck()
+    private void StarWallCheck()
     {
         Vector2 origin = transform.position;
         RaycastHit2D hitWall = new RaycastHit2D(); // 기본값으로 초기화
@@ -266,18 +428,20 @@ public class PlayerController : MonoBehaviour
     }
 
     // 벽점프 키 입력 반대 위로 linearVelocity 설정
-    private void WallJump()
+    private void StarWallJump()
     {
-        if (isTouchingWall && jumpBufferCounter > 0 && !isGrounded)
+
+
+        if (isStarClimbing && jumpBufferCounter > 0 && !isGrounded && selectedWallNormal != null)
         {
             isJumping = true;
-            rb.linearVelocity = new Vector2(wallJumpXSpeed * -Mathf.Sign(moveInput.x), wallJumpYSpeed);
+            rb.linearVelocity = selectedWallNormal.Value * starWallJumpSpeed;
             Debug.Log("Wall Jump");
         }
     }
 
     // 대시, 대시 중 모든 변수 무시하고 linearVelocity는 무조건 moveInput.normalized * dashSpeed됨.
-    private void Dash()
+    private void StarDash()
     {
         if (moveInput == Vector2.zero) return;
         if (dashCount <= 0) return;
@@ -288,7 +452,7 @@ public class PlayerController : MonoBehaviour
     }
 
     // 대시 후 댐핑, 대시 끝나면 최대속도 조절
-    private void dampAfterDash()
+    private void StardampAfterDash()
     {
         float dampedSpeedX = rb.linearVelocity.x;
         float dampedSpeedY = rb.linearVelocity.y;
