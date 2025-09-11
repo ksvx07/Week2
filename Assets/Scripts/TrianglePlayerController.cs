@@ -177,13 +177,13 @@ public class TrianglePlayerController : MonoBehaviour
         Bounds bounds = col.bounds;
         float extraHeight = 0.05f;
 
-        RaycastHit2D hit = Physics2D.BoxCast(bounds.center, bounds.size, 0f, Vector2.down,
-            extraHeight, wallLayer);
+        Vector2 centerPoint = new Vector2(bounds.center.x, bounds.min.y);
 
-        isGrounded = hit.collider != null;
+        RaycastHit2D hitCenter = Physics2D.Raycast(centerPoint, Vector2.down, extraHeight, wallLayer);
+        //바닥에 닿으면 grounded 상태
+        isGrounded = hitCenter.collider != null;
 
-
-       // 땅에 착지했을 때 hop 상태 해제
+        // 땅에 착지했을 때 hop 상태 해제
         if (isGrounded && isHopping)
         {
             isHopping = false;
@@ -198,22 +198,6 @@ public class TrianglePlayerController : MonoBehaviour
     #endregion
 
     #region 이동
-    // private void Move() //네모 이동
-    // {
-    //     float accel = speedAcceleration;
-    //     float decel = SpeedDeceleration;
-    //     if (!isGrounded) //공중에서 이동 시 가속도, 감속도 감소
-    //     {
-    //         accel *= airAccelMulti;
-    //         decel *= airDecelMulti;
-    //     }
-    //     float targetX = moveInput.x * maxSpeed;
-    //     float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
-    //     // 이동 방향에 따라 속도 보간
-    //     float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
-    //     rb.linearVelocity = new Vector2(newX, rb.linearVelocity.y);
-    // }
-    
     private void Move() //삼각형 이동
     {
         if (hopCooldown > 0)
