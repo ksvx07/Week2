@@ -1043,8 +1043,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSpeed: 5
-  speedAcceleration: 50
-  SpeedDeceleration: 40
+  speedAcceleration: 20
+  SpeedDeceleration: 20
   maxJumpSpeed: 10
   jumpDcceleration: 20
   maxGravity: 50
@@ -1053,7 +1053,7 @@ MonoBehaviour:
   coyoteTime: 0.1
   jumpBufferTime: 0.1
   wallCheckDistance: 0.4
-  wallJumpXSpeed: 8
+  wallJumpXSpeed: 20
   wallJumpYSpeed: 8
   wallSlideMaxSpeed: 2
   wallSlideDecceleration: 5
