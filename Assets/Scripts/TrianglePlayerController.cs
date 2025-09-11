@@ -63,6 +63,7 @@ public class TrianglePlayerController : MonoBehaviour
     #endregion
 
     #region 상태 플래그
+    private bool isHopping; //깡충깡충 점프 중인지 여부
     private bool isGrounded; //땅에 닿았는지 여부
     private bool isJumping; //점프 중인지 여부
     private bool isTouchingWall; //벽에 닿았는지 여부
@@ -182,6 +183,12 @@ public class TrianglePlayerController : MonoBehaviour
         isGrounded = hit.collider != null;
 
 
+       // 땅에 착지했을 때 hop 상태 해제
+        if (isGrounded && isHopping)
+        {
+            isHopping = false;
+        }
+
         if (isJumping && rb.linearVelocity.y <= 0)
         {
             isJumping = false;
@@ -209,42 +216,33 @@ public class TrianglePlayerController : MonoBehaviour
     
     private void Move() //삼각형 이동
     {
-        hopCooldown -= Time.fixedDeltaTime; //뛰는 느낌을 주기위한 쿨다운
-        
-        // 네모 이동로직
+        if (hopCooldown > 0)
+        {
+            hopCooldown -= Time.fixedDeltaTime;
+            return; // 쿨다운 중에는 이동하지 않음
+        }
+
         float accel = speedAcceleration;
         float decel = SpeedDeceleration;
-        if (!isGrounded) // 공중에서 이동 시 가속도, 감속도 감소
+        if (!isGrounded) //공중에서 이동 시 가속도, 감속도 감소
         {
             accel *= airAccelMulti;
             decel *= airDecelMulti;
         }
-        
         float targetX = moveInput.x * maxSpeed;
         float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
-        
         // 이동 방향에 따라 속도 보간
         float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
         
-         // 점프가 우선! - 점프 버퍼가 있으면 hop 하지 않음
-        bool shouldHop = isGrounded &&  //땅에 있고
-                     moveInput.x != 0 &&  //수평 이동입력이 있고
-                     hopCooldown <= 0 &&  //합 쿨타임이 끝났고
-                     jumpBufferCounter <= 0; // 점프 입력이 없을 때만 hop
-
-        // 역삼각형 뛰는 효과 추가
-        if (shouldHop)
+        if (moveInput.x != 0 && isGrounded)
         {
-            // 기존 X 속도는 유지하고 Y 속도만 추가
+            isHopping = true; // hop 상태 설정
             rb.linearVelocity = new Vector2(newX, hopHeight);
-            hopCooldown = hopCooldownTime;
-
-            Debug.Log($"Hop! X: {newX:F2}, Y: {hopHeight:F2}");
+            hopCooldown = hopCooldownTime; // 쿨다운 시간 설정
         }
         else
         {
-            // 일반적인 부드러운 이동
-            rb.linearVelocityX = newX;
+            rb.linearVelocity = new Vector2(newX, rb.linearVelocity.y);
         }
     }
     #endregion
@@ -281,16 +279,14 @@ public class TrianglePlayerController : MonoBehaviour
     #region 점프
     private void Jump()
     {
-        if (jumpBufferCounter > 0 && coyoteTimeCounter > 0)
+        if (jumpBufferCounter > 0 && (coyoteTimeCounter > 0 || isHopping))
         {
             Debug.Log("Jump!");
             isJumping = true;
+            isHopping = false; // 점프 시 hop 상태 해제
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, maxJumpSpeed);
             jumpBufferCounter = 0;
             coyoteTimeCounter = 0;
-
-            // 점프할 때 hop 쿨다운 리셋 (연속 점프 방지)
-            hopCooldown = hopCooldownTime * 0.5f; // hop보다 짧게 설정
         }
     }
     #endregion

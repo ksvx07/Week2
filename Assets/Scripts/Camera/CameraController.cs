@@ -61,9 +61,9 @@ public class CameraController : MonoBehaviour
     {
         var playerVelocity = Player.GetComponent<Rigidbody2D>().linearVelocity;
 
-        if (Player.GetComponent<PlayerController>().IsJumping || !Player.GetComponent<PlayerController>().IsGrounded) return;
+        //if (Player.GetComponent<PlayerController>().IsJumping || !Player.GetComponent<PlayerController>().IsGrounded) return;
         _velocity = playerVelocity;
-        // ¿øÀÇ °æ¿ì ¼Óµµ ~ ÀÌ»óÀÏ ¶§ ÁÜ ¾Æ¿ô È¿°ú
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Óµï¿½ ~ ï¿½Ì»ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½Æ¿ï¿½ È¿ï¿½ï¿½
         float speed = playerVelocity.magnitude;
         if (speed > SpeedThreshold)
         {
