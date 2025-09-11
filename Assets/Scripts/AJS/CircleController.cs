@@ -118,10 +118,6 @@ public class CircleController : MonoBehaviour
     private void Update()
     {
         TimeCounters();
-        if (rb.linearVelocityX - 1f <= maxSpeed)
-        {
-            print(rb.linearVelocityX);
-        }
     }
 
     // 시간 카운터들

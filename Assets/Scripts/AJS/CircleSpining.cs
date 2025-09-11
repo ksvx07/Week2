@@ -10,7 +10,6 @@ public class CircleSpining : MonoBehaviour
     [Range(0.1f, 10.0f)]
     [Tooltip("MaxSpeed에서 한바퀴 도는데 걸리는 시간")] [SerializeField] float rotationTimeInMaxSpeed = 1.0f;
 
-    private float currentRotationTime;
     private float maxSpeed;
 
     private void Start()
@@ -20,7 +19,7 @@ public class CircleSpining : MonoBehaviour
 
     void Update()
     {
-        if (rb == null || rb.linearVelocity.magnitude < 0.2f)
+        if (rb.linearVelocity.magnitude < 0.2f)
         {
             return;
         }
