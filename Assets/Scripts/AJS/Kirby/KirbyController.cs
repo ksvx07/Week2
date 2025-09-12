@@ -27,7 +27,6 @@ public class KirbyController : MonoBehaviour
     [SerializeField] private float bounceHeight = 5f;
     [Tooltip("튕겨 나가는 효과가 지속될 시간입니다.")]
     [SerializeField] private float bounceDuration = 0.3f;
-    [SerializeField] private float fixedBounceDuration = 0.3f;
     private bool isBouncing = false;
     private bool isFixedBouncing = false;
 
@@ -141,11 +140,9 @@ public class KirbyController : MonoBehaviour
         if (collision.gameObject.CompareTag("Wall") && turboMode)
         {
             if (isBouncing) return;
-
             turboMode = false;
             // 충돌 시 바운스 코루틴 시작
             StartCoroutine(Bounce(collision));
-            print("바운스");
         }
     }
 
@@ -214,7 +211,7 @@ public class KirbyController : MonoBehaviour
         // Rigidbody에 속도 적용
         _rb.linearVelocity = fixedBounceVelocity;
 
-        yield return new WaitForSeconds(fixedBounceDuration);
+        yield return new WaitForSeconds(bounceDuration);
         isFixedBouncing = false;
     }
 
