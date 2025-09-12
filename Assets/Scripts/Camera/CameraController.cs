@@ -10,8 +10,8 @@ public class CameraController : MonoBehaviour
     [SerializeField] private CameraClamp Clamp;
 
     [Header("DeadZone / SoftZone")]
-    [SerializeField] private Vector2 deadZoneSize = new Vector2(2f, 1f);   // ÇÃ·¹ÀÌ¾î°¡ ÀÌ ¹üÀ§ ¾È¿¡ ÀÖÀ¸¸é Ä«¸Þ¶ó °íÁ¤
-    [SerializeField] private Vector2 softZoneSize = new Vector2(4f, 2f);   // DeadZoneÀ» ³Ñ¾î°¡ SoftZone±îÁö °¥ ¶§ Ä«¸Þ¶ó ½º¹«½ºÇÏ°Ô µû¶ó°¨
+    [SerializeField] private Vector2 deadZoneSize = new Vector2(2f, 1f);   // ï¿½Ã·ï¿½ï¿½Ì¾î°¡ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½È¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ï¿½ï¿½
+    [SerializeField] private Vector2 softZoneSize = new Vector2(4f, 2f);   // DeadZoneï¿½ï¿½ ï¿½Ñ¾î°¡ SoftZoneï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½
 
     [Header("Zoom In Out")]
     [SerializeField] private float MaxZoomIn = 3f;
@@ -75,8 +75,8 @@ public class CameraController : MonoBehaviour
         Vector3 camPos = transform.position;
         Vector3 playerPos = Player.position;
 
-        Vector2 dz = deadZoneSize;   // DeadZone Å©±â
-        Vector2 sz = softZoneSize;   // SoftZone Å©±â
+        Vector2 dz = deadZoneSize;   // DeadZone Å©ï¿½ï¿½
+        Vector2 sz = softZoneSize;   // SoftZone Å©ï¿½ï¿½
 
         float newX = camPos.x;
         float newY = camPos.y;
@@ -86,12 +86,12 @@ public class CameraController : MonoBehaviour
 
         if (Mathf.Abs(deltaX) > dz.x)
         {
-            // DeadZone ¹þ¾î³ª¸é SmoothDamp·Î µû¶ó°¡±â
+            // DeadZone ï¿½ï¿½ï¿½î³ªï¿½ï¿½ SmoothDampï¿½ï¿½ ï¿½ï¿½ï¿½ó°¡±ï¿½
             newX = Mathf.SmoothDamp(camPos.x, playerPos.x, ref _velocity.x, SmoothTime);
         }
         else
         {
-            // DeadZone ¾È¿¡¼­µµ »ìÂ¦ µû¶ó°¡µµ·Ï ºñÀ² Á¶Á¤
+            // DeadZone ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Â¦ ï¿½ï¿½ï¿½ó°¡µï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             float moveFactorX = deltaX / dz.x;
             newX += moveFactorX * SmoothTime / 2f;
         }
@@ -101,10 +101,10 @@ public class CameraController : MonoBehaviour
 
         if (Mathf.Abs(deltaY) > dz.y)
         {
-            // DeadZone ¹ÛÀÌ¸é SmoothDamp
+            // DeadZone ï¿½ï¿½ï¿½Ì¸ï¿½ SmoothDamp
             newY = Mathf.SmoothDamp(camPos.y, playerPos.y, ref _velocity.y, SmoothTime);
         }
-        // DeadZone ¾ÈÀÌ¸é YÃàÀº °íÁ¤
+        // DeadZone ï¿½ï¿½ï¿½Ì¸ï¿½ Yï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
         return new Vector3(newX, newY, camPos.z);
     }

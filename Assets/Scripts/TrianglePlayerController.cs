@@ -1,3 +1,4 @@
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -155,10 +156,22 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
                 isDashing = false;
                 dampAfterDash();
             }
+
+        }
+        else if( MathF.Abs(rb.linearVelocity.y) <= 0.05f)
+        {
+            if (isDashing)
+            {
+                isDashing = false;
+                dampAfterDash();
+            }
+        }                         
+        else
+        {
+            coyoteTimeCounter -= Time.deltaTime;
         }
 
-        else
-            coyoteTimeCounter -= Time.deltaTime;
+
         if (isDashing)
         {
             dashTimeCounter -= Time.deltaTime;
@@ -183,7 +196,6 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
             ApplyGravity();
             Move();
         }
-        //Debug.Log($"x: {rb.linearVelocity.x:F2}, y: {rb.linearVelocity.y:F2}");
     }
 
     #endregion
@@ -191,14 +203,19 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
     #region 바닥감지
     private void DetectGround()
     {
-        Bounds bounds = col.bounds;
+         Bounds bounds = col.bounds;
         float extraHeight = 0.05f;
+        float rayOffset = 0.001f; // 레이 간격 조정 (콜라이더 크기에 맞게 조정)
 
-        Vector2 centerPoint = new Vector2(bounds.center.x, bounds.min.y);
+        // 중앙에서 좌우로 약간 떨어진 두 지점
+        Vector2 leftPoint = new Vector2(bounds.center.x - rayOffset, bounds.min.y);
+        Vector2 rightPoint = new Vector2(bounds.center.x + rayOffset, bounds.min.y);
 
-        RaycastHit2D hitCenter = Physics2D.Raycast(centerPoint, Vector2.down, extraHeight, wallLayer);
-        //바닥에 닿으면 grounded 상태
-        isGrounded = hitCenter.collider != null;
+        RaycastHit2D hitLeft = Physics2D.Raycast(leftPoint, Vector2.down, extraHeight, wallLayer);
+        RaycastHit2D hitRight = Physics2D.Raycast(rightPoint, Vector2.down, extraHeight, wallLayer);
+        
+        // 둘 중 하나라도 바닥에 닿으면 grounded 상태
+        isGrounded = hitLeft.collider != null || hitRight.collider != null;
 
         // 땅에 착지했을 때 hop 상태 해제
         if (isGrounded && isHopping)
