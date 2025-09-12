@@ -39,6 +39,7 @@ public class CameraController : MonoBehaviour
             Destroy(gameObject);
         }
 
+        Player = GameObject.FindWithTag("Player").transform;
         _rb = Player.GetComponent<Rigidbody2D>();
     }
 
@@ -62,6 +63,11 @@ public class CameraController : MonoBehaviour
         {
             HandleZoomInOut();
         }
+    }
+
+    public void SetPlayer(Transform player)
+    {
+        Player = player;
     }
 
     private Vector3 HandleFollow()
