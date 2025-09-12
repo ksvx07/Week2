@@ -1,11 +1,19 @@
+using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class CameraController : MonoBehaviour
 {
-    [SerializeField] private Camera cam;
+    [SerializeField] private Camera Cam;
     [SerializeField] private Transform Player;
     [SerializeField] private float SmoothTime = 0.2f;
     [SerializeField] private CameraClamp Clamp;
+    [SerializeField] private float MinRiseJump = 5f;
+    [SerializeField] private float MinFollowHoldTime = 2f;
+
+    [Header("DeadZone / SoftZone")]
+    [SerializeField] private Vector2 deadZoneSize = new Vector2(2f, 1f);   // ÇÃ·¹ÀÌ¾î°¡ ÀÌ ¹üÀ§ ¾È¿¡ ÀÖÀ¸¸é Ä«¸Þ¶ó °íÁ¤
+    [SerializeField] private Vector2 softZoneSize = new Vector2(4f, 2f);   // DeadZoneÀ» ³Ñ¾î°¡ SoftZone±îÁö °¥ ¶§ Ä«¸Þ¶ó ½º¹«½ºÇÏ°Ô µû¶ó°¨
 
     [Header("Zoom In Out")]
     [SerializeField] private float MaxZoomIn = 3f;
@@ -16,6 +24,11 @@ public class CameraController : MonoBehaviour
     private Vector3 _offset = new Vector3(0, 0, -10);
     private Vector3 _velocity = new Vector3(2, 2, 2);
     private float targetZoom;
+    private Rigidbody2D _rb;
+    private float _beforeY;
+    private bool _followY;
+    private bool _wasHopping;
+    private float _hoppingEnterTime;
 
     public static CameraController instance = null;
     public bool IsTriggerZoom { get; private set; }
@@ -32,9 +45,22 @@ public class CameraController : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        _rb = Player.GetComponent<Rigidbody2D>();
+        _beforeY = Player.position.y;
     }
 
     private void LateUpdate()
+    {
+        
+    }
+
+    private void FixedUpdate()
+    {
+        
+    }
+
+    private void Update()
     {
         var desiredPos = HandleFollow();
 
@@ -48,9 +74,44 @@ public class CameraController : MonoBehaviour
 
     private Vector3 HandleFollow()
     {
-        Vector3 targetPos = Player.position + _offset;
-        return Vector3.SmoothDamp(transform.position, targetPos, ref _velocity, SmoothTime);
+        Vector3 camPos = transform.position;
+        Vector3 playerPos = Player.position;
+
+        Vector2 dz = deadZoneSize;   // DeadZone Å©±â
+        Vector2 sz = softZoneSize;   // SoftZone Å©±â
+
+        float newX = camPos.x;
+        float newY = camPos.y;
+
+        // x
+        float deltaX = playerPos.x - camPos.x;
+
+        if (Mathf.Abs(deltaX) > dz.x)
+        {
+            // DeadZone ¹þ¾î³ª¸é SmoothDamp·Î µû¶ó°¡±â
+            newX = Mathf.SmoothDamp(camPos.x, playerPos.x, ref _velocity.x, SmoothTime);
+        }
+        else
+        {
+            // DeadZone ¾È¿¡¼­µµ »ìÂ¦ µû¶ó°¡µµ·Ï ºñÀ² Á¶Á¤
+            float moveFactorX = deltaX / dz.x;
+            newX += moveFactorX * SmoothTime / 2f;
+        }
+
+        // y
+        float deltaY = playerPos.y - camPos.y;
+
+        if (Mathf.Abs(deltaY) > dz.y)
+        {
+            // DeadZone ¹ÛÀÌ¸é SmoothDamp
+            newY = Mathf.SmoothDamp(camPos.y, playerPos.y, ref _velocity.y, SmoothTime);
+        }
+        // DeadZone ¾ÈÀÌ¸é YÃàÀº °íÁ¤
+
+        return new Vector3(newX, newY, camPos.z);
     }
+
+
 
     private void HandleCameraShaking()
     {
@@ -59,11 +120,10 @@ public class CameraController : MonoBehaviour
 
     private void HandleZoomInOut()
     {
-        var playerVelocity = Player.GetComponent<Rigidbody2D>().linearVelocity;
+        var playerVelocity = _rb.linearVelocity;
 
-        //if (Player.GetComponent<PlayerController>().IsJumping || !Player.GetComponent<PlayerController>().IsGrounded) return;
         _velocity = playerVelocity;
-        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Óµï¿½ ~ ï¿½Ì»ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½Æ¿ï¿½ È¿ï¿½ï¿½
+       
         float speed = playerVelocity.magnitude;
         if (speed > SpeedThreshold)
         {
@@ -74,18 +134,26 @@ public class CameraController : MonoBehaviour
             targetZoom = MaxZoomIn;
         }
 
-        cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, targetZoom, Time.deltaTime * ZoomLerpSpeed);
+        Cam.orthographicSize = Mathf.Lerp(Cam.orthographicSize, targetZoom, Time.deltaTime * ZoomLerpSpeed);
     }
 
     public void TriggerZoomOut(float targetZoom)
     {
         IsTriggerZoom = true;
-        cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, targetZoom, Time.deltaTime * ZoomLerpSpeed);
+        Cam.orthographicSize = Mathf.Lerp(Cam.orthographicSize, targetZoom, Time.deltaTime * ZoomLerpSpeed);
     }
 
     public void TriggerZoomIn(float targetZoom)
     {
-        cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, targetZoom, Time.deltaTime * ZoomLerpSpeed);
+        Cam.orthographicSize = Mathf.Lerp(Cam.orthographicSize, targetZoom, Time.deltaTime * ZoomLerpSpeed);
         IsTriggerZoom = false;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+        Vector3 center = new Vector3(transform.position.x, transform.position.y, 0f);
+        Vector3 size = new Vector3(deadZoneSize.x * 2f, deadZoneSize.y * 2f, 0f);
+        Gizmos.DrawWireCube(center, size);
     }
 }
