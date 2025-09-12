@@ -66,8 +66,7 @@ public class StarController : MonoBehaviour
     private bool isStarClimbing;
 
     private Vector2? selectedWallNormal;
-    //private Vector2 wallsNormalAverage;
-    private float wallDistance;
+    //private Vector2 closestWallNormal;
 
     private void Awake()
     {
@@ -190,7 +189,9 @@ public class StarController : MonoBehaviour
         selectedWallNormal = null;
         //wallsNormalAverage = Vector2.zero;
         Vector2 mostClosestNormal = Vector2.zero;
+        //Vector2 closestWallNormal = Vector2.zero;
 
+        float wallDistance = 10f;
         var wallNum = 0;
         float bestDot = 1.0f;
 
@@ -215,7 +216,12 @@ public class StarController : MonoBehaviour
                         selectedWallNormal = hitWall.normal;
 
                     if (hitWall.distance < wallDistance)
+                    {
                         wallDistance = hitWall.distance;
+                        //closestWallNormal = hitWall.normal;
+
+                    }
+
                 }
 
                 Vector2 rayDir = rayDirs[i];
@@ -271,12 +277,20 @@ public class StarController : MonoBehaviour
         //}
 
 
+        if (Vector2.Dot(selectedWallNormal.Value, mostClosestNormal) > 0.99f)
+        {
+            if (wallDistance > starMaxWallGravityDistance)
+                newVel -= selectedWallNormal.Value * starWallGravity;
+        }
+        else
+        {
+            newVel -= (selectedWallNormal.Value + mostClosestNormal) / 2 * starWallGravity;
+        }
 
-        if (wallDistance > starMaxWallGravityDistance)
-            newVel -= mostClosestNormal * starWallGravity;
 
-        // 최종 속도 적용
-        rb.linearVelocity = newVel;
+
+            // 최종 속도 적용
+            rb.linearVelocity = newVel;
 
         if (Mathf.Abs(moveInput.x) > 0)
         {
