@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - StageEnd
+  - Enemy
   layers:
   - Default
   - TransparentFX
