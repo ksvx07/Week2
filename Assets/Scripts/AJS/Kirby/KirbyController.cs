@@ -38,6 +38,13 @@ public class KirbyController : MonoBehaviour
     private float turnSpeed; // 방향전환 속도
     #endregion
 
+    #region Public - Return Speed Variables
+    public float DirectionX
+    {
+        get { return directionX; }
+    }
+    #endregion
+
     private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
