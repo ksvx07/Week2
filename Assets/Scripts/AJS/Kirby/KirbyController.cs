@@ -220,7 +220,7 @@ public class KirbyController : MonoBehaviour
     public void OnTurboModePressed()
     {
         // 바운스 상태에서는 TurboMode 불가능
-        if (isFixedBouncing) return;
+        if (isBouncing) return;
 
         turboMode = !turboMode;
     }
