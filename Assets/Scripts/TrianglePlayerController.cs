@@ -11,6 +11,7 @@ public class TrianglePlayerController : MonoBehaviour
     private Vector2 moveInput;
     private Rigidbody2D rb;
     private PolygonCollider2D col;
+    private SpriteRenderer spriteRenderer; // 추가
     #endregion
 
     #region 상태 변수
@@ -46,6 +47,11 @@ public class TrianglePlayerController : MonoBehaviour
     [SerializeField] private float maxSpeedAfterDashUp = 5f; //대쉬 후 최대 Y 속도
     [SerializeField] private int maxDashCount = 1; //최대 대쉬 횟수
 
+    [SerializeField] private GameObject afterImagePrefab; // 잔상 프리팹
+    [SerializeField] private float afterImageLifetime = 0.3f; // 잔상 지속 시간
+    [SerializeField] private float afterImageSpawnRate = 0.05f; // 잔상 생성 간격
+    private float afterImageTimer; // 잔상 생성 타이머
+
     [Header("AirTimeMultiplier")]
     [SerializeField] private float airAccelMulti = 0.65f; //공중 가속도 멀티플라이어
     [SerializeField] private float airDecelMulti = 0.65f; //공중 감속도 멀티플라이어
@@ -78,6 +84,7 @@ public class TrianglePlayerController : MonoBehaviour
         inputActions = new PlayerInput();
         col = GetComponent<PolygonCollider2D>();
         rb = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         currentGravity = jumpDcceleration;
         wallLayer = LayerMask.GetMask("Ground");
         dashCount = maxDashCount;
@@ -128,7 +135,8 @@ public class TrianglePlayerController : MonoBehaviour
 
     private void OnDash(InputAction.CallbackContext ctx)
     {
-        Dash();
+        //Dash();
+        TriangleSpecialAbility();
     }
     #endregion
 
@@ -147,6 +155,14 @@ public class TrianglePlayerController : MonoBehaviour
         if (isDashing)
         {
             dashTimeCounter -= Time.deltaTime;
+            // 잔상 효과 생성
+            afterImageTimer -= Time.deltaTime;
+            if (afterImageTimer <= 0)
+            {
+                CreateAfterImage();
+                afterImageTimer = afterImageSpawnRate;
+            }
+
             if (dashTimeCounter < 0)
             {
                 isDashing = false;
@@ -170,7 +186,7 @@ public class TrianglePlayerController : MonoBehaviour
     }
 
     #endregion
-    
+
     #region 바닥감지
     private void DetectGround()
     {
@@ -217,7 +233,7 @@ public class TrianglePlayerController : MonoBehaviour
         float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
         // 이동 방향에 따라 속도 보간
         float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
-        
+
         if (moveInput.x != 0 && isGrounded)
         {
             isHopping = true; // hop 상태 설정
@@ -339,6 +355,87 @@ public class TrianglePlayerController : MonoBehaviour
         dampedSpeedX = Mathf.Clamp(dampedSpeedX, -maxSpeedAfterDashX, maxSpeedAfterDashX);
         dampedSpeedY = Mathf.Min(dampedSpeedY, maxSpeedAfterDashUp);
         rb.linearVelocity = new Vector2(dampedSpeedX, dampedSpeedY);
+    }
+    #endregion
+
+    #region 세모 특수 능력
+    private void TriangleSpecialAbility()
+    {
+        if (moveInput == Vector2.zero) return;
+        if (dashCount <= 0) return;
+        
+        // 8방향 중 아래 3방향만 허용 (아래, 왼쪽아래, 오른쪽아래)
+        Vector2 dashDirection = GetDownwardDashDirection(moveInput);
+        if (dashDirection == Vector2.zero) return; // 아래 방향이 아니면 대시 불가
+        
+        isDashing = true;
+        dashCount -= 1;
+        dashTimeCounter = dashTime;
+        rb.linearVelocity = dashDirection * dashSpeed;
+    }
+
+    private Vector2 GetDownwardDashDirection(Vector2 input)
+    {
+        // 입력을 8방향으로 정규화
+        Vector2 direction = Vector2.zero;
+        
+        // X 방향 결정
+        if (input.x > 0.3f) direction.x = 1f;      // 오른쪽
+        else if (input.x < -0.3f) direction.x = -1f; // 왼쪽
+        else direction.x = 0f;                      // 가운데
+        
+        // Y 방향 결정 (아래쪽만 허용)
+        if (input.y < -0.3f) direction.y = -1f;    // 아래
+        else return Vector2.zero; // 아래가 아니면 대시 불가
+        
+        return direction.normalized;
+    }
+
+    // 대시 중 적과의 충돌 감지 (물리적 충돌)
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (isDashing && collision.gameObject.CompareTag("Enemy"))
+        {
+            // 적을 파괴
+            Destroy(collision.gameObject);
+            Debug.Log("Enemy destroyed by triangle dash!");
+        }
+    }
+    #endregion
+
+
+    #region 잔상 효과 생성
+    private void CreateAfterImage()
+    {
+        GameObject afterImage = new GameObject("AfterImage");
+        afterImage.transform.position = transform.position;
+        afterImage.transform.rotation = transform.rotation;
+        afterImage.transform.localScale = transform.localScale;
+
+        SpriteRenderer afterImageSR = afterImage.AddComponent<SpriteRenderer>();
+        afterImageSR.sprite = spriteRenderer.sprite;
+        afterImageSR.color = new Color(1f, 1f, 1f, 0.5f); // 반투명
+        afterImageSR.sortingLayerName = spriteRenderer.sortingLayerName;
+        afterImageSR.sortingOrder = spriteRenderer.sortingOrder - 1;
+
+        // 잔상 페이드아웃 코루틴 시작
+        StartCoroutine(FadeOutAfterImage(afterImageSR, afterImage));
+    }
+
+    private System.Collections.IEnumerator FadeOutAfterImage(SpriteRenderer sr, GameObject obj)
+    {
+        float elapsed = 0f;
+        Color originalColor = sr.color;
+        
+        while (elapsed < afterImageLifetime)
+        {
+            elapsed += Time.deltaTime;
+            float alpha = Mathf.Lerp(originalColor.a, 0f, elapsed / afterImageLifetime);
+            sr.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
+            yield return null;
+        }
+        
+        Destroy(obj);
     }
     #endregion
 }
