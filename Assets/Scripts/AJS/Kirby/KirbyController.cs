@@ -21,19 +21,15 @@ public class KirbyController : MonoBehaviour
     [SerializeField, Range(0f, 20f)][Tooltip("터보속도")] private float turboSpeed = 20f;
 
     [Header("Bounce Settings")]
-    [Tooltip("수평 방향으로의 튕김을 제어할 애니메이션 커브입니다.")]
-    public AnimationCurve bounceCurveX;
-    [Tooltip("수직 방향으로의 튕김을 제어할 애니메이션 커브입니다.")]
-    public AnimationCurve bounceCurveY;
-    [Tooltip("튕겨나가는 효과가 지속될 시간입니다.")]
-    public float bounceDuration = 0.3f; // 바운스 지속 시간
-    [Tooltip("튕겨나가는 최대 거리입니다.")]
-    public float bounceMagnitude = 2f; // 바운스 강도
-    [Tooltip("튕겨나가는 최대 높이입니다.")]
-    public float bounceHeight = 2f; // 바운스 높이
-
+    [Tooltip("튕겨 나가는 힘의 세기")]
+    [SerializeField] private float bounceStrength = 15f;
+    [Tooltip("위로 튕겨 나가는 힘 (높이)")]
+    [SerializeField] private float bounceHeight = 5f;
+    [Tooltip("튕겨 나가는 효과가 지속될 시간입니다.")]
+    [SerializeField] private float bounceDuration = 0.3f;
+    [SerializeField] private float fixedBounceDuration = 0.3f;
     private bool isBouncing = false;
-    private Vector2 bounceDirection;
+    private bool isFixedBouncing = false;
 
     [Header("Current State")]
     public bool onGround;
@@ -73,6 +69,12 @@ public class KirbyController : MonoBehaviour
 
     private void Update()
     {
+        // 입력키를 누르든 말든 최소 유지해야 하는 boucning시간
+        if (isFixedBouncing)
+        {
+            return;
+        }
+
         // 입력값이 있으면, 누른 방향으로 방향전환
         if (directionX != 0)
         {
@@ -83,6 +85,15 @@ public class KirbyController : MonoBehaviour
         {
             pressingKey = false;
         }
+
+        // isBoudning 상태에서
+        if (isBouncing)
+        {
+            // 키를 눌렀으면, bouncing 상태 종료
+            if(pressingKey) {isBouncing = false;}
+            else  return;
+        }
+
 
         if (turboMode)
         {
@@ -98,10 +109,19 @@ public class KirbyController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (isFixedBouncing) return;
+
         onGround = _groundCheck.GetOnGround();
+
+        if (isBouncing)
+        {
+            if(onGround) { isBouncing = false; }
+            return;
+        }
 
         //현재 velocity 값을 가져오기
         moveVelocity = _rb.linearVelocity;
+
 
         if (turboMode)
         {
@@ -110,7 +130,7 @@ public class KirbyController : MonoBehaviour
         }
         else
         {
-             runWithAcceleration();
+            runWithAcceleration();
         }
     }
 
@@ -118,14 +138,14 @@ public class KirbyController : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // 벽 태그를 가진 오브젝트와 충돌했는지, 현재 바운스 중이 아닌지, 터보모드인지 확인
-        if (collision.gameObject.CompareTag("Wall") && !isBouncing && turboMode)
+        if (collision.gameObject.CompareTag("Wall") && turboMode)
         {
-            turboMode= false;
-            // 충돌 지점의 법선 벡터를 튕겨나갈 방향으로 사용
-            bounceDirection = collision.contacts[0].normal;
+            if (isBouncing) return;
 
-            // 바운스 코루틴 시작
-            StartCoroutine(Bounce(bounceDirection));
+            turboMode = false;
+            // 충돌 시 바운스 코루틴 시작
+            StartCoroutine(Bounce(collision));
+            print("바운스");
         }
     }
 
@@ -173,36 +193,29 @@ public class KirbyController : MonoBehaviour
         _rb.linearVelocity = moveVelocity;
     }
 
-    private IEnumerator Bounce(Vector2 direction)
+    private IEnumerator Bounce(Collision2D collision)
     {
+        isFixedBouncing = true;
         isBouncing = true;
 
-        // 물리적 움직임을 잠시 멈춤
-        _rb.linearVelocity = Vector2.zero;
-        _rb.gravityScale = 0f; // 중력 영향 일시적으로 제거
+        // 벽의 법선 벡터를 가져와 튕겨나갈 방향을 결정
+        Vector2 normal = collision.contacts[0].normal;
 
-        float timer = 0f;
-        Vector2 startPosition = transform.position;
+        // 수평 반대 방향과 수직 높이를 포함한 고정 속도 벡터 생성
+        Vector2 fixedBounceVelocity = new Vector2(
+            // 벽의 x축 법선 방향을 반전시켜 반대 방향으로 튕기게 함
+            normal.x * bounceStrength,
+            // 고정된 높이로 튕기게 함
+            bounceHeight
+        );
 
-        while (timer < bounceDuration)
-        {
-            // 시간 경과에 따른 진행률 (0에서 1 사이)
-            float progress = timer / bounceDuration;
+        print(fixedBounceVelocity);
 
+        // Rigidbody에 속도 적용
+        _rb.linearVelocity = fixedBounceVelocity;
 
-            // X축 움직임: bounceCurveX를 사용하여 수평 이동
-            float xOffset = bounceCurveX.Evaluate(progress) * bounceMagnitude * bounceDirection.x;
-            // Y축 움직임: bounceCurveY를 사용하여 수직 이동
-            float yOffset = bounceCurveY.Evaluate(progress) * bounceHeight;
-
-            Vector2 newPosition = new Vector2(startPosition.x + xOffset, startPosition.y + yOffset);
-            _rb.MovePosition(newPosition);
-
-            timer += Time.deltaTime;
-            yield return null; // 다음 프레임까지 대기
-        }
-
-        isBouncing = false;
+        yield return new WaitForSeconds(fixedBounceDuration);
+        isFixedBouncing = false;
     }
 
     #region Public - PlayerInput
@@ -212,7 +225,7 @@ public class KirbyController : MonoBehaviour
     }
 
     public void OnTurboModePressed()
-    {        
+    {
         turboMode = !turboMode;
     }
     #endregion
