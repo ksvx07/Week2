@@ -11,6 +11,10 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float MinRiseJump = 5f;
     [SerializeField] private float MinFollowHoldTime = 2f;
 
+    [Header("DeadZone / SoftZone")]
+    [SerializeField] private Vector2 deadZoneSize = new Vector2(2f, 1f);   // 플레이어가 이 범위 안에 있으면 카메라 고정
+    [SerializeField] private Vector2 softZoneSize = new Vector2(4f, 2f);   // DeadZone을 넘어가 SoftZone까지 갈 때 카메라 스무스하게 따라감
+
     [Header("Zoom In Out")]
     [SerializeField] private float MaxZoomIn = 3f;
     [SerializeField] private float MaxZoomOut = 10f;
@@ -70,56 +74,44 @@ public class CameraController : MonoBehaviour
 
     private Vector3 HandleFollow()
     {
-        /*Vector3 targetPos = Player.position + _offset;
-        return Vector3.SmoothDamp(transform.position, targetPos, ref _velocity, SmoothTime);*/
-        float targetX = Player.position.x + _offset.x;
-        float newX = Mathf.SmoothDamp(transform.position.x, targetX, ref _velocity.x, SmoothTime);
+        Vector3 camPos = transform.position;
+        Vector3 playerPos = Player.position;
 
-        // isHopping은 TrianlgeController 에서만 체크
-        bool isGround = Player.GetComponent<PlayerController>().IsGrounded;
-        //bool isHopping = Player.GetComponent<TrianglePlayerController>().IsHopping;
-        bool isJumping = Player.GetComponent<PlayerController>().IsJumping;
+        Vector2 dz = deadZoneSize;   // DeadZone 크기
+        Vector2 sz = softZoneSize;   // SoftZone 크기
 
-        /*if (isHopping && !_wasHopping)
+        float newX = camPos.x;
+        float newY = camPos.y;
+
+        // x
+        float deltaX = playerPos.x - camPos.x;
+
+        if (Mathf.Abs(deltaX) > dz.x)
         {
-            _hoppingEnterTime = Time.time;
+            // DeadZone 벗어나면 SmoothDamp로 따라가기
+            newX = Mathf.SmoothDamp(camPos.x, playerPos.x, ref _velocity.x, SmoothTime);
         }
-        _wasHopping = isHopping;*/
-
-        float newY = transform.position.y;
-
-        if (isGround)
+        else
         {
-            _beforeY = Player.position.y;
-        }
-
-        float changedY = Player.position.y - _beforeY;
-
-        /*if (isHopping)
-        {
-            if (Time.time - _hoppingEnterTime > 2f)
-                _followY = true;
-            else
-                _followY = false;
-        }*/
-
-        if (Mathf.Abs(changedY) >= MinRiseJump)
-        {
-            _followY = true;
-        }
-        else if (isJumping)
-        {
-            _followY = true;
+            // DeadZone 안에서도 살짝 따라가도록 비율 조정
+            float moveFactorX = deltaX / dz.x;
+            newX += moveFactorX * SmoothTime / 2f;
         }
 
-        if (_followY)
-        {
-            float targetY = Player.position.y + _offset.y;
-            newY = Mathf.SmoothDamp(transform.position.y, targetY, ref _velocity.y, SmoothTime);
-        }
+        // y
+        float deltaY = playerPos.y - camPos.y;
 
-        return new Vector3(newX, newY, transform.position.z);
+        if (Mathf.Abs(deltaY) > dz.y)
+        {
+            // DeadZone 밖이면 SmoothDamp
+            newY = Mathf.SmoothDamp(camPos.y, playerPos.y, ref _velocity.y, SmoothTime);
+        }
+        // DeadZone 안이면 Y축은 고정
+
+        return new Vector3(newX, newY, camPos.z);
     }
+
+
 
     private void HandleCameraShaking()
     {
@@ -155,5 +147,13 @@ public class CameraController : MonoBehaviour
     {
         Cam.orthographicSize = Mathf.Lerp(Cam.orthographicSize, targetZoom, Time.deltaTime * ZoomLerpSpeed);
         IsTriggerZoom = false;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+        Vector3 center = new Vector3(transform.position.x, transform.position.y, 0f);
+        Vector3 size = new Vector3(deadZoneSize.x * 2f, deadZoneSize.y * 2f, 0f);
+        Gizmos.DrawWireCube(center, size);
     }
 }
