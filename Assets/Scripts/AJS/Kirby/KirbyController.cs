@@ -21,14 +21,14 @@ public class KirbyController : MonoBehaviour
     [SerializeField, Range(0f, 20f)][Tooltip("터보속도")] private float turboSpeed = 20f;
 
     [Header("Bounce Settings")]
-    [Tooltip("튕겨 나가는 힘의 세기")]
-    [SerializeField] private float bounceStrength = 15f;
-    [Tooltip("위로 튕겨 나가는 힘 (높이)")]
-    [SerializeField] private float bounceHeight = 5f;
-    [Tooltip("튕겨 나가는 효과가 지속될 시간입니다.")]
+    [Tooltip("X축으로 튕겨 나가는 힘")]
+    [SerializeField] private float bounceStrength = 5f;
+    [Tooltip("Y축으로 튕겨 나가는 힘")]
+    [SerializeField] private float bounceHeight = 10f;
+    [Tooltip("튕겨 나가는 효과가 지속되는 최소시간")]
     [SerializeField] private float bounceDuration = 0.3f;
-    private bool isBouncing = false;
-    private bool isFixedBouncing = false;
+    private bool isBouncing = false; // 현재도 튕겨 나가는지 
+    private bool isFixedBouncing = false; // 튕겨 나가지는 최소 유지 시간
 
     [Header("Current State")]
     public bool onGround;
@@ -85,10 +85,9 @@ public class KirbyController : MonoBehaviour
             pressingKey = false;
         }
 
-        // isBoudning 상태에서
+        // 바운스 상태에서 입력이 없으면, 계속 바운스 vector 유지
         if (isBouncing)
         {
-            // 키를 눌렀으면, bouncing 상태 종료
             if(pressingKey) {isBouncing = false;}
             else  return;
         }
@@ -108,19 +107,18 @@ public class KirbyController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (isFixedBouncing) return;
+        if (isFixedBouncing) return; // 최소 바운스 유지 시간에는 return
 
         onGround = _groundCheck.GetOnGround();
 
+        // 바운스 상태에서는 땅이 닿으면, 바운스 상태 종료
         if (isBouncing)
         {
             if(onGround) { isBouncing = false; }
             return;
         }
-
         //현재 velocity 값을 가져오기
         moveVelocity = _rb.linearVelocity;
-
 
         if (turboMode)
         {
@@ -206,8 +204,6 @@ public class KirbyController : MonoBehaviour
             bounceHeight
         );
 
-        print(fixedBounceVelocity);
-
         // Rigidbody에 속도 적용
         _rb.linearVelocity = fixedBounceVelocity;
 
@@ -223,6 +219,9 @@ public class KirbyController : MonoBehaviour
 
     public void OnTurboModePressed()
     {
+        // 바운스 상태에서는 TurboMode 불가능
+        if (isFixedBouncing) return;
+
         turboMode = !turboMode;
     }
     #endregion
