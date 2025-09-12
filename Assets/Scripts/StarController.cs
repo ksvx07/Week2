@@ -1,9 +1,6 @@
-using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Rendering;
 
 public class StarController : MonoBehaviour
 {
@@ -48,11 +45,14 @@ public class StarController : MonoBehaviour
     [SerializeField] private float starRayGravityDistance = 1f;
     [SerializeField] private float starWallJumpSpeed = 5f;
     [SerializeField] private Transform starPivotTransform;
+    [SerializeField] private float starWallGravity = 5f;
+    [SerializeField] private float starMaxWallGravityDistance = 5f;
 
-    
     private LayerMask wallLayer;
 
-    private RaycastHit2D[] hitWalls = new RaycastHit2D[60];
+    int rayCount = 60;
+    private RaycastHit2D[] hitWalls;
+    Vector2[] rayDirs;
     private float currentGravity;
     private float coyoteTimeCounter; // 땅을 떠난 후 남은 점프 가능 시간
     private float jumpBufferCounter; // 점프 입력 유지 시간
@@ -65,8 +65,9 @@ public class StarController : MonoBehaviour
     private int dashCount;
     private bool isStarClimbing;
 
-
     private Vector2? selectedWallNormal;
+    //private Vector2 wallsNormalAverage;
+    private float wallDistance;
 
     private void Awake()
     {
@@ -77,8 +78,11 @@ public class StarController : MonoBehaviour
         wallLayer = LayerMask.GetMask("Ground");
         dashCount = maxDashCount;
 
-        // Rigidbody 설정
-        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        hitWalls = new RaycastHit2D[rayCount];
+        rayDirs = new Vector2[rayCount];
+
+    // Rigidbody 설정
+    rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         rb.gravityScale = 0f; // 중력은 직접 처리
     }
 
@@ -174,6 +178,7 @@ public class StarController : MonoBehaviour
         //Debug.Log($"x: {rb.linearVelocity.x:F2}, y: {rb.linearVelocity.y:F2}");
     }
 
+
     private void StarWallClimbing()
     {
         if (isJumping) return;
@@ -183,19 +188,45 @@ public class StarController : MonoBehaviour
 
         Vector2 bestTangent = Vector2.zero;
         selectedWallNormal = null;
+        //wallsNormalAverage = Vector2.zero;
+        Vector2 mostClosestNormal = Vector2.zero;
 
+        var wallNum = 0;
+        float bestDot = 1.0f;
 
-        foreach (RaycastHit2D hitWall in hitWalls)
+        //My ver......................................................,......
+        for (int i = 0; i < rayCount; i++)
         {
+            RaycastHit2D hitWall = hitWalls[i];
             if (hitWall.collider != null)
             {
+                wallNum += 1;
+                //wallsNormalAverage += hitWall.normal;
+
                 if (selectedWallNormal == null)
+                {
                     selectedWallNormal = hitWall.normal;
+                    wallDistance = hitWall.distance;
+                }
                 else
                 {
                     float normalsAngle = Vector2.SignedAngle(selectedWallNormal.Value, hitWall.normal);
                     if (normalsAngle * moveInput.x > 0)
                         selectedWallNormal = hitWall.normal;
+
+                    if (hitWall.distance < wallDistance)
+                        wallDistance = hitWall.distance;
+                }
+
+                Vector2 rayDir = rayDirs[i];
+                Vector2 wallNormala = hitWall.normal;
+
+                // 레이와 수직인지 확인
+                float dot = Mathf.Abs(Vector2.Dot(rayDir.normalized, wallNormala.normalized));
+                if (dot < bestDot)  // bestDot은 초기값 1.0f
+                {
+                    bestDot = dot;
+                    mostClosestNormal = wallNormala;
                 }
             }
         }
@@ -232,8 +263,25 @@ public class StarController : MonoBehaviour
         // 현재 속도 → 목표 속도로 부드럽게 변경
         Vector2 newVel = Vector2.Lerp(rb.linearVelocity, targetVel, lerpAmount);
 
+        //newVel -= wallNormal * starWallGravity;
+        // 벽 중력 설정
+        //if (wallNum != 0)
+        //{
+        //    wallsNormalAverage /= wallNum;
+        //}
+
+
+
+        if (wallDistance > starMaxWallGravityDistance)
+            newVel -= mostClosestNormal * starWallGravity;
+
         // 최종 속도 적용
         rb.linearVelocity = newVel;
+
+        if (Mathf.Abs(moveInput.x) > 0)
+        {
+            Debug.Log($"x: {rb.linearVelocity.x:F2}, y: {rb.linearVelocity.y:F2}");
+        }
     }
 
     private void StarRoll()
@@ -266,12 +314,18 @@ public class StarController : MonoBehaviour
     {
         Vector2 origin = starPivotTransform.position;
 
-        for (int i = 0; i < 60; i++)
+        for (int i = 0; i < rayCount; i++)
         {
-            float angle = 6f * i; // 0,72,144,216,288도
+            float angle = 360f / rayCount * i; //
             // starSpriteTransform.up을 Z축 기준으로 angle만큼 회전
-            Vector3 dir3 = Quaternion.Euler(0f, 0f, angle) * starPivotTransform.up;
-            Vector2 dir = new Vector2(dir3.x, dir3.y);
+            //Vector3 dir3 = Quaternion.Euler(0f, 0f, angle) * Vector2.up;
+            ////Vector3 dir3 = Quaternion.Euler(0f, 0f, angle) * starPivotTransform.up;
+            //Vector2 dir = new Vector2(dir3.x, dir3.y);
+
+            Vector2 dir = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad),
+                              Mathf.Sin(angle * Mathf.Deg2Rad));
+
+            rayDirs[i] = dir;
 
             RaycastHit2D hit = Physics2D.Raycast(origin, dir, starRayGravityDistance, wallLayer);
             hitWalls[i] = hit;
