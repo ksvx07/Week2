@@ -1,0 +1,72 @@
+using System.Security.Cryptography.X509Certificates;
+using UnityEngine;
+
+public class CameraClamp : MonoBehaviour
+{
+    [SerializeField] private Camera cam;
+    [SerializeField] private float SwitchSpeed;
+
+    private float _minX;
+    private float _maxX;
+    private float _minY;
+    private float _maxY;
+
+    private float _targetMinX, _targetMinY, _targetMaxX, _targetMaxY;
+
+    private void Start()
+    {
+        SetMapBounds(Stages.STAGE1);
+        SetInitMapBounds();
+    }
+
+    private void Update()
+    {
+        _minX = Mathf.Lerp(_minX, _targetMinX, Time.deltaTime * SwitchSpeed);
+        _maxX = Mathf.Lerp(_maxX, _targetMaxX, Time.deltaTime * SwitchSpeed);
+        _minY = Mathf.Lerp(_minY, _targetMinY, Time.deltaTime * SwitchSpeed);
+        _maxY = Mathf.Lerp(_maxY, _targetMaxY, Time.deltaTime * SwitchSpeed);
+    }
+
+    public Vector3 HandleClamp(Vector3 desiredPos)
+    {
+        float camHeight = cam.orthographicSize;
+        float camWidth = camHeight * cam.aspect;
+
+        float clampX = Mathf.Clamp(desiredPos.x, _minX +  camWidth, _maxX - camWidth);
+        float clampY = Mathf.Clamp(desiredPos.y, _minY + camHeight, _maxY - camHeight);
+
+        return new Vector3(clampX, clampY, desiredPos.z);
+    }
+
+    public void SetMapBounds(string stageName)
+    {
+        if(GameManager.Instance.StageDics.TryGetValue(stageName, out var mapDefinition))
+        {
+            _targetMinX = mapDefinition.minX;
+            _targetMaxX = mapDefinition.maxX;
+            _targetMinY = mapDefinition.minY;
+            _targetMaxY = mapDefinition.maxY;
+        }
+    }
+
+    private void SetInitMapBounds()
+    {
+        if (GameManager.Instance.StageDics.TryGetValue(Stages.STAGE1, out var mapDefinition))
+        {
+            _minX = mapDefinition.minX;
+            _maxX = mapDefinition.maxX;
+            _minY = mapDefinition.minY;
+            _maxY = mapDefinition.maxY;
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+
+        Vector3 center = new Vector3((_minX + _maxX) / 2f, (_minY + _maxY) / 2f, 0);
+        Vector3 size = new Vector3(_maxX - _minX, _maxY - _minY, 0);
+
+        Gizmos.DrawWireCube(center, size);
+    }
+}
