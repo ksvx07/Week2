@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IPlayerController
 {
     private PlayerInput inputActions;
     private Vector2 moveInput;
@@ -295,5 +295,23 @@ public class PlayerController : MonoBehaviour
         dampedSpeedX = Mathf.Clamp(dampedSpeedX, -maxSpeedAfterDashX, maxSpeedAfterDashX);
         dampedSpeedY = Mathf.Min(dampedSpeedY, maxSpeedAfterDashUp);
         rb.linearVelocity = new Vector2(dampedSpeedX, dampedSpeedY);
+    }
+
+    public void OnEnableSetVelocity(float newVelX, float newVelY)
+    {
+        inputActions = new PlayerInput();
+        col = GetComponent<BoxCollider2D>();
+        rb = GetComponent<Rigidbody2D>();
+        currentGravity = jumpDcceleration;
+        wallLayer = LayerMask.GetMask("Ground");
+        dashCount = maxDashCount;
+
+        // Rigidbody 설정
+        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        rb.gravityScale = 0f; // 중력은 직접 처리
+
+        rb.linearVelocity = new Vector2(newVelX, newVelY);
+
+        Debug.Log(rb.linearVelocity);
     }
 }
