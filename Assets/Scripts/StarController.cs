@@ -439,7 +439,6 @@ public class StarController : MonoBehaviour, IPlayerController
 
     public void OnEnableSetVelocity(float newVelX, float newVelY)
     {
-        inputActions = new PlayerInput();
         col = GetComponent<CircleCollider2D>();
         rb = GetComponent<Rigidbody2D>();
         currentGravity = jumpDcceleration;

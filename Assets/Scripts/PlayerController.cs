@@ -299,7 +299,6 @@ public class PlayerController : MonoBehaviour, IPlayerController
 
     public void OnEnableSetVelocity(float newVelX, float newVelY)
     {
-        inputActions = new PlayerInput();
         col = GetComponent<BoxCollider2D>();
         rb = GetComponent<Rigidbody2D>();
         currentGravity = jumpDcceleration;

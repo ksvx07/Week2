@@ -473,7 +473,6 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
 
     public void OnEnableSetVelocity(float newVelX, float newVelY)
     {
-        inputActions = new PlayerInput();
         col = GetComponent<PolygonCollider2D>();
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
