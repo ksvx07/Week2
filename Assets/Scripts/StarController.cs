@@ -65,8 +65,6 @@ public class StarController : MonoBehaviour
     private int dashCount;
     private bool isStarClimbing;
 
-    //private Vector2? selectedWallNormal;
-    //private Vector2 closestWallNormal;
     Vector2 avgNormal;
 
     private void Awake()
@@ -159,14 +157,12 @@ public class StarController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        //WallCheck();
         StarDetectWalls();
         StarRoll();
         StarDetectGround();
         if (!isDashing)
         {
             StarApplyGravity();
-            //Move();
             StarAirControl();
             StarWallClimbing();
             StarJump();
@@ -297,22 +293,6 @@ public class StarController : MonoBehaviour
         isStarClimbing = hitWalls.Any(hit => hit.collider != null);
     }
 
-    // 이동
-    //private void Move() 
-    //{
-    //    float accel = speedAcceleration;
-    //    float decel = SpeedDeceleration;
-    //    if (!isGrounded) // 공중이면 배수 적용
-    //    {
-    //        accel *= airAccelMulti;
-    //        decel *= airDecelMulti;
-    //    }
-    //    float targetX = moveInput.x * maxSpeed;
-    //    float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
-    //    // 속도가 빠를수록 가속도 감소
-    //    float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
-    //    rb.linearVelocity = new Vector2(newX, rb.linearVelocity.y); 
-    //}
 
     private void StarAirControl()
     {
@@ -422,25 +402,6 @@ public class StarController : MonoBehaviour
         }
     }
 
-    // 벽 감지 (Raycast)
-    private void StarWallCheck()
-    {
-        Vector2 origin = transform.position;
-        RaycastHit2D hitWall = new RaycastHit2D(); // 기본값으로 초기화
-
-        if (moveInput.x > 0)
-        {
-            hitWall = Physics2D.Raycast(origin, Vector2.right, wallCheckDistance, wallLayer);
-            Debug.DrawRay(origin, Vector2.right * wallCheckDistance, Color.red);
-        }
-        else if (moveInput.x < 0)
-        {
-            hitWall = Physics2D.Raycast(origin, Vector2.left, wallCheckDistance, wallLayer);
-            Debug.DrawRay(origin, Vector2.left * wallCheckDistance, Color.red);
-        }
-
-        isTouchingWall = hitWall.collider != null;
-    }
 
     // 벽점프 키 입력 반대 위로 linearVelocity 설정
     private void StarWallJump()
