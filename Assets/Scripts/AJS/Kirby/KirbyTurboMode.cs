@@ -5,7 +5,7 @@ public class KirbyTurboMode : MonoBehaviour
     #region Reference
     Rigidbody2D rb;
     KirbyController kirbyController;
-    [SerializeField]  SpriteRenderer renderer;
+    [SerializeField] SpriteRenderer renderer;
     #endregion
     [Header("Trail")]
     [SerializeField] private TrailRenderer trail;

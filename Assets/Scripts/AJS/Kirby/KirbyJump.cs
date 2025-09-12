@@ -4,6 +4,7 @@ public class KirbyJump : MonoBehaviour
 {
     #region References
     Rigidbody2D _rb;
+    KirbyGroundCheck _groundCheck;
     #endregion
     [HideInInspector] public Vector2 jumpVelocity; // 점프 실행시, velocity의 값을 가져와, 새로 적용 할 velocity값을 계산합니다
 
@@ -19,6 +20,7 @@ public class KirbyJump : MonoBehaviour
     private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
+        _groundCheck = GetComponent<KirbyGroundCheck>();
     }
     private void Update()
     {
@@ -92,8 +94,11 @@ public class KirbyJump : MonoBehaviour
     #region Public - PlayerInput
     public void OnJumpClicked()
     {
+        if (_groundCheck.GetOnGround())
+        {            
         // 점프키를 눌렀음을 확인
         desiredJump = true;
+        }
     }
     #endregion
 }
