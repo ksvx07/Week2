@@ -6,6 +6,7 @@ TagManager:
   tags:
   - StageEnd
   - Enemy
+  - Wall
   layers:
   - Default
   - TransparentFX
