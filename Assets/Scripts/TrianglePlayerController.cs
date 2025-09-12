@@ -148,6 +148,13 @@ public class TrianglePlayerController : MonoBehaviour
         {
             coyoteTimeCounter = coyoteTime;
             dashCount = maxDashCount;
+
+            // 땅에 닿으면 찍기 종료
+            if (isDashing)
+            {
+                isDashing = false;
+                dampAfterDash();
+            }
         }
 
         else
@@ -161,12 +168,6 @@ public class TrianglePlayerController : MonoBehaviour
             {
                 CreateAfterImage();
                 afterImageTimer = afterImageSpawnRate;
-            }
-
-            if (dashTimeCounter < 0)
-            {
-                isDashing = false;
-                dampAfterDash();
             }
         }
     }
@@ -395,24 +396,24 @@ public class TrianglePlayerController : MonoBehaviour
     private void TriangleSpecialAbility()
     {
         if (dashCount <= 0) return;
+        if (isGrounded) return; // 이미 땅에 있으면 사용 불가
         
         // 항상 아래 방향으로만 대시
         Vector2 dashDirection = Vector2.down;
         
         isDashing = true;
         dashCount -= 1;
-        dashTimeCounter = dashTime;
         rb.linearVelocity = dashDirection * dashSpeed;
     }
 
 
     // 대시 중 적과의 충돌 감지 (물리적 충돌)
-    private void OnCollisionEnter2D(Collision2D collision)
+     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (isDashing && collision.gameObject.CompareTag("Enemy"))
+        if (isDashing && other.CompareTag("Enemy"))
         {
             // 적을 파괴
-            Destroy(collision.gameObject);
+            Destroy(other.gameObject);
             Debug.Log("Enemy destroyed by triangle dash!");
         }
     }
