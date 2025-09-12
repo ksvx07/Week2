@@ -359,14 +359,45 @@ public class TrianglePlayerController : MonoBehaviour
     #endregion
 
     #region 세모 특수 능력
+    //아래 3방향 대쉬
+    // private void TriangleSpecialAbility()
+    // {
+    //     if (moveInput == Vector2.zero) return;
+    //     if (dashCount <= 0) return;
+
+    //     // 8방향 중 아래 3방향만 허용 (아래, 왼쪽아래, 오른쪽아래)
+    //     Vector2 dashDirection = GetDownwardDashDirection(moveInput);
+    //     if (dashDirection == Vector2.zero) return; // 아래 방향이 아니면 대시 불가
+
+    //     isDashing = true;
+    //     dashCount -= 1;
+    //     dashTimeCounter = dashTime;
+    //     rb.linearVelocity = dashDirection * dashSpeed;
+    // }
+
+    // private Vector2 GetDownwardDashDirection(Vector2 input)
+    // {
+    //     // 입력을 8방향으로 정규화
+    //     Vector2 direction = Vector2.zero;
+
+    //     // X 방향 결정
+    //     if (input.x > 0.3f) direction.x = 1f;      // 오른쪽
+    //     else if (input.x < -0.3f) direction.x = -1f; // 왼쪽
+    //     else direction.x = 0f;                      // 가운데
+
+    //     // Y 방향 결정 (아래쪽만 허용)
+    //     if (input.y < -0.3f) direction.y = -1f;    // 아래
+    //     else return Vector2.zero; // 아래가 아니면 대시 불가
+
+    //     return direction.normalized;
+    // }
+
     private void TriangleSpecialAbility()
     {
-        if (moveInput == Vector2.zero) return;
         if (dashCount <= 0) return;
         
-        // 8방향 중 아래 3방향만 허용 (아래, 왼쪽아래, 오른쪽아래)
-        Vector2 dashDirection = GetDownwardDashDirection(moveInput);
-        if (dashDirection == Vector2.zero) return; // 아래 방향이 아니면 대시 불가
+        // 항상 아래 방향으로만 대시
+        Vector2 dashDirection = Vector2.down;
         
         isDashing = true;
         dashCount -= 1;
@@ -374,22 +405,6 @@ public class TrianglePlayerController : MonoBehaviour
         rb.linearVelocity = dashDirection * dashSpeed;
     }
 
-    private Vector2 GetDownwardDashDirection(Vector2 input)
-    {
-        // 입력을 8방향으로 정규화
-        Vector2 direction = Vector2.zero;
-        
-        // X 방향 결정
-        if (input.x > 0.3f) direction.x = 1f;      // 오른쪽
-        else if (input.x < -0.3f) direction.x = -1f; // 왼쪽
-        else direction.x = 0f;                      // 가운데
-        
-        // Y 방향 결정 (아래쪽만 허용)
-        if (input.y < -0.3f) direction.y = -1f;    // 아래
-        else return Vector2.zero; // 아래가 아니면 대시 불가
-        
-        return direction.normalized;
-    }
 
     // 대시 중 적과의 충돌 감지 (물리적 충돌)
     private void OnCollisionEnter2D(Collision2D collision)
@@ -404,7 +419,7 @@ public class TrianglePlayerController : MonoBehaviour
     #endregion
 
 
-    #region 잔상 효과 생성
+    #region 잔상 효과
     private void CreateAfterImage()
     {
         GameObject afterImage = new GameObject("AfterImage");
