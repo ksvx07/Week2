@@ -178,6 +178,7 @@ public class KirbyController : MonoBehaviour
 
         // 물리적 움직임을 잠시 멈춤
         _rb.linearVelocity = Vector2.zero;
+        _rb.gravityScale = 0f; // 중력 영향 일시적으로 제거
 
         float timer = 0f;
         Vector2 startPosition = transform.position;
@@ -187,10 +188,11 @@ public class KirbyController : MonoBehaviour
             // 시간 경과에 따른 진행률 (0에서 1 사이)
             float progress = timer / bounceDuration;
 
+
             // X축 움직임: bounceCurveX를 사용하여 수평 이동
             float xOffset = bounceCurveX.Evaluate(progress) * bounceMagnitude * bounceDirection.x;
             // Y축 움직임: bounceCurveY를 사용하여 수직 이동
-            float yOffset = bounceCurveY.Evaluate(progress) * bounceMagnitude;
+            float yOffset = bounceCurveY.Evaluate(progress) * bounceHeight;
 
             Vector2 newPosition = new Vector2(startPosition.x + xOffset, startPosition.y + yOffset);
             _rb.MovePosition(newPosition);
