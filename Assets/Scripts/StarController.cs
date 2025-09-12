@@ -11,42 +11,42 @@ public class StarController : MonoBehaviour
 
     // Inspector 조절 가능 변수들
     [Header("Move")]
-    [SerializeField] private float maxSpeed = 5f;
-    [SerializeField] private float speedAcceleration = 5f;
-    [SerializeField] private float SpeedDeceleration = 5f;
+    [SerializeField] private float maxSpeed = 2f;
+    [SerializeField] private float speedAcceleration = 100f;
+    [SerializeField] private float SpeedDeceleration = 100f;
 
     [Header("Jump / Gravity")]
     [SerializeField] private float maxJumpSpeed = 5f;
-    [SerializeField] private float jumpDcceleration = 5f;
-    [SerializeField] private float maxGravity = 5f;
-    [SerializeField] private float gravityAcceleration = 5f;
-    [SerializeField] private float maxDownSpeed = 5f;
+    [SerializeField] private float jumpDcceleration = 20f;
+    [SerializeField] private float maxGravity = 50f;
+    [SerializeField] private float gravityAcceleration = 40f;
+    [SerializeField] private float maxDownSpeed = 10f;
     [SerializeField] private float coyoteTime = 0.1f;       // 코요테 타임 길이
     [SerializeField] private float jumpBufferTime = 0.1f;   // 점프 버퍼 길이
 
     [Header("Wall Jump")]
     [SerializeField] private float wallCheckDistance = 0.4f;
     [SerializeField] private float wallJumpXSpeed = 5f;
-    [SerializeField] private float wallJumpYSpeed = 5f;
-    [SerializeField] private float wallSlideMaxSpeed = 5f;
+    [SerializeField] private float wallJumpYSpeed = 0f;
+    [SerializeField] private float wallSlideMaxSpeed = 2f;
 
     [Header("Dash")]
-    [SerializeField] private float dashSpeed = 5f;
-    [SerializeField] private float dashTime = 0.5f;
+    [SerializeField] private float dashSpeed = 20f;
+    [SerializeField] private float dashTime = 0.1f;
     [SerializeField] private float maxSpeedAfterDashX = 5f;
     [SerializeField] private float maxSpeedAfterDashUp = 5f;
     [SerializeField] private int maxDashCount = 1;
 
     [Header("AirTimeMultiplier")]
-    [SerializeField] private float airAccelMulti = 0.65f;
-    [SerializeField] private float airDecelMulti = 0.65f;
+    [SerializeField] private float airAccelMulti = 0.05f;
+    [SerializeField] private float airDecelMulti = 0.1f;
 
     [Header("Star")]
-    [SerializeField] private float starRayGravityDistance = 1f;
+    [SerializeField] private float starRayGravityDistance = 0.4f;
     [SerializeField] private float starWallJumpSpeed = 5f;
     [SerializeField] private Transform starPivotTransform;
-    [SerializeField] private float starWallGravity = 5f;
-    [SerializeField] private float starMaxWallGravityDistance = 5f;
+    [SerializeField] private float starWallGravity = 2f;
+    [SerializeField] private float starMaxWallGravityDistance = 0.34f;
 
     private LayerMask wallLayer;
 
