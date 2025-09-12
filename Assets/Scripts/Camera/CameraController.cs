@@ -8,8 +8,6 @@ public class CameraController : MonoBehaviour
     [SerializeField] private Transform Player;
     [SerializeField] private float SmoothTime = 0.2f;
     [SerializeField] private CameraClamp Clamp;
-    [SerializeField] private float MinRiseJump = 5f;
-    [SerializeField] private float MinFollowHoldTime = 2f;
 
     [Header("DeadZone / SoftZone")]
     [SerializeField] private Vector2 deadZoneSize = new Vector2(2f, 1f);   // 플레이어가 이 범위 안에 있으면 카메라 고정
@@ -21,14 +19,9 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float ZoomLerpSpeed = 1f;
     [SerializeField] private float SpeedThreshold = 5f;
 
-    private Vector3 _offset = new Vector3(0, 0, -10);
     private Vector3 _velocity = new Vector3(2, 2, 2);
     private float targetZoom;
     private Rigidbody2D _rb;
-    private float _beforeY;
-    private bool _followY;
-    private bool _wasHopping;
-    private float _hoppingEnterTime;
 
     public static CameraController instance = null;
     public bool IsTriggerZoom { get; private set; }
@@ -47,7 +40,6 @@ public class CameraController : MonoBehaviour
         }
 
         _rb = Player.GetComponent<Rigidbody2D>();
-        _beforeY = Player.position.y;
     }
 
     private void LateUpdate()
