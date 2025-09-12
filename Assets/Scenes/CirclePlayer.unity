@@ -1130,8 +1130,23 @@ MonoBehaviour:
   maxTurnSpeed: 100
   maxAirAcceleration: 100
   maxAirDeceleration: 100
-  maxAirTurnSpeed: 98.5
+  maxAirTurnSpeed: 40
   turboSpeed: 12
+  bounceCurveX:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  bounceCurveY:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  bounceDuration: 0.3
+  bounceMagnitude: 1
+  bounceHeight: 4
   onGround: 0
   pressingKey: 0
 --- !u!114 &1104248579
@@ -2250,8 +2265,8 @@ GameObject:
   - component: {fileID: 1571583674}
   - component: {fileID: 1571583675}
   m_Layer: 6
-  m_Name: Square (2)
-  m_TagString: Untagged
+  m_Name: Wall
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

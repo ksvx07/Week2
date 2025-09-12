@@ -20,6 +20,20 @@ public class KirbyController : MonoBehaviour
     [Header("Turbo Stats")]
     [SerializeField, Range(0f, 20f)][Tooltip("터보속도")] private float turboSpeed = 20f;
 
+    [Header("Bounce Settings")]
+    [Tooltip("수평 방향으로의 튕김을 제어할 애니메이션 커브입니다.")]
+    public AnimationCurve bounceCurveX;
+    [Tooltip("수직 방향으로의 튕김을 제어할 애니메이션 커브입니다.")]
+    public AnimationCurve bounceCurveY;
+    [Tooltip("튕겨나가는 효과가 지속될 시간입니다.")]
+    public float bounceDuration = 0.3f; // 바운스 지속 시간
+    [Tooltip("튕겨나가는 최대 거리입니다.")]
+    public float bounceMagnitude = 2f; // 바운스 강도
+    [Tooltip("튕겨나가는 최대 높이입니다.")]
+    public float bounceHeight = 2f; // 바운스 높이
+    private bool isBouncing = false;
+    private Vector2 bounceDirection;
+
     [Header("Current State")]
     public bool onGround;
     public bool pressingKey; // 이동키를 누르고 있는지 여부
@@ -98,6 +112,22 @@ public class KirbyController : MonoBehaviour
              runWithAcceleration();
         }
     }
+
+    // Hack: 임시로 Wall tag 만듬
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        // 벽 태그를 가진 오브젝트와 충돌했는지, 현재 바운스 중이 아닌지, 터보모드인지 확인
+        if (collision.gameObject.CompareTag("Wall") && !isBouncing && turboMode)
+        {
+            turboMode= false;
+            // 충돌 지점의 법선 벡터를 튕겨나갈 방향으로 사용
+            bounceDirection = collision.contacts[0].normal;
+
+            // 바운스 코루틴 시작
+            StartCoroutine(Bounce(bounceDirection));
+        }
+    }
+
     // 최고속도 도달을 위한 가속도 적용시
     private void runWithAcceleration()
     {
@@ -140,6 +170,36 @@ public class KirbyController : MonoBehaviour
         //단순하게, 누른 방향 * 최대속도 linearVelocity 값을 Rigidbody 전달
         moveVelocity.x = desiredVelocity.x;
         _rb.linearVelocity = moveVelocity;
+    }
+
+    private IEnumerator Bounce(Vector2 direction)
+    {
+        isBouncing = true;
+
+        // 물리적 움직임을 잠시 멈춤
+        _rb.linearVelocity = Vector2.zero;
+
+        float timer = 0f;
+        Vector2 startPosition = transform.position;
+
+        while (timer < bounceDuration)
+        {
+            // 시간 경과에 따른 진행률 (0에서 1 사이)
+            float progress = timer / bounceDuration;
+
+            // X축 움직임: bounceCurveX를 사용하여 수평 이동
+            float xOffset = bounceCurveX.Evaluate(progress) * bounceMagnitude * bounceDirection.x;
+            // Y축 움직임: bounceCurveY를 사용하여 수직 이동
+            float yOffset = bounceCurveY.Evaluate(progress) * bounceMagnitude;
+
+            Vector2 newPosition = new Vector2(startPosition.x + xOffset, startPosition.y + yOffset);
+            _rb.MovePosition(newPosition);
+
+            timer += Time.deltaTime;
+            yield return null; // 다음 프레임까지 대기
+        }
+
+        isBouncing = false;
     }
 
     #region Public - PlayerInput
