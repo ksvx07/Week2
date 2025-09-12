@@ -31,6 +31,7 @@ public class KirbyController : MonoBehaviour
     public float bounceMagnitude = 2f; // 바운스 강도
     [Tooltip("튕겨나가는 최대 높이입니다.")]
     public float bounceHeight = 2f; // 바운스 높이
+
     private bool isBouncing = false;
     private Vector2 bounceDirection;
 
