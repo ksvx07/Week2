@@ -902,7 +902,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 345704468}
-  SwitchSpeed: 5
+  SwitchSpeed: 0
 --- !u!114 &345704465
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -915,14 +915,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bacea23af74cd034b8ed7803af068af7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Cam: {fileID: 345704468}
+  Cam: {fileID: 0}
   Player: {fileID: 580384641}
   SmoothTime: 0.2
   Clamp: {fileID: 345704464}
-  MinRiseJump: 1
-  MinFollowHoldTime: 1
-  deadZoneSize: {x: 7, y: 2}
-  softZoneSize: {x: 7, y: 2}
+  MinRiseJump: 5
+  MinFollowHoldTime: 2
+  deadZoneSize: {x: 2, y: 1}
+  softZoneSize: {x: 4, y: 2}
   MaxZoomIn: 5
   MaxZoomOut: 10
   ZoomLerpSpeed: 1
@@ -1515,7 +1515,6 @@ MonoBehaviour:
   wallJumpXSpeed: 10
   wallJumpYSpeed: 8
   wallSlideMaxSpeed: 2
-  wallSlideDecceleration: 5
   dashSpeed: 20
   dashTime: 0.1
   maxSpeedAfterDashX: 5
@@ -1684,7 +1683,7 @@ Transform:
   m_GameObject: {fileID: 580384640}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
-  m_LocalPosition: {x: 47.6, y: -13.4, z: 0}
+  m_LocalPosition: {x: -7.4, y: -0.7, z: 0}
   m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -1724,9 +1723,9 @@ MonoBehaviour:
   maxSpeedAfterDashX: 5
   maxSpeedAfterDashUp: 5
   maxDashCount: 1
-  afterImagePrefab: {fileID: 580384640}
+  afterImagePrefab: {fileID: 0}
   afterImageLifetime: 0.3
-  afterImageSpawnRate: 0.03
+  afterImageSpawnRate: 0.05
   airAccelMulti: 0.65
   airDecelMulti: 0.65
 --- !u!50 &580384643
