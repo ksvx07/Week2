@@ -1021,8 +1021,10 @@ GameObject:
   - component: {fileID: 1104248571}
   - component: {fileID: 1104248574}
   - component: {fileID: 1104248576}
-  - component: {fileID: 1104248575}
   - component: {fileID: 1104248577}
+  - component: {fileID: 1104248578}
+  - component: {fileID: 1104248579}
+  - component: {fileID: 1104248580}
   m_Layer: 3
   m_Name: Player Circle
   m_TagString: Player
@@ -1039,7 +1041,7 @@ Transform:
   m_GameObject: {fileID: 1104248568}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1, y: -3.333447, z: 0}
+  m_LocalPosition: {x: -0.28, y: -3.596, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -1073,40 +1075,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
---- !u!114 &1104248575
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1104248568}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f15a077eee3b3b409c3053cfac93aea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxSpeed: 20
-  speedAcceleration: 15
-  SpeedDeceleration: 2
-  maxJumpSpeed: 5
-  jumpDcceleration: 5
-  maxGravity: 100
-  gravityAcceleration: 5
-  maxDownSpeed: 100
-  coyoteTime: 0.1
-  jumpBufferTime: 0.1
-  wallCheckDistance: 0.4
-  wallJumpXSpeed: 5
-  wallJumpYSpeed: 5
-  wallSlideMaxSpeed: 5
-  wallSlideDecceleration: 5
-  dashSpeed: 5
-  dashTime: 0.5
-  maxSpeedAfterDashX: 5
-  maxSpeedAfterDashUp: 5
-  maxDashCount: 1
-  airAccelMulti: 0.65
-  airDecelMulti: 0.65
 --- !u!58 &1104248576
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -1117,7 +1085,7 @@ CircleCollider2D:
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
-  m_Material: {fileID: 6200000, guid: 95f817a53aa82674687a6b94b1643b9d, type: 2}
+  m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1150,12 +1118,66 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1104248568}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 104e36fb400f1ae43b6323378100717e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   trail: {fileID: 1418301199}
+--- !u!114 &1104248578
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1104248568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d34992bdc33aca41871d6e1cd075dbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxSpeed: 1
+  maxAcceleration: 100
+  maxDecceleration: 100
+  maxTurnSpeed: 100
+  maxAirAcceleration: 100
+  maxAirDeceleration: 100
+  maxAirTurnSpeed: 98.5
+  useAcceleration: 0
+  dashDistance: 0
+  dashDuration: 0.2
+  isDashing: 0
+  onGround: 0
+  pressingKey: 0
+--- !u!114 &1104248579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1104248568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f837c1ec47b638548a07c9dfa6573775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  groundLength: 0.47
+  colliderOffset: {x: 0.3, y: 0, z: 0}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+--- !u!114 &1104248580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1104248568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01f2d88130ec5cb4395a8b2fe4670767, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1121872657
 GameObject:
   m_ObjectHideFlags: 0
@@ -1808,13 +1830,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1418301195}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fbdb4e73a6088894eb542e1760a0d01a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 1104248574}
-  controller: {fileID: 1104248575}
+  controller: {fileID: 0}
   rotationTimeInMinSpeed: 2.5
   rotationTimeInMaxSpeed: 0.4
 --- !u!96 &1418301199
