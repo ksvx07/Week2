@@ -1,12 +1,12 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+public class CircleController : MonoBehaviour
 {
     private PlayerInput inputActions;
     private Vector2 moveInput;
     private Rigidbody2D rb;
-    private BoxCollider2D col;
+    private CircleCollider2D col;
 
     // Inspector 조절 가능 변수들
     [Header("Move")]
@@ -28,6 +28,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float wallJumpXSpeed = 5f;
     [SerializeField] private float wallJumpYSpeed = 5f;
     [SerializeField] private float wallSlideMaxSpeed = 5f;
+    [SerializeField] private float wallSlideDecceleration = 5f;
 
     [Header("Dash")]
     [SerializeField] private float dashSpeed = 5f;
@@ -47,16 +48,23 @@ public class PlayerController : MonoBehaviour
     private float jumpBufferCounter; // 점프 입력 유지 시간
     private float dashTimeCounter;
     // 내부 상태
-    public bool IsGrounded { get; private set; }
-    public bool IsJumping { get; private set; }
+    private bool isGrounded;
+    private bool isJumping;
     private bool isTouchingWall;
     private bool isDashing;
     private int dashCount;
 
+    // Hack : CircleSpiing용 변수
+    public float MaxSpeed
+    {
+        get { return maxSpeed; }
+    }
+
+
     private void Awake()
     {
         inputActions = new PlayerInput();
-        col = GetComponent<BoxCollider2D>();
+        col = GetComponent<CircleCollider2D>();
         rb = GetComponent<Rigidbody2D>();
         currentGravity = jumpDcceleration;
         wallLayer = LayerMask.GetMask("Ground");
@@ -99,7 +107,7 @@ public class PlayerController : MonoBehaviour
 
     private void OffJump(InputAction.CallbackContext ctx)
     {
-        FastFall();
+        //FastFall();
     }
 
     private void OnDash(InputAction.CallbackContext ctx)
@@ -117,14 +125,11 @@ public class PlayerController : MonoBehaviour
     {
         // 점프 버퍼 (예약) & 코요테 타임
         jumpBufferCounter -= Time.deltaTime;
-        if (IsGrounded)
+        if (isGrounded)
         {
             coyoteTimeCounter = coyoteTime;
             dashCount = maxDashCount;
-        }
-
-        else
-            coyoteTimeCounter -= Time.deltaTime;
+        }else  coyoteTimeCounter -= Time.deltaTime;
 
         // 일정 시간 대시함, 대시 끝나면 Damping 줌
         if (isDashing)
@@ -149,17 +154,14 @@ public class PlayerController : MonoBehaviour
             ApplyGravity();
             Move();
         }
-
-
-        //Debug.Log($"x: {rb.linearVelocity.x:F2}, y: {rb.linearVelocity.y:F2}");
     }
 
     // 이동
-    private void Move() 
+    private void Move()
     {
         float accel = speedAcceleration;
         float decel = SpeedDeceleration;
-        if (!IsGrounded) // 공중이면 배수 적용
+        if (!isGrounded) // 공중이면 배수 적용
         {
             accel *= airAccelMulti;
             decel *= airDecelMulti;
@@ -168,7 +170,7 @@ public class PlayerController : MonoBehaviour
         float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
         // 속도가 빠를수록 가속도 감소
         float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
-        rb.linearVelocityX = newX; 
+        rb.linearVelocityX = newX;       
     }
 
     // 바닥 감지 (BoxCast)
@@ -180,12 +182,12 @@ public class PlayerController : MonoBehaviour
         RaycastHit2D hit = Physics2D.BoxCast(bounds.center, bounds.size, 0f, Vector2.down,
             extraHeight, wallLayer);
 
-        IsGrounded = hit.collider != null;
-        
+        isGrounded = hit.collider != null;
 
-        if (IsJumping && rb.linearVelocity.y <= 0)
+
+        if (isJumping && rb.linearVelocity.y <= 0)
         {
-            IsJumping = false;
+            isJumping = false;
             currentGravity = jumpDcceleration;
         }
     }
@@ -194,10 +196,10 @@ public class PlayerController : MonoBehaviour
     private void ApplyGravity()
     {
         float newY;
-        if (IsJumping)
+        if (isJumping)
         {
             // 점프 중 중력(올라갈 때)
-            newY = rb.linearVelocity.y - jumpDcceleration * Time.fixedDeltaTime;
+            newY = rb.linearVelocityY - jumpDcceleration * Time.fixedDeltaTime;
         }
         else
         {
@@ -208,7 +210,7 @@ public class PlayerController : MonoBehaviour
             else
                 currentGravity = maxGravity;
 
-            newY = rb.linearVelocity.y - currentGravity * Time.fixedDeltaTime;
+            newY = rb.linearVelocityY - currentGravity * Time.fixedDeltaTime;
         }
 
         // 벽잡고 있으면 중력 낮음
@@ -219,7 +221,7 @@ public class PlayerController : MonoBehaviour
         // y축 최대 속도
         newY = Mathf.Clamp(newY, -maxDownSpeed, maxJumpSpeed);
 
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, newY);
+        rb.linearVelocityY = newY;
     }
 
     // 점프
@@ -229,8 +231,8 @@ public class PlayerController : MonoBehaviour
         {
             // +y로 linearVelocity 설정
             Debug.Log("Jump!");
-            IsJumping = true;
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, maxJumpSpeed);
+            isJumping = true;
+            rb.linearVelocityY = maxJumpSpeed;
             jumpBufferCounter = 0;
             coyoteTimeCounter = 0;
         }
@@ -239,9 +241,9 @@ public class PlayerController : MonoBehaviour
     // 점프 키 때면 isJumping = false -> 중력 강해짐 -> 빨리 떨어짐
     private void FastFall()
     {
-        if (IsJumping)
+        if (isJumping)
         {
-            IsJumping = false;
+            isJumping = false;
         }
     }
 
@@ -268,9 +270,9 @@ public class PlayerController : MonoBehaviour
     // 벽점프 키 입력 반대 위로 linearVelocity 설정
     private void WallJump()
     {
-        if (isTouchingWall && jumpBufferCounter > 0 && !IsGrounded)
+        if (isTouchingWall && jumpBufferCounter > 0 && !isGrounded)
         {
-            IsJumping = true;
+            isJumping = true;
             rb.linearVelocity = new Vector2(wallJumpXSpeed * -Mathf.Sign(moveInput.x), wallJumpYSpeed);
             Debug.Log("Wall Jump");
         }
@@ -290,8 +292,8 @@ public class PlayerController : MonoBehaviour
     // 대시 후 댐핑, 대시 끝나면 최대속도 조절
     private void dampAfterDash()
     {
-        float dampedSpeedX = rb.linearVelocity.x;
-        float dampedSpeedY = rb.linearVelocity.y;
+        float dampedSpeedX = rb.linearVelocityX;
+        float dampedSpeedY = rb.linearVelocityY;
         dampedSpeedX = Mathf.Clamp(dampedSpeedX, -maxSpeedAfterDashX, maxSpeedAfterDashX);
         dampedSpeedY = Mathf.Min(dampedSpeedY, maxSpeedAfterDashUp);
         rb.linearVelocity = new Vector2(dampedSpeedX, dampedSpeedY);
