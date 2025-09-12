@@ -65,8 +65,9 @@ public class StarController : MonoBehaviour
     private int dashCount;
     private bool isStarClimbing;
 
-    private Vector2? selectedWallNormal;
+    //private Vector2? selectedWallNormal;
     //private Vector2 closestWallNormal;
+    Vector2 avgNormal;
 
     private void Awake()
     {
@@ -177,126 +178,70 @@ public class StarController : MonoBehaviour
         //Debug.Log($"x: {rb.linearVelocity.x:F2}, y: {rb.linearVelocity.y:F2}");
     }
 
-
     private void StarWallClimbing()
     {
         if (isJumping) return;
 
+        // 충돌 없으면 종료
         if (hitWalls.All(hit => hit.collider == null))
             return;
 
-        Vector2 bestTangent = Vector2.zero;
-        selectedWallNormal = null;
-        //wallsNormalAverage = Vector2.zero;
-        Vector2 mostClosestNormal = Vector2.zero;
-        //Vector2 closestWallNormal = Vector2.zero;
+        // 벽 normal 평균 구하기
+        avgNormal = Vector2.zero;
+        float closestDistance = float.MaxValue;
+        int count = 0;
 
-        float wallDistance = 10f;
-        var wallNum = 0;
-        float bestDot = 1.0f;
-
-        //My ver......................................................,......
-        for (int i = 0; i < rayCount; i++)
+        foreach (RaycastHit2D hit in hitWalls)
         {
-            RaycastHit2D hitWall = hitWalls[i];
-            if (hitWall.collider != null)
+            if (hit.collider != null)
             {
-                wallNum += 1;
-                //wallsNormalAverage += hitWall.normal;
+                avgNormal += hit.normal;
+                count++;
 
-                if (selectedWallNormal == null)
-                {
-                    selectedWallNormal = hitWall.normal;
-                    wallDistance = hitWall.distance;
-                }
-                else
-                {
-                    float normalsAngle = Vector2.SignedAngle(selectedWallNormal.Value, hitWall.normal);
-                    if (normalsAngle * moveInput.x > 0)
-                        selectedWallNormal = hitWall.normal;
-
-                    if (hitWall.distance < wallDistance)
-                    {
-                        wallDistance = hitWall.distance;
-                        //closestWallNormal = hitWall.normal;
-
-                    }
-
-                }
-
-                Vector2 rayDir = rayDirs[i];
-                Vector2 wallNormala = hitWall.normal;
-
-                // 레이와 수직인지 확인
-                float dot = Mathf.Abs(Vector2.Dot(rayDir.normalized, wallNormala.normalized));
-                if (dot < bestDot)  // bestDot은 초기값 1.0f
-                {
-                    bestDot = dot;
-                    mostClosestNormal = wallNormala;
-                }
+                if (hit.distance < closestDistance)
+                    closestDistance = hit.distance;
             }
         }
 
-        if (selectedWallNormal == null)
-            return;
+        if (count == 0) return;
 
-        // 4. tangent 계산 (벽 타는 방향)
-        Vector2 wallNormal = selectedWallNormal.Value;
+        avgNormal.Normalize(); // 평균 normal
+
+        // tangent 계산
         Vector2 tangent = (moveInput.x > 0)
-            ? new Vector2(wallNormal.y, -wallNormal.x)   // 시계 방향
-            : new Vector2(-wallNormal.y, wallNormal.x);  // 반시계 방향
-
+            ? new Vector2(avgNormal.y, -avgNormal.x)   // 시계 방향
+            : new Vector2(-avgNormal.y, avgNormal.x);  // 반시계 방향
 
         Vector2 moveDir = tangent.normalized;
-        //Vector2 moveDir = bestTangent.normalized;
 
-        // 가속/감속 계수 결정
+        // 가속/감속 계수
         float accel = speedAcceleration;
         float decel = SpeedDeceleration;
-        if (!isStarClimbing) // 공중일 때 배수 적용
+        if (!isStarClimbing)
         {
             accel *= airAccelMulti;
             decel *= airDecelMulti;
         }
 
-        // 목표 속도 = tangent 방향 * 최대 속도 * 입력 크기
+        // 목표 속도
         Vector2 targetVel = moveDir * maxSpeed * Mathf.Abs(moveInput.x);
-        //Vector2 targetVel = moveDir * maxSpeed * moveInput.magnitude;
 
-        // Lerp 비율 (가속 or 감속)
+        // 보간 비율
         float lerpAmount = ((moveInput.x != 0) ? accel : decel) * Time.fixedDeltaTime;
 
-        // 현재 속도 → 목표 속도로 부드럽게 변경
+        // 속도 보간
         Vector2 newVel = Vector2.Lerp(rb.linearVelocity, targetVel, lerpAmount);
 
-        //newVel -= wallNormal * starWallGravity;
-        // 벽 중력 설정
-        //if (wallNum != 0)
-        //{
-        //    wallsNormalAverage /= wallNum;
-        //}
-
-
-        if (Vector2.Dot(selectedWallNormal.Value, mostClosestNormal) > 0.99f)
+        // 벽 쪽으로 당기는 힘 적용
+        if (closestDistance > starMaxWallGravityDistance)
         {
-            if (wallDistance > starMaxWallGravityDistance)
-                newVel -= selectedWallNormal.Value * starWallGravity;
-        }
-        else
-        {
-            newVel -= (selectedWallNormal.Value + mostClosestNormal) / 2 * starWallGravity;
+            newVel -= avgNormal * starWallGravity;
         }
 
-
-
-            // 최종 속도 적용
-            rb.linearVelocity = newVel;
-
-        if (Mathf.Abs(moveInput.x) > 0)
-        {
-            Debug.Log($"x: {rb.linearVelocity.x:F2}, y: {rb.linearVelocity.y:F2}");
-        }
+        rb.linearVelocity = newVel;
     }
+
+
 
     private void StarRoll()
     {
@@ -452,17 +397,19 @@ public class StarController : MonoBehaviour
     {
         if (jumpBufferCounter > 0 && coyoteTimeCounter > 0)
         {
-            if (selectedWallNormal != null)
+            if (avgNormal != Vector2.zero)
             {
+                //if (selectedWallNormal != null)
                 // +y로 linearVelocity 설정
                 Debug.Log("Jump!");
                 isJumping = true;
 
                 //rb.linearVelocity = new Vector2(rb.linearVelocity.x, maxJumpSpeed);
-                rb.linearVelocity = selectedWallNormal.Value * maxJumpSpeed;
+                rb.linearVelocity = avgNormal * maxJumpSpeed;
                 jumpBufferCounter = 0;
                 coyoteTimeCounter = 0;
             }
+           
         }
     }
 
@@ -500,10 +447,10 @@ public class StarController : MonoBehaviour
     {
 
 
-        if (isStarClimbing && jumpBufferCounter > 0 && !isGrounded && selectedWallNormal != null)
+        if (isStarClimbing && jumpBufferCounter > 0 && !isGrounded && avgNormal != Vector2.zero)
         {
             isJumping = true;
-            rb.linearVelocity = selectedWallNormal.Value * starWallJumpSpeed;
+            rb.linearVelocity = avgNormal * starWallJumpSpeed;
             Debug.Log("Wall Jump");
         }
     }
