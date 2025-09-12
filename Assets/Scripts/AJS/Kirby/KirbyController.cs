@@ -9,20 +9,20 @@ public class KirbyController : MonoBehaviour
     #endregion
 
     [Header("Movement Stats")]
-    [SerializeField, Range(0f, 20f)][Tooltip("최고속도")] public float maxSpeed = 10f;
-    [SerializeField, Range(0f, 100f)][Tooltip("얼마나 빨리 최고속도에 도달")] public float maxAcceleration = 52f;
-    [SerializeField, Range(0f, 100f)][Tooltip("입력값 없을시, 얼마나 빨리 정지")] public float maxDecceleration = 52f;
-    [SerializeField, Range(1f, 100f)][Tooltip("방향 전환시, 얼마나 빨리 정지")] public float maxTurnSpeed = 80f;
-    [SerializeField, Range(0f, 100f)][Tooltip("공중에서, 얼마나 빨리 최고속도에 도달")] public float maxAirAcceleration;
-    [SerializeField, Range(0f, 100f)][Tooltip("공중에서, 입력값 없을시, 얼마나 빨리 정지")] public float maxAirDeceleration; // 줄여서 AirBreak
-    [SerializeField, Range(0f, 100f)][Tooltip("공중에서, 방향 전환시, 얼마나 빨리 정지")] public float maxAirTurnSpeed = 80f;// 줄여서 AirControl
+    [SerializeField, Range(0f, 20f)][Tooltip("최고속도")] private float maxSpeed = 10f;
+    [SerializeField, Range(0f, 100f)][Tooltip("얼마나 빨리 최고속도에 도달")] private float maxAcceleration = 52f;
+    [SerializeField, Range(0f, 100f)][Tooltip("입력값 없을시, 얼마나 빨리 정지")] private float maxDecceleration = 52f;
+    [SerializeField, Range(1f, 100f)][Tooltip("방향 전환시, 얼마나 빨리 정지")] private float maxTurnSpeed = 80f;
+    [SerializeField, Range(0f, 100f)][Tooltip("공중에서, 얼마나 빨리 최고속도에 도달")] private float maxAirAcceleration;
+    [SerializeField, Range(0f, 100f)][Tooltip("공중에서, 입력값 없을시, 얼마나 빨리 정지")] private float maxAirDeceleration; // 줄여서 AirBreak
+    [SerializeField, Range(0f, 100f)][Tooltip("공중에서, 방향 전환시, 얼마나 빨리 정지")] private float maxAirTurnSpeed = 80f;// 줄여서 AirControl
 
     [SerializeField][Tooltip("가속도 적용 여부")] private bool useAcceleration; // 단순 비교용 bool
 
     [Header("Dash Stats")]
-    [SerializeField, Range(0f, 100f)][Tooltip("대쉬거리")] public float dashDistance;
-    [SerializeField] public float dashDuration = 0.2f;
-    public bool isDashing = false;
+    [SerializeField, Range(0f, 100f)][Tooltip("대쉬거리")] private float dashDistance;
+    [SerializeField] private float dashDuration = 0.2f;
+    private bool isDashing = false;
 
     [Header("Current State")]
     public bool onGround;
@@ -42,6 +42,10 @@ public class KirbyController : MonoBehaviour
     public float DirectionX
     {
         get { return directionX; }
+    }
+    public float MaxSpeed
+    {
+        get { return maxSpeed; }
     }
     #endregion
 

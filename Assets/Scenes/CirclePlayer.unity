@@ -1021,10 +1021,11 @@ GameObject:
   - component: {fileID: 1104248571}
   - component: {fileID: 1104248574}
   - component: {fileID: 1104248576}
-  - component: {fileID: 1104248577}
   - component: {fileID: 1104248578}
   - component: {fileID: 1104248579}
   - component: {fileID: 1104248580}
+  - component: {fileID: 1104248581}
+  - component: {fileID: 1104248582}
   m_Layer: 3
   m_Name: Player Circle
   m_TagString: Player
@@ -1111,19 +1112,6 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.4
---- !u!114 &1104248577
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1104248568}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 104e36fb400f1ae43b6323378100717e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  trail: {fileID: 1418301199}
 --- !u!114 &1104248578
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1136,17 +1124,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d34992bdc33aca41871d6e1cd075dbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 1
-  maxAcceleration: 100
+  maxSpeed: 10
+  maxAcceleration: 5
   maxDecceleration: 100
   maxTurnSpeed: 100
   maxAirAcceleration: 100
   maxAirDeceleration: 100
   maxAirTurnSpeed: 98.5
-  useAcceleration: 0
+  useAcceleration: 1
   dashDistance: 0
   dashDuration: 0.2
-  isDashing: 0
   onGround: 0
   pressingKey: 0
 --- !u!114 &1104248579
@@ -1178,6 +1165,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01f2d88130ec5cb4395a8b2fe4670767, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1104248581
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1104248568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc59e394001fca949983ff330982d5c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jumpVelocity: {x: 0, y: 0}
+  jumpHeight: 10
+  timeToJumpApex: 1.2
+--- !u!114 &1104248582
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1104248568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16f69673ca71ff94792ad7733865b884, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  trail: {fileID: 1418301199}
 --- !u!1 &1121872657
 GameObject:
   m_ObjectHideFlags: 0
@@ -1830,15 +1845,15 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1418301195}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fbdb4e73a6088894eb542e1760a0d01a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 1104248574}
-  controller: {fileID: 0}
-  rotationTimeInMinSpeed: 2.5
-  rotationTimeInMaxSpeed: 0.4
+  kirbyController: {fileID: 1104248578}
+  rotationTimeInMinSpeed: 7
+  rotationTimeInMaxSpeed: 0.1
 --- !u!96 &1418301199
 TrailRenderer:
   serializedVersion: 3

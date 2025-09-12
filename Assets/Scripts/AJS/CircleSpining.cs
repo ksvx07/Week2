@@ -12,6 +12,7 @@ public class CircleSpining : MonoBehaviour
 
     void Update()
     {
+        // 속도가 0에 근접하면 정지
         if (rb.linearVelocity.magnitude < 0.2f)
         {
             return;
@@ -22,7 +23,7 @@ public class CircleSpining : MonoBehaviour
 
     private float GetCurrentRotationSpeed()
     {
-        float speedRatio = Mathf.Clamp01(Mathf.Abs(rb.linearVelocityX) / kirbyController.maxSpeed);
+        float speedRatio = Mathf.Clamp01(Mathf.Abs(rb.linearVelocityX) / kirbyController.MaxSpeed);
 
         return Mathf.Lerp(360f/rotationTimeInMinSpeed, 360f/ rotationTimeInMaxSpeed, speedRatio);
     }

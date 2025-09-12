@@ -1,7 +1,6 @@
 using UnityEngine;
-using UnityEngine.InputSystem.XR;
 
-public class CircleTurboMode : MonoBehaviour
+public class KirbyTurboMode : MonoBehaviour
 {
     #region Reference
     Rigidbody2D rb;

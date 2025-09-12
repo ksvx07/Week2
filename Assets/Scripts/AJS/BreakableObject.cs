@@ -6,7 +6,7 @@ public class BreakableObject : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            CircleTurboMode turboMode = collision.GetComponent<CircleTurboMode>();
+            KirbyTurboMode turboMode = collision.GetComponent<KirbyTurboMode>();
             if(turboMode != null)
             {
                 if (turboMode.TurboMode)
