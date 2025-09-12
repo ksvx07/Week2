@@ -37,6 +37,7 @@ public class KirbyInput : MonoBehaviour
         _inputs.Kirby.Move.performed += OnMoveInput;
         _inputs.Kirby.Move.canceled += OnMoveInput;
         _inputs.Kirby.Jump.performed += OnJumpClicked;
+        _inputs.Kirby.TurboMode.performed += OnTurboClicked;
     }
 
     private void DisableInput()
@@ -49,6 +50,7 @@ public class KirbyInput : MonoBehaviour
         _inputs.Kirby.Move.performed -= OnMoveInput;
         _inputs.Kirby.Move.canceled -= OnMoveInput;
         _inputs.Kirby.Jump.performed -= OnJumpClicked;
+        _inputs.Kirby.TurboMode.performed -= OnTurboClicked;
     }
 
     #endregion
@@ -57,7 +59,10 @@ public class KirbyInput : MonoBehaviour
     {
         _playerJump.OnJumpClicked();
     }
-
+    void OnTurboClicked(InputAction.CallbackContext context)
+    {
+        _playerMove.OnTurboModePressed();
+    }
     void OnMoveInput(InputAction.CallbackContext context)
     {
         _playerMove.OnMoveInput(context.ReadValue<Vector2>());

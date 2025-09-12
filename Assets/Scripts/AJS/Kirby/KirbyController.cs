@@ -17,16 +17,13 @@ public class KirbyController : MonoBehaviour
     [SerializeField, Range(0f, 100f)][Tooltip("공중에서, 입력값 없을시, 얼마나 빨리 정지")] private float maxAirDeceleration; // 줄여서 AirBreak
     [SerializeField, Range(0f, 100f)][Tooltip("공중에서, 방향 전환시, 얼마나 빨리 정지")] private float maxAirTurnSpeed = 80f;// 줄여서 AirControl
 
-    [SerializeField][Tooltip("가속도 적용 여부")] private bool useAcceleration; // 단순 비교용 bool
-
-    [Header("Dash Stats")]
-    [SerializeField, Range(0f, 100f)][Tooltip("대쉬거리")] private float dashDistance;
-    [SerializeField] private float dashDuration = 0.2f;
-    private bool isDashing = false;
+    [Header("Turbo Stats")]
+    [SerializeField, Range(0f, 20f)][Tooltip("터보속도")] private float turboSpeed = 20f;
 
     [Header("Current State")]
     public bool onGround;
     public bool pressingKey; // 이동키를 누르고 있는지 여부
+    private bool turboMode;
 
     #region Private - Speed Caculation Variables
     private Vector2 desiredVelocity; // 이동하고 싶어 하는 Velocity값
@@ -46,6 +43,10 @@ public class KirbyController : MonoBehaviour
     public float MaxSpeed
     {
         get { return maxSpeed; }
+    }
+    public bool TurboMode
+    {
+        get { return turboMode; }
     }
     #endregion
 
@@ -68,8 +69,16 @@ public class KirbyController : MonoBehaviour
             pressingKey = false;
         }
 
-        // 현재 누르고 있는 방향에, maxSpeed를 곱해, desiredVelocity를 구하기 (바로 maxSpeed에 도달하지 않고, 가속도 여부로 정하기)
-        desiredVelocity = new Vector2(directionX, 0f) * Mathf.Max(maxSpeed, 0f);
+        if (turboMode)
+        {
+            // 터보 speed로 이동
+            desiredVelocity = new Vector2(transform.localScale.x, 0f) * turboSpeed;
+        }
+        else
+        {
+            // 현재 누르고 있는 방향에, maxSpeed를 곱해, desiredVelocity를 구하기 (바로 maxSpeed에 도달하지 않고, 가속도 여부로 정하기)
+            desiredVelocity = new Vector2(directionX, 0f) * Mathf.Max(maxSpeed, 0f);
+        }
     }
 
     private void FixedUpdate()
@@ -79,30 +88,14 @@ public class KirbyController : MonoBehaviour
         //현재 velocity 값을 가져오기
         moveVelocity = _rb.linearVelocity;
 
-        // 대시 중에는 일반 이동 로직을 실행하지 않음
-        if (isDashing)
+        if (turboMode)
         {
-            return;
-        }
-
-        // Hack: useAcceleration는 단순 이동시 얼마나 어색한지 비교하기 위한 bool 변수다
-        // Hack: 실제 게임 제작시에는 필요없는 디버그 if문
-        if (useAcceleration)
-        {
-            runWithAcceleration();
+            // 터보 모드에서는 가속이나, 감속 없음
+            runWithoutAcceleration();
         }
         else
         {
-            if (onGround)
-            {
-                // moveVelocity의 값을 토대로, 단순 Velocity 값 변경
-                runWithoutAcceleration();
-            }
-            else
-            {
-                // 공중에서는 적용하기
-                runWithAcceleration();
-            }
+             runWithAcceleration();
         }
     }
     // 최고속도 도달을 위한 가속도 적용시
@@ -149,41 +142,15 @@ public class KirbyController : MonoBehaviour
         _rb.linearVelocity = moveVelocity;
     }
 
-    private IEnumerator DashCoroutine()
-    {
-        isDashing = true;
-
-        // 중력 일시 비활성화 (선택 사항, 대시를 직선으로 만들고 싶을 때)
-        _rb.gravityScale = 0;
-
-        float calculatedDashSpeed = dashDistance / dashDuration;
-        // 대시 속도 적용
-        _rb.linearVelocityX = directionX * calculatedDashSpeed;
-
-        yield return new WaitForSeconds(dashDuration);
-
-        // 대시 종료 후 상태 복구
-        isDashing = false;
-        _rb.gravityScale = 1; // 원래 중력으로 복구
-        _rb.linearVelocityX = 0f;
-    }
-
-
     #region Public - PlayerInput
     public void OnMoveInput(Vector2 movementInput)
     {
         directionX = movementInput.x;
-        print(directionX);
     }
 
-    public void OnDashClicked()
-    {
-        // 이미 대시 중이면 함수를 종료
-        if (isDashing)
-        {
-            return;
-        }
-        StartCoroutine(DashCoroutine());
+    public void OnTurboModePressed()
+    {        
+        turboMode = !turboMode;
     }
     #endregion
 }

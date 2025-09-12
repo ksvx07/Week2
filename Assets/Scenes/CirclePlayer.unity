@@ -1124,16 +1124,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d34992bdc33aca41871d6e1cd075dbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 10
-  maxAcceleration: 5
-  maxDecceleration: 100
+  maxSpeed: 8
+  maxAcceleration: 4
+  maxDecceleration: 30
   maxTurnSpeed: 100
   maxAirAcceleration: 100
   maxAirDeceleration: 100
   maxAirTurnSpeed: 98.5
-  useAcceleration: 1
-  dashDistance: 0
-  dashDuration: 0.2
+  turboSpeed: 12
   onGround: 0
   pressingKey: 0
 --- !u!114 &1104248579
@@ -1178,8 +1176,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   jumpVelocity: {x: 0, y: 0}
-  jumpHeight: 10
-  timeToJumpApex: 1.2
+  jumpHeight: 1.2
+  timeToJumpApex: 0.25
 --- !u!114 &1104248582
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1192,6 +1190,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16f69673ca71ff94792ad7733865b884, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  renderer: {fileID: 1418301197}
   trail: {fileID: 1418301199}
 --- !u!1 &1121872657
 GameObject:
@@ -1853,7 +1852,8 @@ MonoBehaviour:
   rb: {fileID: 1104248574}
   kirbyController: {fileID: 1104248578}
   rotationTimeInMinSpeed: 7
-  rotationTimeInMaxSpeed: 0.1
+  rotationTimeInMaxSpeed: 0.5
+  rotationTimeInTurboSpeed: 0.1
 --- !u!96 &1418301199
 TrailRenderer:
   serializedVersion: 3

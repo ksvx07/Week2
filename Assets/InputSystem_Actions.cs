@@ -1099,6 +1099,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""TurboMode"",
+                    ""type"": ""Button"",
+                    ""id"": ""fe926fa9-2348-4b78-84b1-5fa6f936f37e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1244,6 +1253,17 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""72297c8c-ee5f-4c7d-9ded-382127472df1"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""TurboMode"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -1338,6 +1358,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Kirby = asset.FindActionMap("Kirby", throwIfNotFound: true);
         m_Kirby_Move = m_Kirby.FindAction("Move", throwIfNotFound: true);
         m_Kirby_Jump = m_Kirby.FindAction("Jump", throwIfNotFound: true);
+        m_Kirby_TurboMode = m_Kirby.FindAction("TurboMode", throwIfNotFound: true);
     }
 
     ~@InputSystem_Actions()
@@ -1801,6 +1822,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private List<IKirbyActions> m_KirbyActionsCallbackInterfaces = new List<IKirbyActions>();
     private readonly InputAction m_Kirby_Move;
     private readonly InputAction m_Kirby_Jump;
+    private readonly InputAction m_Kirby_TurboMode;
     /// <summary>
     /// Provides access to input actions defined in input action map "Kirby".
     /// </summary>
@@ -1820,6 +1842,10 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Kirby/Jump".
         /// </summary>
         public InputAction @Jump => m_Wrapper.m_Kirby_Jump;
+        /// <summary>
+        /// Provides access to the underlying input action "Kirby/TurboMode".
+        /// </summary>
+        public InputAction @TurboMode => m_Wrapper.m_Kirby_TurboMode;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1852,6 +1878,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Jump.started += instance.OnJump;
             @Jump.performed += instance.OnJump;
             @Jump.canceled += instance.OnJump;
+            @TurboMode.started += instance.OnTurboMode;
+            @TurboMode.performed += instance.OnTurboMode;
+            @TurboMode.canceled += instance.OnTurboMode;
         }
 
         /// <summary>
@@ -1869,6 +1898,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Jump.started -= instance.OnJump;
             @Jump.performed -= instance.OnJump;
             @Jump.canceled -= instance.OnJump;
+            @TurboMode.started -= instance.OnTurboMode;
+            @TurboMode.performed -= instance.OnTurboMode;
+            @TurboMode.canceled -= instance.OnTurboMode;
         }
 
         /// <summary>
@@ -2137,5 +2169,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnJump(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "TurboMode" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnTurboMode(InputAction.CallbackContext context);
     }
 }

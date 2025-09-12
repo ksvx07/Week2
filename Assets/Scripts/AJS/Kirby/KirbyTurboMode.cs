@@ -5,15 +5,10 @@ public class KirbyTurboMode : MonoBehaviour
     #region Reference
     Rigidbody2D rb;
     KirbyController kirbyController;
+    [SerializeField]  SpriteRenderer renderer;
     #endregion
     [Header("Trail")]
     [SerializeField] private TrailRenderer trail;
-
-    private bool turboMode = false;
-    public bool TurboMode
-    {
-        get { return turboMode; }
-    }
 
     private void Start()
     {
@@ -24,7 +19,7 @@ public class KirbyTurboMode : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (kirbyController.MaxSpeed - rb.linearVelocity.magnitude < 0.2f)
+        if (kirbyController.TurboMode)
         {
             TurboModeActive();
         }
@@ -36,14 +31,14 @@ public class KirbyTurboMode : MonoBehaviour
     private void TurboModeActive()
     {
         trail.emitting = true;
-        turboMode = true;
         rb.excludeLayers = LayerMask.GetMask("Breakable");
+        renderer.color = Color.red;
     }
 
     private void TurboModeDeActive()
     {
         trail.emitting = false;
-        turboMode = false;
         rb.excludeLayers = 0;
+        renderer.color = Color.white;
     }
 }
