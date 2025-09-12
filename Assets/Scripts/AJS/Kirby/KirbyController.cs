@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class KirbyController : MonoBehaviour
+public class KirbyController : MonoBehaviour, IPlayerController
 {
     #region References
     Rigidbody2D _rb;
@@ -223,6 +223,13 @@ public class KirbyController : MonoBehaviour
         if (isBouncing) return;
 
         turboMode = !turboMode;
+    }
+
+    public void OnEnableSetVelocity(float newVelX, float newVelY)
+    {
+        _rb = GetComponent<Rigidbody2D>();
+        _groundCheck = GetComponent<KirbyGroundCheck>(); // 땅 닿았는지 알기위한 스크립트
+        _rb.linearVelocity = new Vector2(newVelX, newVelY);
     }
     #endregion
 }

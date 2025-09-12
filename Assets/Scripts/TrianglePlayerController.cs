@@ -2,7 +2,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class TrianglePlayerController : MonoBehaviour
+public class TrianglePlayerController : MonoBehaviour, IPlayerController
 {
 
 
@@ -452,6 +452,23 @@ public class TrianglePlayerController : MonoBehaviour
         }
         
         Destroy(obj);
+    }
+
+    public void OnEnableSetVelocity(float newVelX, float newVelY)
+    {
+        inputActions = new PlayerInput();
+        col = GetComponent<PolygonCollider2D>();
+        rb = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        currentGravity = jumpDcceleration;
+        wallLayer = LayerMask.GetMask("Ground");
+        dashCount = maxDashCount;
+
+        // Rigidbody 설정
+        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        rb.gravityScale = 0f; // 중력 스케일 초기화
+
+        rb.linearVelocity = new Vector2(newVelX, newVelY);
     }
     #endregion
 }
