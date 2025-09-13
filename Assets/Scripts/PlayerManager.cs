@@ -1,20 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using static UnityEditor.Progress;
 
 public class PlayerManager : MonoBehaviour
 {
     // Hack ;Input 변경
     private int currentPlayer = 0;
     private int selectPlayer = 0;
+    private int highlightPlayer = 0;
     private bool isSelectUIActive = false;  // UI가 현재 활성화되어 있는지 여부
 
     [SerializeField] private List<GameObject> players;
+    [SerializeField] private List<Image> pannels;
+    [SerializeField] private Color originColor;
+    [SerializeField] private Color highLightColor;
 
 
     [SerializeField] private CameraController camControlelr;
@@ -45,9 +46,11 @@ public class PlayerManager : MonoBehaviour
 
         inputActions = new PlayerInput();
 
-        currentPlayer = 0;
+        selectPlayer = 0;
         currentPlayer = selectPlayer;
+        highlightPlayer = selectPlayer;
         _currentPlayerPrefab = players[currentPlayer];
+        HighLightSelectPlayer(currentPlayer, highlightPlayer);
     }
 
     private void OnEnable()
@@ -76,10 +79,8 @@ public class PlayerManager : MonoBehaviour
 
     private void ChangeSelectPlayer(InputAction.CallbackContext context)
     {
-        print("선택창 활성화 여부 체크 중");
         // 선택창 활성화된 상태에서만 선택이 가능
         if (!isSelectUIActive) return;
-        print("선택창 활성화 됨");
 
         Vector2 inputVector = context.ReadValue<Vector2>();
         if (inputVector == Vector2.up)         // W (Up)
@@ -99,7 +100,9 @@ public class PlayerManager : MonoBehaviour
             selectPlayer = 3;
         }
 
-        print(selectPlayer + "선택함");
+        HighLightSelectPlayer(highlightPlayer,selectPlayer);
+        highlightPlayer = selectPlayer;
+
     }
 
     private void AcitveSelectUI()
@@ -176,6 +179,12 @@ public class PlayerManager : MonoBehaviour
         selectPlayer = (currentPlayer - 1 + players.Count) % players.Count;
 
         ActiveSelectPlayer(currentPlayer, selectPlayer);
+    }
+
+    private void HighLightSelectPlayer(int oldPlayer, int newPlayer)
+    {
+        pannels[oldPlayer].color = originColor;
+        pannels[newPlayer].color = highLightColor;
     }
 
     private void ActiveSelectPlayer(int oldPlayer, int newPlayer)

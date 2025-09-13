@@ -3823,6 +3823,13 @@ MonoBehaviour:
   - {fileID: 1604274596}
   - {fileID: 265248874}
   - {fileID: 1661856605}
+  pannels:
+  - {fileID: 646226287}
+  - {fileID: 732138932}
+  - {fileID: 439388563}
+  - {fileID: 182680762}
+  originColor: {r: 1, g: 1, b: 1, a: 1}
+  highLightColor: {r: 1, g: 0.09067254, b: 0, a: 1}
   camControlelr: {fileID: 773959066}
   selectPlayerPanel: {fileID: 981760582}
   _selectPanelSpeed: 0.05
@@ -4473,6 +4480,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   missile: {fileID: 3126201136803822574, guid: fed2ca59885a44240ab1b56e3271edbc, type: 3}
   missileBody: {fileID: 1549861350}
+  missileParent: {fileID: 0}
   shootingCooldown: 3
   _activeMissiles: []
 --- !u!4 &1563595847 stripped
