@@ -7667,7 +7667,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4577bf096b78ac646b3df2d9f2d908b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultSpawn: {x: 0, y: 0, z: 0}
+  defaultSpawn: {fileID: 1998001958}
 --- !u!4 &1779215590
 Transform:
   m_ObjectHideFlags: 0
@@ -7719,10 +7719,7 @@ MonoBehaviour:
   - {fileID: 1874342585}
   camControlelr: {fileID: 1318149768}
   selectPlayerPanel: {fileID: 217612625}
-  upButton: {fileID: 1694688121}
-  downButton: {fileID: 1705448345}
-  leftButton: {fileID: 704116059}
-  rightButton: {fileID: 63797893}
+  _selectPanelSpeed: 0.02
 --- !u!4 &1801015238
 Transform:
   m_ObjectHideFlags: 0

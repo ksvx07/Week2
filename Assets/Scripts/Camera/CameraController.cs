@@ -17,7 +17,7 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float ZoomLerpSpeed = 1f;
     [SerializeField] private float SpeedThreshold = 5f;
 
-    private Transform Player => PlayerManager.Instance?._currentPlayer?.transform;
+    private Transform Player => PlayerManager.Instance?._currentPlayerPrefab?.transform;
     private float targetZoom;
     private Rigidbody2D _rb;
 
