@@ -2024,7 +2024,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8690045216225980264, guid: 3dc087ac878750a4cafeed9c067c5bb6, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3317,10 +3317,10 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1563595847}
   - {fileID: 657251337}
-  - {fileID: 1039146680}
   - {fileID: 2059799743}
+  - {fileID: 1039146680}
+  - {fileID: 1563595847}
   - {fileID: 731105043}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3820,16 +3820,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   players:
-  - {fileID: 265248874}
   - {fileID: 1772469602}
-  - {fileID: 1604274596}
   - {fileID: 1661856605}
+  - {fileID: 1604274596}
+  - {fileID: 265248874}
   camControlelr: {fileID: 773959066}
   selectPlayerPanel: {fileID: 981760582}
-  upButton: {fileID: 301822207}
-  downButton: {fileID: 1227806330}
-  leftButton: {fileID: 335614890}
-  rightButton: {fileID: 923107347}
+  _selectPanelSpeed: 60
 --- !u!4 &1348983673
 Transform:
   m_ObjectHideFlags: 0
@@ -6474,7 +6471,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1045736920416087700, guid: 282ce54410b81cc4a9d7bd95fa242402, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8376829763068281936, guid: 282ce54410b81cc4a9d7bd95fa242402, type: 3}
       propertyPath: m_LocalPosition.x

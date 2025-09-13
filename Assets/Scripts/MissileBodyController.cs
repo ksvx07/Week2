@@ -8,7 +8,7 @@ public class MissileBodyController : MonoBehaviour
     [SerializeField] private Transform missileBody;
     [SerializeField] private float shootingCooldown;
 
-    private Transform _player => PlayerManager.Instance._currentPlayer.transform;
+    private Transform _player => PlayerManager.Instance._currentPlayerPrefab.transform;
     private float _shootingCurrentTime;
     private int _maxEnemy = 5;
     public List<GameObject> _activeMissiles = new();

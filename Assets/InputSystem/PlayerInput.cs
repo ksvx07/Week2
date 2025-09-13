@@ -315,165 +315,42 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             ""id"": ""e142499f-d016-4315-a8c5-9a3f1230dd8c"",
             ""actions"": [
                 {
-                    ""name"": ""Select"",
-                    ""type"": ""Value"",
-                    ""id"": ""e471f739-6836-4649-8147-ef66c5b55a43"",
-                    ""expectedControlType"": ""Vector2"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
-                },
-                {
-                    ""name"": ""Hold"",
+                    ""name"": ""SwitchHold"",
                     ""type"": ""Button"",
                     ""id"": ""ec5f559a-98e6-436d-b349-67a679262710"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""QuckSwitch"",
+                    ""type"": ""Button"",
+                    ""id"": ""b8e742f9-6806-48e1-94ae-8fa196e0491e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SelectPlayer"",
+                    ""type"": ""Value"",
+                    ""id"": ""f79f3a47-ac9a-4e54-8c08-6325c58e9bda"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
                 {
-                    ""name"": ""Arrow"",
-                    ""id"": ""b9cd058b-c7f1-40bf-90b8-db8ce3b63cfe"",
-                    ""path"": ""2DVector"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Select"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""up"",
-                    ""id"": ""b941e97b-777b-4ded-a3db-1d3f44d17a01"",
-                    ""path"": ""<Keyboard>/upArrow"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Select"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""down"",
-                    ""id"": ""5d70b4a2-dd29-4e27-9159-fe944debebb7"",
-                    ""path"": ""<Keyboard>/downArrow"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Select"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""left"",
-                    ""id"": ""320a07ba-23db-4779-bd0f-bba5e584ca66"",
-                    ""path"": ""<Keyboard>/leftArrow"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Select"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""right"",
-                    ""id"": ""de021f7c-1e41-4d93-973a-ead3de561a62"",
-                    ""path"": ""<Keyboard>/rightArrow"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Select"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""WASD"",
-                    ""id"": ""0f1dae0d-a8a6-4ff6-84fe-73396923a9ba"",
-                    ""path"": ""2DVector"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Select"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""up"",
-                    ""id"": ""80e3aa1c-7117-4e1a-9c90-732d7f2b0837"",
-                    ""path"": ""<Keyboard>/w"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Select"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""down"",
-                    ""id"": ""0e847eee-2dde-403f-af14-47ba5c130420"",
-                    ""path"": ""<Keyboard>/s"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Select"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""left"",
-                    ""id"": ""8d1a6332-d751-439b-9764-51f62f7a86f4"",
-                    ""path"": ""<Keyboard>/a"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Select"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""right"",
-                    ""id"": ""0b7427f1-249a-4423-9ee6-07a02987238b"",
-                    ""path"": ""<Keyboard>/d"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Select"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""99eb2e10-cfa1-4caf-a778-6eeb5dbb30c6"",
-                    ""path"": ""<Gamepad>/dpad"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Select"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""dbc208a1-ab03-427e-ba75-9c289f0ffff2"",
-                    ""path"": ""<Gamepad>/leftStick"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Select"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
                     ""name"": """",
                     ""id"": ""ace45573-8401-4c92-bdc4-ae86b281bee6"",
-                    ""path"": ""<Keyboard>/ctrl"",
+                    ""path"": ""<Keyboard>/shift"",
                     ""interactions"": ""Hold"",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Hold"",
+                    ""action"": ""SwitchHold"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -484,9 +361,75 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""interactions"": ""Hold"",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Hold"",
+                    ""action"": ""SwitchHold"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2c4b4831-741a-4055-9f7d-524d79c87130"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": ""Tap"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""QuckSwitch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""c2a32c9c-6cae-48e0-959f-3dd3e6ac8416"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectPlayer"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""6a647b6c-69a9-409c-897b-781afeb0e7a3"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectPlayer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""84b9379b-7305-44d4-b562-47293c04a2ed"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectPlayer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""b86f9a79-c2ad-4959-8424-060b432ed566"",
+                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectPlayer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""48f55a2b-a540-44ec-bfed-abc2e60085e9"",
+                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectPlayer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -500,8 +443,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
-        m_UI_Select = m_UI.FindAction("Select", throwIfNotFound: true);
-        m_UI_Hold = m_UI.FindAction("Hold", throwIfNotFound: true);
+        m_UI_SwitchHold = m_UI.FindAction("SwitchHold", throwIfNotFound: true);
+        m_UI_QuckSwitch = m_UI.FindAction("QuckSwitch", throwIfNotFound: true);
+        m_UI_SelectPlayer = m_UI.FindAction("SelectPlayer", throwIfNotFound: true);
     }
 
     ~@PlayerInput()
@@ -701,8 +645,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     // UI
     private readonly InputActionMap m_UI;
     private List<IUIActions> m_UIActionsCallbackInterfaces = new List<IUIActions>();
-    private readonly InputAction m_UI_Select;
-    private readonly InputAction m_UI_Hold;
+    private readonly InputAction m_UI_SwitchHold;
+    private readonly InputAction m_UI_QuckSwitch;
+    private readonly InputAction m_UI_SelectPlayer;
     /// <summary>
     /// Provides access to input actions defined in input action map "UI".
     /// </summary>
@@ -715,13 +660,17 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         /// </summary>
         public UIActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
         /// <summary>
-        /// Provides access to the underlying input action "UI/Select".
+        /// Provides access to the underlying input action "UI/SwitchHold".
         /// </summary>
-        public InputAction @Select => m_Wrapper.m_UI_Select;
+        public InputAction @SwitchHold => m_Wrapper.m_UI_SwitchHold;
         /// <summary>
-        /// Provides access to the underlying input action "UI/Hold".
+        /// Provides access to the underlying input action "UI/QuckSwitch".
         /// </summary>
-        public InputAction @Hold => m_Wrapper.m_UI_Hold;
+        public InputAction @QuckSwitch => m_Wrapper.m_UI_QuckSwitch;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/SelectPlayer".
+        /// </summary>
+        public InputAction @SelectPlayer => m_Wrapper.m_UI_SelectPlayer;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -748,12 +697,15 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_UIActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_UIActionsCallbackInterfaces.Add(instance);
-            @Select.started += instance.OnSelect;
-            @Select.performed += instance.OnSelect;
-            @Select.canceled += instance.OnSelect;
-            @Hold.started += instance.OnHold;
-            @Hold.performed += instance.OnHold;
-            @Hold.canceled += instance.OnHold;
+            @SwitchHold.started += instance.OnSwitchHold;
+            @SwitchHold.performed += instance.OnSwitchHold;
+            @SwitchHold.canceled += instance.OnSwitchHold;
+            @QuckSwitch.started += instance.OnQuckSwitch;
+            @QuckSwitch.performed += instance.OnQuckSwitch;
+            @QuckSwitch.canceled += instance.OnQuckSwitch;
+            @SelectPlayer.started += instance.OnSelectPlayer;
+            @SelectPlayer.performed += instance.OnSelectPlayer;
+            @SelectPlayer.canceled += instance.OnSelectPlayer;
         }
 
         /// <summary>
@@ -765,12 +717,15 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UIActions" />
         private void UnregisterCallbacks(IUIActions instance)
         {
-            @Select.started -= instance.OnSelect;
-            @Select.performed -= instance.OnSelect;
-            @Select.canceled -= instance.OnSelect;
-            @Hold.started -= instance.OnHold;
-            @Hold.performed -= instance.OnHold;
-            @Hold.canceled -= instance.OnHold;
+            @SwitchHold.started -= instance.OnSwitchHold;
+            @SwitchHold.performed -= instance.OnSwitchHold;
+            @SwitchHold.canceled -= instance.OnSwitchHold;
+            @QuckSwitch.started -= instance.OnQuckSwitch;
+            @QuckSwitch.performed -= instance.OnQuckSwitch;
+            @QuckSwitch.canceled -= instance.OnQuckSwitch;
+            @SelectPlayer.started -= instance.OnSelectPlayer;
+            @SelectPlayer.performed -= instance.OnSelectPlayer;
+            @SelectPlayer.canceled -= instance.OnSelectPlayer;
         }
 
         /// <summary>
@@ -841,18 +796,25 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     public interface IUIActions
     {
         /// <summary>
-        /// Method invoked when associated input action "Select" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "SwitchHold" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnSelect(InputAction.CallbackContext context);
+        void OnSwitchHold(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Hold" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "QuckSwitch" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnHold(InputAction.CallbackContext context);
+        void OnQuckSwitch(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SelectPlayer" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSelectPlayer(InputAction.CallbackContext context);
     }
 }

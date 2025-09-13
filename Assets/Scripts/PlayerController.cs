@@ -312,7 +312,5 @@ public class PlayerController : MonoBehaviour, IPlayerController
         rb.gravityScale = 0f; // 吝仿篮 流立 贸府
 
         rb.linearVelocity = new Vector2(newVelX, newVelY);
-
-        Debug.Log(rb.linearVelocity);
     }
 }

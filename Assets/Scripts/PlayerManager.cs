@@ -1,35 +1,39 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using static UnityEditor.Progress;
 
 public class PlayerManager : MonoBehaviour
 {
+    // Hack ;Input 변경
+    private int currentPlayer = 0;
+    private int selectPlayer = 0;
+    private bool isSelectUIActive = false;  // UI가 현재 활성화되어 있는지 여부
+
     [SerializeField] private List<GameObject> players;
+    
+
     [SerializeField] private CameraController camControlelr;
     [SerializeField] private GameObject selectPlayerPanel;
-    [SerializeField] private Button upButton;
-    [SerializeField] private Button downButton;
-    [SerializeField] private Button leftButton;
-    [SerializeField] private Button rightButton;
 
-    public GameObject _currentPlayer { get; private set; }
+    public GameObject _currentPlayerPrefab { get; private set; }
     private PlayerInput inputActions;
 
     public bool IsHold { get; private set; }
-    private Vector2 _inputNavi = Vector2.zero;
     private Vector3 _originScale = Vector3.zero;
     private Vector3 _MaxScale = new Vector3(1.2f, 1.2f, 1.2f);
-    private float _selectPanelSpeed = 60f;
-    private Button _currentButton;
+    [SerializeField] private float _selectPanelSpeed = 60f;
+    private Coroutine pannelActive;
 
-    public static  PlayerManager Instance;
+    public static PlayerManager Instance;
 
     private void Awake()
     {
-        if(null == Instance)
+        if (null == Instance)
         {
             Instance = this;
 
@@ -41,132 +45,168 @@ public class PlayerManager : MonoBehaviour
         }
 
         inputActions = new PlayerInput();
-        _currentPlayer = GameObject.FindWithTag("Player");
 
-        upButton.onClick.AddListener(() => { SetActivePlayer(_currentPlayer, players.Find(x => x.name == upButton.name)); });
-        downButton.onClick.AddListener(() => { SetActivePlayer(_currentPlayer, players.Find(x => x.name == downButton.name)); });
-        leftButton.onClick.AddListener(() => { SetActivePlayer(_currentPlayer, players.Find(x => x.name == leftButton.name)); });
-        rightButton.onClick.AddListener(() => { SetActivePlayer(_currentPlayer, players.Find(x => x.name == rightButton.name)); });
+        currentPlayer = 0;
+        currentPlayer = selectPlayer;
+        _currentPlayerPrefab = players[currentPlayer];
     }
 
     private void OnEnable()
     {
         inputActions.UI.Enable();
-        
-        inputActions.UI.Hold.started += OnHold;
-        inputActions.UI.Hold.canceled += OnHold;
-        inputActions.UI.Select.started += OnSelectPlayer;
-        inputActions.UI.Select.canceled += OnSelectPlayer;
+
+        inputActions.UI.SwitchHold.performed += OnSwithPlayerHold; // 홀드키 0.5초 이상 누르면 OnSwithPlayerHold 호출
+        inputActions.UI.SwitchHold.canceled += OnSwitchPlayerCancled;
+        inputActions.UI.SelectPlayer.performed += ChangeSelectPlayer;
+            
+        inputActions.UI.QuckSwitch.performed += QuickSwitchPlayer;
     }
 
     private void OnDisable()
     {
-        inputActions.UI.Hold.started -= OnHold;
-        inputActions.UI.Hold.canceled -= OnHold;
-        inputActions.UI.Select.started -= OnSelectPlayer;
-        inputActions.UI.Select.canceled -= OnSelectPlayer;
+        inputActions.UI.SwitchHold.performed -= OnSwithPlayerHold; // 홀드키 0.5초 이상 누르면 OnSwithPlayerHold 호출
+        inputActions.UI.SwitchHold.canceled -= OnSwitchPlayerCancled;
+        inputActions.UI.SelectPlayer.performed -= ChangeSelectPlayer;
+
+        inputActions.UI.QuckSwitch.performed -= QuickSwitchPlayer;
 
         inputActions.UI.Disable();
     }
 
-    private void OnHold(InputAction.CallbackContext ctx)
+    private void ChangeSelectPlayer(InputAction.CallbackContext context)
     {
-        if (ctx.started)
+        print("선택창 활성화 여부 체크 중");
+        // 선택창 활성화된 상태에서만 선택이 가능
+        if (!isSelectUIActive) return;
+        print("선택창 활성화 됨");
+
+        Vector2 inputVector = context.ReadValue<Vector2>();
+        if (inputVector == Vector2.up)         // W (Up)
         {
-            IsHold = true;
+            selectPlayer = 0;
         }
-        else if (ctx.canceled)
+        else if (inputVector == Vector2.right) // D (Right) // A (Left)
         {
-            IsHold = false;
+            selectPlayer = 1;
+        }
+        else if (inputVector == Vector2.down)  // S (Down)
+        {
+            selectPlayer = 2;
+        }
+        else if (inputVector == Vector2.left)// A (Left)
+        {
+            selectPlayer = 3;
+        }
 
-            // 홀드 상태 취소되면, 그 선택되어있던 버튼 클릭 invoke
-            if (_currentButton  != null) _currentButton.onClick.Invoke();
+        print(selectPlayer + "선택함");
+    }
+
+    private void AcitveSelectUI()
+    {
+        Time.timeScale = 0.1f;
+        Time.fixedDeltaTime = 0.02f * Time.timeScale;
+
+        Vector3 screenPosition = Camera.main.WorldToScreenPoint(_currentPlayerPrefab.transform.position);
+        selectPlayerPanel.GetComponent<RectTransform>().position = screenPosition;
+
+        if (pannelActive != null)
+        {
+        StopCoroutine(pannelActive);
+        }
+        pannelActive =StartCoroutine(ScalePanel(selectPlayerPanel.transform, _originScale, _MaxScale, _selectPanelSpeed));
+        selectPlayerPanel.SetActive(true);
+
+        isSelectUIActive = true;  // UI가 현재 활성화되어 있는지 여부
+}
+
+private void DeActiveSelectUI()
+    {
+        Time.timeScale = 1f;
+        Time.fixedDeltaTime = 0.02f * Time.timeScale;
+
+        selectPlayerPanel.SetActive(false);
+        isSelectUIActive = false;
+    }
+
+
+    public void OnSwithPlayerHold(InputAction.CallbackContext context)
+    {
+        if (context.phase == InputActionPhase.Performed)
+        {
+            // 1초 이상 Shift 키를 눌렀을 때, 선택 UI 활성화
+            AcitveSelectUI();
         }
     }
 
-    private void OnSelectPlayer(InputAction.CallbackContext ctx)
+    public void OnSwitchPlayerCancled(InputAction.CallbackContext context)
     {
-        _inputNavi = ctx.ReadValue<Vector2>();
-    }
-
-    private void Highlight(Button button)
-    {
-        if (_currentButton != null) _currentButton.OnDeselect(null);
-
-        _currentButton = button;
-        _currentButton.Select();
-    }
-
-    private void Update()
-    {
-        // 키 눌렀을 때 변환
-        if (IsHold)
+        // 선택창이 활성화 된 상태였다면
+        if (isSelectUIActive)
         {
-            Time.timeScale = 0.1f;
-            Time.fixedDeltaTime = 0.02f * Time.timeScale;
+            //선택 UI비활성화
+            DeActiveSelectUI();
+            // 캐릭터 변경
+            ActiveSelectPlayer(currentPlayer, selectPlayer);
+        }
+    }
 
-            if (!selectPlayerPanel.activeSelf) selectPlayerPanel.SetActive(true);
-            selectPlayerPanel.transform.position = _currentPlayer.transform.position;
-            selectPlayerPanel.transform.localScale = Vector3.Lerp(selectPlayerPanel.transform.localScale, _MaxScale, _selectPanelSpeed * Time.deltaTime);
 
-            // 키보드, 게임 패드 입력 들어와서 네비게이션으로 플레이어 선택되게 하기
-            if (_inputNavi == Vector2.zero) return;
 
-            if(Mathf.Abs(_inputNavi.x) > Mathf.Abs(_inputNavi.y))
-            {
-                if (_inputNavi.x > 0) Highlight(rightButton);
-                else Highlight(leftButton);
-            }
-            else
-            {
-                if(_inputNavi.y > 0) Highlight(upButton);
-                else Highlight(downButton);
-            }
+    private void QuickSwitchPlayer(InputAction.CallbackContext context)
+    {
+        print("변경키 짧게 누름: 바로변경");
 
+        if (currentPlayer + 1 < players.Count)
+        {
+            selectPlayer++;
         }
         else
         {
-            Time.timeScale = 1f;
-            Time.fixedDeltaTime = 0.02f * Time.timeScale;
-
-            if (selectPlayerPanel.activeSelf) selectPlayerPanel.SetActive(false);
-            selectPlayerPanel.transform.localScale = Vector3.Lerp(selectPlayerPanel.transform.localScale, _originScale, _selectPanelSpeed * Time.deltaTime);
-
+            selectPlayer = 0;
         }
-
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            RapidChangePlayer();
-        }
+        ActiveSelectPlayer(currentPlayer, selectPlayer);
     }
 
-    private void RapidChangePlayer()
+    private void ActiveSelectPlayer(int oldPlayer, int newPlayer)
     {
-        int currentIdx = players.IndexOf(_currentPlayer);
+        // 같은 캐릭터로바꾸려면 return
+        if (oldPlayer == newPlayer) return;
 
-        if (currentIdx + 1 < players.Count)
-        {
-            var nextPlayer = players[currentIdx + 1];
+        GameObject oldPlayerPrefab = players[oldPlayer];
+        Transform lastPos = oldPlayerPrefab.transform;
+        Vector2 lastVelocity = oldPlayerPrefab.GetComponent<Rigidbody2D>().linearVelocity;
+        oldPlayerPrefab.SetActive(false);   
 
-            SetActivePlayer(_currentPlayer, nextPlayer);
-        }
-        else
-        {
-            var nextPlayer = players[0];
+        _currentPlayerPrefab = players[newPlayer];
+        _currentPlayerPrefab.transform.position = lastPos.position;
+        _currentPlayerPrefab.SetActive(true);
+        _currentPlayerPrefab.GetComponent<IPlayerController>().OnEnableSetVelocity(lastVelocity.x, lastVelocity.y);
 
-            SetActivePlayer(_currentPlayer, nextPlayer);
-        }
+        currentPlayer = selectPlayer; // 인덱스 동기화
     }
 
-    private void SetActivePlayer(GameObject _lastPlayer, GameObject _nowPlayer)
+    IEnumerator ScalePanel(Transform targetTransform, Vector3 startScale, Vector3 endScale, float duration)
     {
-        var lastPosition = _lastPlayer.transform.position;
-        var lastVelocity = _lastPlayer.GetComponent<Rigidbody2D>().linearVelocity;
-        _lastPlayer.SetActive(false);
+        float elapsedTime = 0f;
 
-        _currentPlayer = _nowPlayer;
-        _currentPlayer.transform.position = lastPosition;
-        _currentPlayer.SetActive(true);
-        _currentPlayer.GetComponent<IPlayerController>().OnEnableSetVelocity(lastVelocity.x, lastVelocity.y);
+        // 경과 시간이 설정한 지속 시간보다 작을 때까지 루프를 실행합니다.
+        while (elapsedTime < duration)
+        {
+            // t 값은 0부터 1까지 부드럽게 증가하는 비율입니다.
+            // 이 값이 Lerp 함수의 마지막 인자로 사용됩니다.
+            float t = elapsedTime / duration;
+
+            // Vector3.Lerp를 사용하여 시작 크기에서 최종 크기로 보간합니다.
+            targetTransform.localScale = Vector3.Lerp(startScale, endScale, t);
+
+            // 경과 시간을 업데이트합니다. Time.deltaTime은 이전 프레임으로부터의 시간입니다.
+            elapsedTime += Time.unscaledDeltaTime;
+
+            // 다음 프레임까지 기다립니다.
+            yield return null;
+        }
+
+        // 루프가 끝난 후, 최종 크기를 정확하게 설정하여 오차를 방지합니다.
+        targetTransform.localScale = endScale;
     }
 }

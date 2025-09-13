@@ -4,7 +4,7 @@ public class StageSwitch : MonoBehaviour
 {
     [SerializeField] private CameraClamp Clamp;
 
-    private Transform Player => PlayerManager.Instance._currentPlayer.transform;
+    private Transform Player => PlayerManager.Instance._currentPlayerPrefab.transform;
 
     void Update()
     {

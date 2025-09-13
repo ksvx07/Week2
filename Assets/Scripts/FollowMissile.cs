@@ -8,7 +8,7 @@ public class FollowMissile : MonoBehaviour
     [SerializeField] private float _updateInterval = 0.05f; // 연산 주기 (초)
 
     private MissileBodyController _missileController;
-    private Transform _player => PlayerManager.Instance._currentPlayer.transform;
+    private Transform _player => PlayerManager.Instance._currentPlayerPrefab.transform;
     private Rigidbody2D _rb;
 
     public void Init(MissileBodyController missileController)
