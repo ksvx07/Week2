@@ -1,3 +1,5 @@
+using NUnit.Framework;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,7 +10,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
     private Rigidbody2D rb;
     private BoxCollider2D col;
 
-    // Inspector Á¶Àı °¡´É º¯¼öµé
+    // Inspector ???? ???? ??????
     [Header("Move")]
     [SerializeField] private float maxSpeed = 5f;
     [SerializeField] private float speedAcceleration = 5f;
@@ -20,8 +22,8 @@ public class PlayerController : MonoBehaviour, IPlayerController
     [SerializeField] private float maxGravity = 5f;
     [SerializeField] private float gravityAcceleration = 5f;
     [SerializeField] private float maxDownSpeed = 5f;
-    [SerializeField] private float coyoteTime = 0.1f;       // ÄÚ¿äÅ× Å¸ÀÓ ±æÀÌ
-    [SerializeField] private float jumpBufferTime = 0.1f;   // Á¡ÇÁ ¹öÆÛ ±æÀÌ
+    [SerializeField] private float coyoteTime = 0.1f;       // ????? ??? ????
+    [SerializeField] private float jumpBufferTime = 0.1f;   // ???? ???? ????
 
     [Header("Wall Jump")]
     [SerializeField] private float wallCheckDistance = 0.4f;
@@ -43,15 +45,18 @@ public class PlayerController : MonoBehaviour, IPlayerController
     private LayerMask wallLayer;
 
     private float currentGravity;
-    private float coyoteTimeCounter; // ¶¥À» ¶°³­ ÈÄ ³²Àº Á¡ÇÁ °¡´É ½Ã°£
-    private float jumpBufferCounter; // Á¡ÇÁ ÀÔ·Â À¯Áö ½Ã°£
+    private float coyoteTimeCounter; // ???? ???? ?? ???? ???? ???? ?ï¿½ï¿½?
+    private float jumpBufferCounter; // ???? ??? ???? ?ï¿½ï¿½?
     private float dashTimeCounter;
-    // ³»ºÎ »óÅÂ
+    // ???? ????
     public bool IsGrounded { get; private set; }
     public bool IsJumping { get; private set; }
     private bool isTouchingWall;
     private bool isDashing;
     private int dashCount;
+    private bool isFastFalling;
+    private int facingDirection = 1; // 1: ì˜¤ë¥¸ìª½, -1: ì™¼ìª½
+    private Vector3 originalScale; // ì›ë³¸ í¬ê¸° ì €ì¥
 
     private void Awake()
     {
@@ -62,9 +67,15 @@ public class PlayerController : MonoBehaviour, IPlayerController
         wallLayer = LayerMask.GetMask("Ground");
         dashCount = maxDashCount;
 
-        // Rigidbody ¼³Á¤
+        // ì›ë³¸ í¬ê¸° ì €ì¥
+        originalScale = transform.localScale;
+
+        // ì›ë³¸ í¬ê¸° ì €ì¥
+        originalScale = transform.localScale;
+
+        // Rigidbody ????
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-        rb.gravityScale = 0f; // Áß·ÂÀº Á÷Á¢ Ã³¸®
+        rb.gravityScale = 0f; // ????? ???? ???
     }
 
     private void OnEnable()
@@ -97,6 +108,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
     private void OnJump(InputAction.CallbackContext ctx)
     {
         jumpBufferCounter = jumpBufferTime;
+        isFastFalling = false;
     }
 
     private void OffJump(InputAction.CallbackContext ctx)
@@ -114,11 +126,13 @@ public class PlayerController : MonoBehaviour, IPlayerController
         TimeCounters();
     }
 
-    // ½Ã°£ Ä«¿îÅÍµé
+    // ?ï¿½ï¿½? ??????
     private void TimeCounters()
     {
-        // Á¡ÇÁ ¹öÆÛ (¿¹¾à) & ÄÚ¿äÅ× Å¸ÀÓ
+        // ???? ???? (????) & ????? ???
         jumpBufferCounter -= Time.deltaTime;
+        if (jumpBufferCounter < 0)
+            isFastFalling = false;
         if (IsGrounded)
         {
             coyoteTimeCounter = coyoteTime;
@@ -128,7 +142,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
         else
             coyoteTimeCounter -= Time.deltaTime;
 
-        // ÀÏÁ¤ ½Ã°£ ´ë½ÃÇÔ, ´ë½Ã ³¡³ª¸é Damping ÁÜ
+        // ???? ?ï¿½ï¿½? ?????, ??? ?????? Damping ??
         if (isDashing)
         {
             dashTimeCounter -= Time.deltaTime;
@@ -156,24 +170,38 @@ public class PlayerController : MonoBehaviour, IPlayerController
         //Debug.Log($"x: {rb.linearVelocity.x:F2}, y: {rb.linearVelocity.y:F2}");
     }
 
-    // ÀÌµ¿
+    // ???
     private void Move() 
     {
         float accel = speedAcceleration;
         float decel = SpeedDeceleration;
-        if (!IsGrounded) // °øÁßÀÌ¸é ¹è¼ö Àû¿ë
+        if (!IsGrounded) // ??????? ??? ????
         {
             accel *= airAccelMulti;
             decel *= airDecelMulti;
         }
+        // ë°”ë¼ë³´ëŠ” ë°©í–¥ ì—…ë°ì´íŠ¸ ë° ìŠ¤í”„ë¼ì´íŠ¸ íšŒì „
+        if (moveInput.x > 0)
+        {
+            facingDirection = 1;
+            transform.localScale = originalScale; // ì˜¤ë¥¸ìª½
+        }
+        else if (moveInput.x < 0)
+        {
+            facingDirection = -1;
+            Vector3 flippedScale = originalScale;
+            flippedScale.x = -originalScale.x;
+            transform.localScale = flippedScale; // ì™¼ìª½ (Xì¶• ë°˜ì „)
+        }
+
         float targetX = moveInput.x * maxSpeed;
         float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
-        // ¼Óµµ°¡ ºü¸¦¼ö·Ï °¡¼Óµµ °¨¼Ò
+        // ì´ë™ ë°©í–¥ì— ë”°ë¥¸ ìƒˆë¡œìš´ Xì¶• ì†ë„ ê³„ì‚°
         float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
         rb.linearVelocityX = newX; 
     }
 
-    // ¹Ù´Ú °¨Áö (BoxCast)
+    // ??? ???? (BoxCast)
     private void DetectGround()
     {
         Bounds bounds = col.bounds;
@@ -192,19 +220,19 @@ public class PlayerController : MonoBehaviour, IPlayerController
         }
     }
 
-    // Áß·Â
+    // ???
     private void ApplyGravity()
     {
         float newY;
         if (IsJumping)
         {
-            // Á¡ÇÁ Áß Áß·Â(¿Ã¶ó°¥ ¶§)
+            // ???? ?? ???(??? ??)
             newY = rb.linearVelocity.y - jumpDcceleration * Time.fixedDeltaTime;
         }
         else
         {
-            // Á¡ÇÁ ÈÄ Áß·Â(¶³¾îÁú ¶§)
-            // Á¡ÇÁ Áß Áß·Â(¾àÇÔ)¿¡¼­ Á¡ÇÁ ÈÄ Áß·Â(°­ÇÔ)À¸·Î ¿¬¼ÓÀûÀ¸·Î Áõ°¡
+            // ???? ?? ???(?????? ??)
+            // ???? ?? ???(????)???? ???? ?? ???(????)???? ?????????? ????
             if (currentGravity < maxGravity)
                 currentGravity += gravityAcceleration * Time.fixedDeltaTime;
             else
@@ -213,45 +241,50 @@ public class PlayerController : MonoBehaviour, IPlayerController
             newY = rb.linearVelocity.y - currentGravity * Time.fixedDeltaTime;
         }
 
-        // º®Àâ°í ÀÖÀ¸¸é Áß·Â ³·À½
+        // ????? ?????? ??? ????
         if (isTouchingWall)
             if (newY < -wallSlideMaxSpeed)
                 newY = -wallSlideMaxSpeed;
 
-        // yÃà ÃÖ´ë ¼Óµµ
+        // y?? ??? ???
         newY = Mathf.Clamp(newY, -maxDownSpeed, maxJumpSpeed);
 
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, newY);
     }
 
-    // Á¡ÇÁ
+    // ????
     private void Jump()
     {
         if (jumpBufferCounter > 0 && coyoteTimeCounter > 0)
         {
-            // +y·Î linearVelocity ¼³Á¤
+            // +y?? linearVelocity ????
             Debug.Log("Jump!");
             IsJumping = true;
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, maxJumpSpeed);
             jumpBufferCounter = 0;
             coyoteTimeCounter = 0;
+            if (isFastFalling)
+                IsJumping = false;
         }
     }
 
-    // Á¡ÇÁ Å° ¶§¸é isJumping = false -> Áß·Â °­ÇØÁü -> »¡¸® ¶³¾îÁü
+    // ???? ? ???? isJumping = false -> ??? ?????? -> ???? ??????
     private void FastFall()
     {
         if (IsJumping)
         {
             IsJumping = false;
         }
+        if (jumpBufferCounter > 0)
+            isFastFalling = true;
+
     }
 
-    // º® °¨Áö (Raycast)
+    // ?? ???? (Raycast)
     private void WallCheck()
     {
         Vector2 origin = transform.position;
-        RaycastHit2D hitWall = new RaycastHit2D(); // ±âº»°ªÀ¸·Î ÃÊ±âÈ­
+        RaycastHit2D hitWall = new RaycastHit2D(); // ???????? ????
 
         if (moveInput.x > 0)
         {
@@ -267,7 +300,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
         isTouchingWall = hitWall.collider != null;
     }
 
-    // º®Á¡ÇÁ Å° ÀÔ·Â ¹İ´ë À§·Î linearVelocity ¼³Á¤
+    // ?????? ? ??? ??? ???? linearVelocity ????
     private void WallJump()
     {
         if (isTouchingWall && jumpBufferCounter > 0 && !IsGrounded)
@@ -278,18 +311,19 @@ public class PlayerController : MonoBehaviour, IPlayerController
         }
     }
 
-    // ´ë½Ã, ´ë½Ã Áß ¸ğµç º¯¼ö ¹«½ÃÇÏ°í linearVelocity´Â ¹«Á¶°Ç moveInput.normalized * dashSpeedµÊ.
+    // ???, ??? ?? ??? ???? ??????? linearVelocity?? ?????? moveInput.normalized * dashSpeed??.
     private void Dash()
     {
-        if (moveInput == Vector2.zero) return;
         if (dashCount <= 0) return;
         isDashing = true;
         dashCount -= 1;
         dashTimeCounter = dashTime;
-        rb.linearVelocity = moveInput.normalized * dashSpeed;
+
+        // í•­ìƒ ë°”ë¼ë³´ëŠ” ë°©í–¥ìœ¼ë¡œ ëŒ€ì‹œ
+        rb.linearVelocity = new Vector2(facingDirection * dashSpeed, 0);
     }
 
-    // ´ë½Ã ÈÄ ´ïÇÎ, ´ë½Ã ³¡³ª¸é ÃÖ´ë¼Óµµ Á¶Àı
+    // ??? ?? ????, ??? ?????? ????? ????
     private void dampAfterDash()
     {
         float dampedSpeedX = rb.linearVelocity.x;
@@ -307,9 +341,9 @@ public class PlayerController : MonoBehaviour, IPlayerController
         wallLayer = LayerMask.GetMask("Ground");
         dashCount = maxDashCount;
 
-        // Rigidbody ¼³Á¤
+        // Rigidbody ????
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-        rb.gravityScale = 0f; // Áß·ÂÀº Á÷Á¢ Ã³¸®
+        rb.gravityScale = 0f; // ????? ???? ???
 
         rb.linearVelocity = new Vector2(newVelX, newVelY);
     }

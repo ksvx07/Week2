@@ -6,14 +6,18 @@ public class MissileBodyController : MonoBehaviour
 {
     [SerializeField] private GameObject missile;
     [SerializeField] private Transform missileBody;
+    [SerializeField] private Transform missileParent;
     [SerializeField] private float shootingCooldown;
 
-    private Transform _player => PlayerManager.Instance._currentPlayerPrefab.transform;
+    private Quaternion offsetRotation = Quaternion.Euler(0, 0, 90);
+    private Vector3 offsetPosition = new Vector3(-0.5f, 0f, 0f);
+
+    private Transform _player => PlayerManager.Instance._currentPlayer.transform;
     private float _shootingCurrentTime;
     private int _maxEnemy = 5;
     public List<GameObject> _activeMissiles = new();
     public Queue<GameObject> _missilePool = new();
-    
+
     void Start()
     {
         _shootingCurrentTime = Time.time;
@@ -27,13 +31,13 @@ public class MissileBodyController : MonoBehaviour
         var distance = Vector3.Distance(transform.position, _player.position);
         Vector3 directionToTarget = _player.position - transform.position;
 
-        if(Mathf.Abs(distance) < 5f )
+        if (Mathf.Abs(distance) < 5f)
         {
             Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
 
             transform.rotation = targetRotation * Quaternion.Euler(0, 90, 0);
 
-            if(Time.time - _shootingCurrentTime > shootingCooldown )
+            if (Time.time - _shootingCurrentTime > shootingCooldown)
             {
                 ShootingBullet();
             }
@@ -44,22 +48,25 @@ public class MissileBodyController : MonoBehaviour
     {
         GameObject bullet;
 
-        if(_missilePool.Count > 0)
+        if (_missilePool.Count > 0)
         {
             bullet = _missilePool.Dequeue();
 
-            bullet.transform.SetParent(missileBody.transform);
+            // bullet.transform.SetParent(missileParent);
 
-            bullet.transform.localPosition = new Vector3(-0.83f, 0f, 0f);   // À§Ä¡ ÃÊ±âÈ­
-            bullet.transform.localRotation = Quaternion.Euler(0, 0, 90);    // È¸Àü ÃÊ±âÈ­
+            // bullet.transform.localPosition = new Vector3(-0.83f, 0f, 0f);   // ï¿½ï¿½Ä¡ ï¿½Ê±ï¿½È­
+            // bullet.transform.localRotation = Quaternion.Euler(0, 0, 90);    // È¸ï¿½ï¿½ ï¿½Ê±ï¿½È­
+            bullet.transform.rotation = missileBody.rotation * offsetRotation;
+            bullet.transform.position = missileBody.position + missileBody.rotation * offsetPosition;
+
         }
         else
         {
-            bullet = Instantiate(missile, missileBody.transform);
+            bullet = Instantiate(missile, missileBody.position + missileBody.rotation * offsetPosition, missileBody.rotation * offsetRotation, missileParent);
         }
 
         bullet.GetComponent<FollowMissile>().Init(this);
-        bullet.transform.SetParent(null);
+        // bullet.transform.SetParent(null);
 
         _shootingCurrentTime = Time.time;
         bullet.SetActive(true);
