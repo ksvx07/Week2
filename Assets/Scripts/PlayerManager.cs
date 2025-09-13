@@ -4,8 +4,6 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
-using static UnityEditor.Progress;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -57,6 +55,7 @@ public class PlayerManager : MonoBehaviour
         inputActions.UI.SwitchHold.performed += OnSwithPlayerHold; // 홀드키 0.5초 이상 누르면 OnSwithPlayerHold 호출
         inputActions.UI.SwitchHold.canceled += OnSwitchPlayerCancled;
         inputActions.UI.SelectPlayer.performed += ChangeSelectPlayer;
+        inputActions.UI.SelectPlayer.canceled += ChangeSelectPlayer;
 
         inputActions.UI.QuickSwitchRight.performed += QuickSwitchPlayerRight;
         inputActions.UI.QuickSwitchLeft.performed += QuickSwitchPlayerLeft;
@@ -67,6 +66,7 @@ public class PlayerManager : MonoBehaviour
         inputActions.UI.SwitchHold.performed -= OnSwithPlayerHold; // 홀드키 0.2초 이상 누르면 OnSwithPlayerHold 호출
         inputActions.UI.SwitchHold.canceled -= OnSwitchPlayerCancled;
         inputActions.UI.SelectPlayer.performed -= ChangeSelectPlayer;
+        inputActions.UI.SelectPlayer.canceled -= ChangeSelectPlayer;
 
         inputActions.UI.QuickSwitchRight.performed -= QuickSwitchPlayerRight;
         inputActions.UI.QuickSwitchLeft.performed -= QuickSwitchPlayerLeft;
@@ -76,10 +76,11 @@ public class PlayerManager : MonoBehaviour
 
     private void ChangeSelectPlayer(InputAction.CallbackContext context)
     {
-        print("선택창 활성화 여부 체크 중");
         // 선택창 활성화된 상태에서만 선택이 가능
         if (!isSelectUIActive) return;
-        print("선택창 활성화 됨");
+
+        if(context.performed) IsHold = true;
+        if (context.canceled) IsHold = false;
 
         Vector2 inputVector = context.ReadValue<Vector2>();
         if (inputVector == Vector2.up)         // W (Up)

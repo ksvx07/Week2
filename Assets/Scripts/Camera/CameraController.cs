@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    [SerializeField] private Camera Cam;
+    [SerializeField] public Camera Cam;
     [SerializeField] private float SmoothTime = 0.2f;
     [SerializeField] private CameraClamp Clamp;
 
@@ -17,7 +17,7 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float ZoomLerpSpeed = 1f;
     [SerializeField] private float SpeedThreshold = 5f;
 
-    private Transform Player => PlayerManager.Instance._currentPlayerPrefab.transform;
+    private Transform Player => PlayerManager.Instance?._currentPlayerPrefab?.transform;
     private float targetZoom;
     private Rigidbody2D _rb;
 
@@ -38,17 +38,19 @@ public class CameraController : MonoBehaviour
         }
 
         Cam = GetComponent<Camera>();
-        // Hack : Null에러 때문에 start로 옮김
-        //_rb = Player.GetComponent<Rigidbody2D>();
     }
 
     private void Start()
     {
-        _rb = Player.GetComponent<Rigidbody2D>();
+        if (Player != null)
+            _rb = Player.GetComponent<Rigidbody2D>();
     }
 
     private void Update()
     {
+        if (Player == null)
+            return;
+
         var desiredPos = HandleFollow();
 
         transform.position = Clamp.HandleClamp(desiredPos);
