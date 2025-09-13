@@ -23,7 +23,7 @@ public class PlayerManager : MonoBehaviour
     private Vector2 _inputNavi = Vector2.zero;
     private Vector3 _originScale = Vector3.zero;
     private Vector3 _MaxScale = new Vector3(1.2f, 1.2f, 1.2f);
-    private float _selectPanelSpeed = 10f;
+    private float _selectPanelSpeed = 20f;
 
     private Button _currentButton;
 
@@ -64,13 +64,17 @@ public class PlayerManager : MonoBehaviour
     private void OnHold(InputAction.CallbackContext ctx)
     {
         if (ctx.started)
+        {
             _isHold = true;
+            //inputActions.Player.Disable();
+        }
         else if (ctx.canceled)
         {
             _isHold = false;
+            //inputActions.Player.Enable();
 
             // 홀드 상태 취소되면, 그 선택되어있던 버튼 클릭 invoke
-            if(_currentButton  != null) _currentButton.onClick.Invoke();
+            if (_currentButton  != null) _currentButton.onClick.Invoke();
         }
     }
 
@@ -94,7 +98,7 @@ public class PlayerManager : MonoBehaviour
         // 키 눌렀을 때 변환
         if (_isHold)
         {
-            Time.timeScale = 0.3f;
+            Time.timeScale = 0.1f;
 
             if(!selectPlayerPanel.activeSelf) selectPlayerPanel.SetActive(true);
             selectPlayerPanel.transform.position = _currentPlayer.transform.position;
