@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class LevelLoadManager : MonoBehaviour
+public class StageLoadManager : MonoBehaviour
 {
     [SerializeField] private GameObject[] LevelPrefabs;
     private GameObject[] LoadedLevels;
@@ -11,6 +11,23 @@ public class LevelLoadManager : MonoBehaviour
         LoadedLevels = new GameObject[LevelPrefabs.Length];
         AddAllLevels();
     }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            RestartLevel();
+        }
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            currntLevel++;
+            if (currntLevel >= LevelPrefabs.Length)
+            {
+                currntLevel = 0;
+            }
+        }
+    }
+
 
 
     [ContextMenu("AddAllLevels")]
