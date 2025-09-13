@@ -191,7 +191,7 @@ MonoBehaviour:
   gravityAcceleration: 40
   maxDownSpeed: 10
   coyoteTime: 0.1
-  jumpBufferTime: 0.1
+  jumpBufferTime: 0.3
   wallCheckDistance: 0.6
   wallJumpXSpeed: 5
   wallJumpYSpeed: -1
