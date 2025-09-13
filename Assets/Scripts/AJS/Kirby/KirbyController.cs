@@ -70,6 +70,10 @@ public class KirbyController : MonoBehaviour, IPlayerController
         _groundCheck = GetComponent<KirbyGroundCheck>(); // 땅 닿았는지 알기위한 스크립트
     }
 
+    private void OnDisable()
+    {
+        InitializedCircle();
+    }
     private void Update()
     {
         // 입력키를 누르든 말든 최소 유지해야 하는 boucning시간
@@ -158,6 +162,11 @@ public class KirbyController : MonoBehaviour, IPlayerController
                 }
             }
         }
+    }
+
+    private void InitializedCircle()
+    {
+        turboMode = false;
     }
 
     // 최고속도 도달을 위한 가속도 적용시

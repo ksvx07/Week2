@@ -12,6 +12,7 @@ public class PlayerManager : MonoBehaviour
     private int highlightPlayer = 0;
     private bool isSelectUIActive = false;  // UI가 현재 활성화되어 있는지 여부
 
+    [SerializeField] private int startPlayer = 0;
     [SerializeField] private List<GameObject> players;
     [SerializeField] private List<Image> pannels;
     [SerializeField] private Color originColor;
@@ -46,10 +47,11 @@ public class PlayerManager : MonoBehaviour
 
         inputActions = new PlayerInput();
 
-        selectPlayer = 0;
+        selectPlayer = startPlayer;
         currentPlayer = selectPlayer;
         highlightPlayer = selectPlayer;
         _currentPlayerPrefab = players[currentPlayer];
+        ActiveStartPlayer(startPlayer);
         HighLightSelectPlayer(currentPlayer, highlightPlayer);
     }
 
@@ -164,8 +166,6 @@ public class PlayerManager : MonoBehaviour
 
     private void QuickSwitchPlayerRight(InputAction.CallbackContext context)
     {
-        print("e 키 누름: 오른쪽 플레이어로 변경");
-
         // 현재 플레이어 인덱스를 1 증가시키고, 플레이어 수 이상이면 0으로 순환
         selectPlayer = (currentPlayer + 1) % players.Count;
 
@@ -173,8 +173,6 @@ public class PlayerManager : MonoBehaviour
     }
     private void QuickSwitchPlayerLeft(InputAction.CallbackContext context)
     {
-        print("q 키 누름: 왼쪽 플레이어로 변경");
-
         // 현재 플레이어 인덱스를 1 감소시키고, 0 미만이면 마지막 인덱스로 순환
         selectPlayer = (currentPlayer - 1 + players.Count) % players.Count;
 
@@ -185,6 +183,12 @@ public class PlayerManager : MonoBehaviour
     {
         pannels[oldPlayer].color = originColor;
         pannels[newPlayer].color = highLightColor;
+    }
+    private void ActiveStartPlayer(int starstPlayer)
+    {
+        _currentPlayerPrefab = players[starstPlayer];
+        _currentPlayerPrefab.SetActive(true);
+        currentPlayer = selectPlayer; // 인덱스 동기화
     }
 
     private void ActiveSelectPlayer(int oldPlayer, int newPlayer)
