@@ -405,5 +405,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16f69673ca71ff94792ad7733865b884, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  renderer: {fileID: 7194712723783113993}
+  spriteRenderer: {fileID: 7194712723783113993}
   trail: {fileID: 1520186434103485758}
