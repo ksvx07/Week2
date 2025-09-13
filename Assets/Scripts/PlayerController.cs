@@ -85,8 +85,8 @@ public class PlayerController : MonoBehaviour, IPlayerController
     private void OnEnable()
     {
         inputActions.Player.Enable();
-        inputActions.Player.Move.performed += OnMove;
         inputActions.Player.Move.canceled += OnMove;
+        inputActions.Player.Move.performed += OnMove;
         inputActions.Player.Jump.started += OnJump;
         inputActions.Player.Jump.canceled += OffJump;
         inputActions.Player.Dash.performed += OnDash;
@@ -94,18 +94,18 @@ public class PlayerController : MonoBehaviour, IPlayerController
 
     private void OnDisable()
     {
-        inputActions.Player.Move.performed -= OnMove;
         inputActions.Player.Move.canceled -= OnMove;
+        inputActions.Player.Move.performed -= OnMove;
         inputActions.Player.Jump.started -= OnJump;
         inputActions.Player.Jump.canceled -= OffJump;
         inputActions.Player.Dash.performed -= OnDash;
         inputActions.Player.Disable();
+        moveInput = Vector2.zero;
     }
 
     private void OnMove(InputAction.CallbackContext ctx)
     {
         if (PlayerManager.Instance.IsHold) return;
-
         moveInput = ctx.ReadValue<Vector2>();
     }
 

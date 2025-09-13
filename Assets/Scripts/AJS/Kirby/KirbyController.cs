@@ -9,50 +9,51 @@ public class KirbyController : MonoBehaviour, IPlayerController
     #endregion
 
     [Header("Movement Stats")]
-    [SerializeField, Range(0f, 20f)][Tooltip("ÃÖ°í¼Óµµ")] private float maxSpeed = 10f;
-    [SerializeField, Range(0f, 100f)][Tooltip("¾ó¸¶³ª »¡¸® ÃÖ°í¼Óµµ¿¡ µµ´Þ")] private float maxAcceleration = 52f;
-    [SerializeField, Range(0f, 100f)][Tooltip("ÀÔ·Â°ª ¾øÀ»½Ã, ¾ó¸¶³ª »¡¸® Á¤Áö")] private float maxDecceleration = 52f;
-    [SerializeField, Range(1f, 100f)][Tooltip("¹æÇâ ÀüÈ¯½Ã, ¾ó¸¶³ª »¡¸® Á¤Áö")] private float maxTurnSpeed = 80f;
-    [SerializeField, Range(0f, 100f)][Tooltip("°øÁß¿¡¼­, ¾ó¸¶³ª »¡¸® ÃÖ°í¼Óµµ¿¡ µµ´Þ")] private float maxAirAcceleration;
-    [SerializeField, Range(0f, 100f)][Tooltip("°øÁß¿¡¼­, ÀÔ·Â°ª ¾øÀ»½Ã, ¾ó¸¶³ª »¡¸® Á¤Áö")] private float maxAirDeceleration; // ÁÙ¿©¼­ AirBreak
-    [SerializeField, Range(0f, 100f)][Tooltip("°øÁß¿¡¼­, ¹æÇâ ÀüÈ¯½Ã, ¾ó¸¶³ª »¡¸® Á¤Áö")] private float maxAirTurnSpeed = 80f;// ÁÙ¿©¼­ AirControl
+    [SerializeField, Range(0f, 20f)][Tooltip("ï¿½Ö°ï¿½ï¿½Óµï¿½")] private float maxSpeed = 10f;
+    [SerializeField, Range(0f, 100f)][Tooltip("ï¿½ó¸¶³ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö°ï¿½ï¿½Óµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")] private float maxAcceleration = 52f;
+    [SerializeField, Range(0f, 100f)][Tooltip("ï¿½Ô·Â°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ó¸¶³ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")] private float maxDecceleration = 52f;
+    [SerializeField, Range(1f, 100f)][Tooltip("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½ï¿½, ï¿½ó¸¶³ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")] private float maxTurnSpeed = 80f;
+    [SerializeField, Range(0f, 100f)][Tooltip("ï¿½ï¿½ï¿½ß¿ï¿½ï¿½ï¿½, ï¿½ó¸¶³ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö°ï¿½ï¿½Óµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")] private float maxAirAcceleration;
+    [SerializeField, Range(0f, 100f)][Tooltip("ï¿½ï¿½ï¿½ß¿ï¿½ï¿½ï¿½, ï¿½Ô·Â°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ó¸¶³ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")] private float maxAirDeceleration; // ï¿½Ù¿ï¿½ï¿½ï¿½ AirBreak
+    [SerializeField, Range(0f, 100f)][Tooltip("ï¿½ï¿½ï¿½ß¿ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½ï¿½, ï¿½ó¸¶³ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")] private float maxAirTurnSpeed = 80f;// ï¿½Ù¿ï¿½ï¿½ï¿½ AirControl
 
     [Header("Turbo Stats")]
-    [SerializeField, Range(0f, 20f)][Tooltip("ÅÍº¸¼Óµµ")] private float turboSpeed = 20f;
-    [SerializeField, Range(0f, 100f)][Tooltip("¹æÇâ ÀüÈ¯½Ã, ¾ó¸¶³ª »¡¸® º¯°æ")] private float turboDecceleration = 52f;
+    [SerializeField, Range(0f, 20f)][Tooltip("ï¿½Íºï¿½ï¿½Óµï¿½")] private float turboSpeed = 20f;
+    [SerializeField, Range(0f, 100f)][Tooltip("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½ï¿½, ï¿½ó¸¶³ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")] private float turboDecceleration = 52f;
 
     [Header("Bounce Settings")]
-    [Tooltip("XÃàÀ¸·Î Æ¨°Ü ³ª°¡´Â Èû")]
+    [Tooltip("Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Æ¨ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½")]
     [SerializeField] private float bounceStrength = 5f;
-    [Tooltip("YÃàÀ¸·Î Æ¨°Ü ³ª°¡´Â Èû")]
+    [Tooltip("Yï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Æ¨ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½")]
     [SerializeField] private float bounceHeight = 10f;
-    [Tooltip("Æ¨°Ü ³ª°¡´Â È¿°ú°¡ Áö¼ÓµÇ´Â ÃÖ¼Ò½Ã°£")]
+    [Tooltip("Æ¨ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È¿ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ÓµÇ´ï¿½ ï¿½Ö¼Ò½Ã°ï¿½")]
     [SerializeField] private float bounceDuration = 0.3f;
-    private bool isBouncing = false; // ÇöÀçµµ Æ¨°Ü ³ª°¡´ÂÁö 
-    private bool isFixedBouncing = false; // Æ¨°Ü ³ª°¡Áö´Â ÃÖ¼Ò À¯Áö ½Ã°£
+    private bool isBouncing = false; // ï¿½ï¿½ï¿½çµµ Æ¨ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+    private bool isFixedBouncing = false; // Æ¨ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¼ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
 
     [Header("Current State")]
     [SerializeField]
     private LayerMask groundLayer;
     public bool onGround;
-    public bool pressingKey; // ÀÌµ¿Å°¸¦ ´©¸£°í ÀÖ´ÂÁö ¿©ºÎ
+    public bool pressingKey; // ï¿½Ìµï¿½Å°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     private bool turboMode;
 
     #region Private - Speed Caculation Variables
-    private Vector2 desiredVelocity; // ÀÌµ¿ÇÏ°í ½Í¾î ÇÏ´Â Velocity°ª
-    private Vector2 moveVelocity; // ½ÇÁ¦ ÀÌµ¿ÇÒ Velocity °ª
-    private float directionX; // ´©¸£°í ÀÖ´Â ¹æÇâ ¿ÞÂÊ: -1, ¿À¸¥ÂÊ +1
-    private float turboDirectionX; // ´©¸£°í ÀÖ´Â ¹æÇâ ¿ÞÂÊ: -1, ¿À¸¥ÂÊ +1
-    private float maxSpeedChangeAmount; // ÇöÀç Àû¿ë ÇÒ ¼ö ÀÖ´Â ÃÖ´ë ¼Óµµ º¯°æ·®
-    private float acceleration; // ÇöÀç Àû¿ëµÇ´Â °¡¼Óµµ
-    private float deceleration; // ÇöÀç Àû¿ëµÇ´Â °¨¼Óµµ
-    private float turnSpeed; // ¹æÇâÀüÈ¯ ¼Óµµ
+    private Vector2 desiredVelocity; // ï¿½Ìµï¿½ï¿½Ï°ï¿½ ï¿½Í¾ï¿½ ï¿½Ï´ï¿½ Velocityï¿½ï¿½
+    private Vector2 moveVelocity; // ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ï¿½ï¿½ Velocity ï¿½ï¿½
+    private float directionX; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: -1, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ +1
+    private float turboDirectionX; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: -1, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ +1
+    private float maxSpeedChangeAmount; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½Ö´ï¿½ ï¿½Óµï¿½ ï¿½ï¿½ï¿½æ·®
+    private float acceleration; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½Óµï¿½
+    private float deceleration; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½Óµï¿½
+    private float turnSpeed; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¯ ï¿½Óµï¿½
     #endregion
 
     #region Public - Return Speed Variables
     public float DirectionX
     {
         get { return directionX; }
+        set { directionX = value; }
     }
     public float MaxSpeed
     {
@@ -67,7 +68,7 @@ public class KirbyController : MonoBehaviour, IPlayerController
     private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
-        _groundCheck = GetComponent<KirbyGroundCheck>(); // ¶¥ ´ê¾Ò´ÂÁö ¾Ë±âÀ§ÇÑ ½ºÅ©¸³Æ®
+        _groundCheck = GetComponent<KirbyGroundCheck>(); // ï¿½ï¿½ ï¿½ï¿½Ò´ï¿½ï¿½ï¿½ ï¿½Ë±ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å©ï¿½ï¿½Æ®
     }
 
     private void OnDisable()
@@ -76,13 +77,13 @@ public class KirbyController : MonoBehaviour, IPlayerController
     }
     private void Update()
     {
-        // ÀÔ·ÂÅ°¸¦ ´©¸£µç ¸»µç ÃÖ¼Ò À¯ÁöÇØ¾ß ÇÏ´Â boucning½Ã°£
+        // ï¿½Ô·ï¿½Å°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¾ï¿½ ï¿½Ï´ï¿½ boucningï¿½Ã°ï¿½
         if (isFixedBouncing)
         {
             return;
         }
 
-        // ÀÔ·Â°ªÀÌ ÀÖÀ¸¸é, ´©¸¥ ¹æÇâÀ¸·Î ¹æÇâÀüÈ¯
+        // ï¿½Ô·Â°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¯
         if (directionX != 0)
         {
             transform.localScale = new Vector3(directionX > 0 ? 1 : -1, 1, 1);
@@ -93,7 +94,7 @@ public class KirbyController : MonoBehaviour, IPlayerController
             pressingKey = false;
         }
 
-        // ¹Ù¿î½º »óÅÂ¿¡¼­ ÀÔ·ÂÀÌ ¾øÀ¸¸é, °è¼Ó ¹Ù¿î½º vector À¯Áö
+        // ï¿½Ù¿î½º ï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ ï¿½Ù¿î½º vector ï¿½ï¿½ï¿½ï¿½
         if (isBouncing)
         {
             if (pressingKey) { isBouncing = false; }
@@ -103,35 +104,35 @@ public class KirbyController : MonoBehaviour, IPlayerController
 
         if (turboMode)
         {
-            // ÅÍº¸ speed·Î ÀÌµ¿
+            // ï¿½Íºï¿½ speedï¿½ï¿½ ï¿½Ìµï¿½
             desiredVelocity = new Vector2(transform.localScale.x, 0f) * turboSpeed;
-            turboDirectionX = desiredVelocity.x; // ÇöÀç °¡·Á´Â ¹æÇâ
+            turboDirectionX = desiredVelocity.x; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         }
         else
         {
-            // ÇöÀç ´©¸£°í ÀÖ´Â ¹æÇâ¿¡, maxSpeed¸¦ °öÇØ, desiredVelocity¸¦ ±¸ÇÏ±â (¹Ù·Î maxSpeed¿¡ µµ´ÞÇÏÁö ¾Ê°í, °¡¼Óµµ ¿©ºÎ·Î Á¤ÇÏ±â)
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½â¿¡, maxSpeedï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, desiredVelocityï¿½ï¿½ ï¿½ï¿½ï¿½Ï±ï¿½ (ï¿½Ù·ï¿½ maxSpeedï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½, ï¿½ï¿½ï¿½Óµï¿½ ï¿½ï¿½ï¿½Î·ï¿½ ï¿½ï¿½ï¿½Ï±ï¿½)
             desiredVelocity = new Vector2(directionX, 0f) * Mathf.Max(maxSpeed, 0f);
         }
     }
 
     private void FixedUpdate()
     {
-        if (isFixedBouncing) return; // ÃÖ¼Ò ¹Ù¿î½º À¯Áö ½Ã°£¿¡´Â return
+        if (isFixedBouncing) return; // ï¿½Ö¼ï¿½ ï¿½Ù¿î½º ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ï¿½ï¿½ return
 
         onGround = _groundCheck.GetOnGround();
 
-        // ¹Ù¿î½º »óÅÂ¿¡¼­´Â ¶¥ÀÌ ´êÀ¸¸é, ¹Ù¿î½º »óÅÂ Á¾·á
+        // ï¿½Ù¿î½º ï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½Ù¿î½º ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (isBouncing)
         {
             if (onGround) { isBouncing = false; }
             return;
         }
-        //ÇöÀç velocity °ªÀ» °¡Á®¿À±â
+        //ï¿½ï¿½ï¿½ï¿½ velocity ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         moveVelocity = _rb.linearVelocity;
 
         if (turboMode)
         {
-            // ÅÍº¸ ¸ðµå¿¡¼­´Â °¡¼ÓÀÌ³ª, °¨¼Ó ¾øÀ½
+            // ï¿½Íºï¿½ ï¿½ï¿½å¿¡ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì³ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             runWithoutAcceleration();
         }
         else
@@ -140,23 +141,23 @@ public class KirbyController : MonoBehaviour, IPlayerController
         }
     }
 
-    // Hack: ÀÓ½Ã·Î Wall tag ¸¸µë
+    // Hack: ï¿½Ó½Ã·ï¿½ Wall tag ï¿½ï¿½ï¿½ï¿½
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // ¹Ù¿î½º »óÅÂ°Å³ª ÅÍº¸¸ðµå°¡ ¾Æ´Ï¸é °¨ÁöÇÒ ÇÊ¿ä ¾øÀ½
+        // ï¿½Ù¿î½º ï¿½ï¿½ï¿½Â°Å³ï¿½ ï¿½Íºï¿½ï¿½ï¿½å°¡ ï¿½Æ´Ï¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (isBouncing || !turboMode) return;
         if ((groundLayer) != 0)
         {
-            // ¸ðµç Ãæµ¹ ÁöÁ¡À» ¼øÈ¸ÇÏ¸ç ¼öÁ÷ º®ÀÎÁö È®ÀÎÇÕ´Ï´Ù.
+            // ï¿½ï¿½ï¿½ ï¿½æµ¹ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¸ï¿½Ï¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
             foreach (ContactPoint2D contact in collision.contacts)
             {
                 Vector2 normal = contact.normal;
 
-                // ¹ý¼± º¤ÅÍÀÇ y ¼ººÐÀÌ 0¿¡ °¡±î¿îÁö È®ÀÎÇÕ´Ï´Ù.
+                // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ y ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
                 if (Mathf.Abs(normal.y) < 0.01f)
                 {
                     turboMode = false;
-                    // Ãæµ¹ ½Ã ¹Ù¿î½º ÄÚ·çÆ¾ ½ÃÀÛ
+                    // ï¿½æµ¹ ï¿½ï¿½ ï¿½Ù¿î½º ï¿½Ú·ï¿½Æ¾ ï¿½ï¿½ï¿½ï¿½
                     StartCoroutine(Bounce(collision));
                     return;
                 }
@@ -167,58 +168,60 @@ public class KirbyController : MonoBehaviour, IPlayerController
     private void InitializedCircle()
     {
         turboMode = false;
+        isFixedBouncing = false;
+        isBouncing = false;
     }
 
-    // ÃÖ°í¼Óµµ µµ´ÞÀ» À§ÇÑ °¡¼Óµµ Àû¿ë½Ã
+    // ï¿½Ö°ï¿½ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
     private void runWithAcceleration()
     {
-        // °øÁß¿¡ ÀÖ´ÂÁö¿¡ µû¶ó, Àû¿ëÇÒ °¡¼Óµµ, °¨¼Óµµ, ¹æÇâÀüÈ¯¼Óµµ °ª ¼³Á¤
+        // ï¿½ï¿½ï¿½ß¿ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Óµï¿½, ï¿½ï¿½ï¿½Óµï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¯ï¿½Óµï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         acceleration = onGround ? maxAcceleration : maxAirAcceleration;
         deceleration = onGround ? maxDecceleration : maxAirDeceleration;
         turnSpeed = onGround ? maxTurnSpeed : maxAirTurnSpeed;
 
-        // ÀÌµ¿Å°¸¦ ´­·¶À¸¸é
+        // ï¿½Ìµï¿½Å°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         if (pressingKey)
         {
-            //ÇöÀç ÀÌµ¿ x ¹æÇâ°ú, ¿òÁ÷¿©¾ß ÇÏ´Â ¹æÇâ x°ªÀÇ ºÎÈ£°¡ ´Ù¸£´Ù´Â °ÍÀº. ¹æÇâÅ°¸¦ ¹Ù²å´Ù´Â ¶æÀ¸·Î, turnSpeed¸¦ Àû¿ëÇÑ´Ù
+            //ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ x ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ xï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ï¿½ï¿½ ï¿½Ù¸ï¿½ï¿½Ù´ï¿½ ï¿½ï¿½ï¿½ï¿½. ï¿½ï¿½ï¿½ï¿½Å°ï¿½ï¿½ ï¿½Ù²ï¿½Ù´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, turnSpeedï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½
             if (Mathf.Sign(directionX) != Mathf.Sign(moveVelocity.x))
             {
                 maxSpeedChangeAmount = turnSpeed * Time.deltaTime;
             }
             else
             {
-                //°°´Ù¸é, ¿©ÀüÈ÷ °°Àº ¹æÇâÀ¸·Î °¬°í ÀÖ´Ù´Â ¶æÀ¸·Î, acceleration¸¦ Àû¿ëÇÑ´Ù
+                //ï¿½ï¿½ï¿½Ù¸ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ù´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, accelerationï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½
                 maxSpeedChangeAmount = acceleration * Time.deltaTime;
             }
         }
         else
         {
-            //¹æÇâÅ°¸¦ ´©¸£°í ÀÖ´Â »óÅÂ°¡ ¾Æ´Ï¸é, °¨¼ÓÇØ¾ß ÇÏ¹Ç·Î, decelerationÀ» Àû¿ëÇÑ´Ù
+            //ï¿½ï¿½ï¿½ï¿½Å°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½Â°ï¿½ ï¿½Æ´Ï¸ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½Ø¾ï¿½ ï¿½Ï¹Ç·ï¿½, decelerationï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½
             maxSpeedChangeAmount = deceleration * Time.deltaTime;
         }
 
-        //ÇöÀç velocity °ª°ú, °¡¾ß µÇ´Â velocity °ªÀÇ Â÷ÀÌ¸¦ ±¸ÇÏµÇ, ÇöÀç ÃÖ´ë ¼Óµµº¯°æ·®À» ³ÑÁö ¾ÊÀº °ªÀ» ¹ÝÈ¯
+        //ï¿½ï¿½ï¿½ï¿½ velocity ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ velocity ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½Ïµï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½Óµï¿½ï¿½ï¿½ï¿½æ·®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯
         moveVelocity.x = Mathf.MoveTowards(moveVelocity.x, desiredVelocity.x, maxSpeedChangeAmount);
 
-        //ÃÖÁ¾ °è»êÇÑ moveVelocity °ªÀ» Update¿¡ Àû¿ëÇÑ´Ù
+        //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ moveVelocity ï¿½ï¿½ï¿½ï¿½ Updateï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½
         _rb.linearVelocity = moveVelocity;
     }
 
-    // °¡¼Óµµ Àû¿ë ¾øÀÌ ¹Ù·Î ÃÖ°í ¼Óµµ·Î ÀÌµ¿
+    // ï¿½ï¿½ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ù·ï¿½ ï¿½Ö°ï¿½ ï¿½Óµï¿½ï¿½ï¿½ ï¿½Ìµï¿½
     private void runWithoutAcceleration()
     {
 
-        //ÇöÀç ÀÌµ¿ x ¹æÇâ°ú, ¿òÁ÷¿©¾ß ÇÏ´Â ¹æÇâ x°ªÀÇ ºÎÈ£°¡ ´Ù¸£´Ù´Â °ÍÀº. ¹æÇâÅ°¸¦ ¹Ù²å´Ù´Â ¶æÀ¸·Î, turnSpeed¸¦ Àû¿ëÇÑ´Ù
+        //ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ x ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ xï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ï¿½ï¿½ ï¿½Ù¸ï¿½ï¿½Ù´ï¿½ ï¿½ï¿½ï¿½ï¿½. ï¿½ï¿½ï¿½ï¿½Å°ï¿½ï¿½ ï¿½Ù²ï¿½Ù´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, turnSpeedï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½
         if (Mathf.Sign(turboDirectionX) != Mathf.Sign(moveVelocity.x))
         {
             maxSpeedChangeAmount = turboDecceleration * Time.deltaTime;
 
-            //ÇöÀç velocity °ª°ú, °¡¾ß µÇ´Â velocity °ªÀÇ Â÷ÀÌ¸¦ ±¸ÇÏµÇ, ÇöÀç ÃÖ´ë ¼Óµµº¯°æ·®À» ³ÑÁö ¾ÊÀº °ªÀ» ¹ÝÈ¯
+            //ï¿½ï¿½ï¿½ï¿½ velocity ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ velocity ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½Ïµï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½Óµï¿½ï¿½ï¿½ï¿½æ·®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯
             moveVelocity.x = Mathf.MoveTowards(moveVelocity.x, desiredVelocity.x, maxSpeedChangeAmount);
         }
         else
         {
-            // ¹æÇâÀÌ °°À¸¸é ´Ü¼øÇÏ°Ô, ´©¸¥ ¹æÇâ * ÃÖ´ë¼Óµµ linearVelocity °ªÀ» Rigidbody Àü´Þ
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ü¼ï¿½ï¿½Ï°ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ * ï¿½Ö´ï¿½Óµï¿½ linearVelocity ï¿½ï¿½ï¿½ï¿½ Rigidbody ï¿½ï¿½ï¿½ï¿½
             moveVelocity.x = desiredVelocity.x;
         }
         _rb.linearVelocity = moveVelocity;
@@ -226,8 +229,8 @@ public class KirbyController : MonoBehaviour, IPlayerController
 
     private void TurboWithAcceleration()
     {
-        // °¡¼Óµµ³ª °¨¼ÓÀÌ ¾øÀ¸¸é
-        //´Ü¼øÇÏ°Ô, ´©¸¥ ¹æÇâ * ÃÖ´ë¼Óµµ linearVelocity °ªÀ» Rigidbody Àü´Þ
+        // ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        //ï¿½Ü¼ï¿½ï¿½Ï°ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ * ï¿½Ö´ï¿½Óµï¿½ linearVelocity ï¿½ï¿½ï¿½ï¿½ Rigidbody ï¿½ï¿½ï¿½ï¿½
         moveVelocity.x = desiredVelocity.x;
         _rb.linearVelocity = moveVelocity;
     }
@@ -237,18 +240,18 @@ public class KirbyController : MonoBehaviour, IPlayerController
         isFixedBouncing = true;
         isBouncing = true;
 
-        // º®ÀÇ ¹ý¼± º¤ÅÍ¸¦ °¡Á®¿Í Æ¨°Ü³ª°¥ ¹æÇâÀ» °áÁ¤
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Æ¨ï¿½Ü³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         Vector2 normal = collision.contacts[0].normal;
 
-        // ¼öÆò ¹Ý´ë ¹æÇâ°ú ¼öÁ÷ ³ôÀÌ¸¦ Æ÷ÇÔÇÑ °íÁ¤ ¼Óµµ º¤ÅÍ »ý¼º
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½Ý´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         Vector2 fixedBounceVelocity = new Vector2(
-            // º®ÀÇ xÃà ¹ý¼± ¹æÇâÀ» ¹ÝÀü½ÃÄÑ ¹Ý´ë ¹æÇâÀ¸·Î Æ¨±â°Ô ÇÔ
+            // ï¿½ï¿½ï¿½ï¿½ xï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ý´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Æ¨ï¿½ï¿½ï¿½ ï¿½ï¿½
             normal.x * bounceStrength,
-            // °íÁ¤µÈ ³ôÀÌ·Î Æ¨±â°Ô ÇÔ
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì·ï¿½ Æ¨ï¿½ï¿½ï¿½ ï¿½ï¿½
             bounceHeight
         );
 
-        // Rigidbody¿¡ ¼Óµµ Àû¿ë
+        // Rigidbodyï¿½ï¿½ ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½
         _rb.linearVelocity = fixedBounceVelocity;
 
         yield return new WaitForSeconds(bounceDuration);
@@ -263,7 +266,7 @@ public class KirbyController : MonoBehaviour, IPlayerController
 
     public void OnTurboModePressed()
     {
-        // ¹Ù¿î½º »óÅÂ¿¡¼­´Â TurboMode ºÒ°¡´É
+        // ï¿½Ù¿î½º ï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½ï¿½ï¿½ TurboMode ï¿½Ò°ï¿½ï¿½ï¿½
         if (isBouncing) return;
 
         turboMode = !turboMode;
@@ -272,7 +275,7 @@ public class KirbyController : MonoBehaviour, IPlayerController
     public void OnEnableSetVelocity(float newVelX, float newVelY)
     {
         _rb = GetComponent<Rigidbody2D>();
-        _groundCheck = GetComponent<KirbyGroundCheck>(); // ¶¥ ´ê¾Ò´ÂÁö ¾Ë±âÀ§ÇÑ ½ºÅ©¸³Æ®
+        _groundCheck = GetComponent<KirbyGroundCheck>(); // ï¿½ï¿½ ï¿½ï¿½Ò´ï¿½ï¿½ï¿½ ï¿½Ë±ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å©ï¿½ï¿½Æ®
         _rb.linearVelocity = new Vector2(newVelX, newVelY);
     }
     #endregion

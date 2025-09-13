@@ -99,8 +99,8 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
     private void OnEnable()
     {
         inputActions.Player.Enable();
-        inputActions.Player.Move.performed += OnMove;
         inputActions.Player.Move.canceled += OnMove;
+        inputActions.Player.Move.performed += OnMove;
         inputActions.Player.Jump.started += OnJump;
         inputActions.Player.Jump.canceled += OffJump;
         inputActions.Player.Dash.performed += OnDash;
@@ -108,11 +108,12 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
 
     private void OnDisable()
     {
-        inputActions.Player.Move.performed -= OnMove;
         inputActions.Player.Move.canceled -= OnMove;
+        inputActions.Player.Move.performed -= OnMove;
         inputActions.Player.Jump.started -= OnJump;
         inputActions.Player.Jump.canceled -= OffJump;
         inputActions.Player.Dash.performed -= OnDash;
+        moveInput = Vector2.zero;
         inputActions.Player.Disable();
     }
     #endregion
@@ -160,14 +161,14 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
             }
 
         }
-        else if( MathF.Abs(rb.linearVelocity.y) <= 0.05f)
+        else if (MathF.Abs(rb.linearVelocity.y) <= 0.05f)
         {
             if (isDashing)
             {
                 isDashing = false;
                 dampAfterDash();
             }
-        }                         
+        }
         else
         {
             coyoteTimeCounter -= Time.deltaTime;
@@ -205,7 +206,7 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
     #region 바닥감지
     private void DetectGround()
     {
-         Bounds bounds = col.bounds;
+        Bounds bounds = col.bounds;
         float extraHeight = 0.05f;
         float rayOffset = 0.001f; // 레이 간격 조정 (콜라이더 크기에 맞게 조정)
 
@@ -215,7 +216,7 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
 
         RaycastHit2D hitLeft = Physics2D.Raycast(leftPoint, Vector2.down, extraHeight, wallLayer);
         RaycastHit2D hitRight = Physics2D.Raycast(rightPoint, Vector2.down, extraHeight, wallLayer);
-        
+
         // 둘 중 하나라도 바닥에 닿으면 grounded 상태
         isGrounded = hitLeft.collider != null || hitRight.collider != null;
 
@@ -379,10 +380,10 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
     {
         if (dashCount <= 0) return;
         if (isGrounded) return; // 이미 땅에 있으면 사용 불가
-        
+
         // 항상 아래 방향으로만 대시
         Vector2 dashDirection = Vector2.down;
-        
+
         isDashing = true;
         dashCount -= 1;
         rb.linearVelocity = dashDirection * dashSpeed;
@@ -390,7 +391,7 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
 
 
     // 대시 중 적과의 충돌 감지 (물리적 충돌)
-     private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         if (isDashing && other.CompareTag("Enemy"))
         {
@@ -429,7 +430,7 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
 
         float elapsed = 0f;
         Color originalColor = sr.color;
-        
+
         while (elapsed < afterImageLifetime && sr != null && obj != null)
         {
             elapsed += Time.deltaTime;
@@ -437,7 +438,7 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
             sr.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
             yield return null;
         }
-        
+
         // 오브젝트가 여전히 존재한다면 삭제
         if (obj != null)
         {
@@ -459,7 +460,7 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
         // Rigidbody 설정
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         rb.gravityScale = 0f; // 중력 스케일 초기화
-        if (!isDashing) 
+        if (!isDashing)
             rb.linearVelocity = new Vector2(newVelX, newVelY);
     }
     #endregion
