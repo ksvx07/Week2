@@ -166,8 +166,6 @@ public class PlayerManager : MonoBehaviour
 
     private void QuickSwitchPlayerRight(InputAction.CallbackContext context)
     {
-        print("e 키 누름: 오른쪽 플레이어로 변경");
-
         // 현재 플레이어 인덱스를 1 증가시키고, 플레이어 수 이상이면 0으로 순환
         selectPlayer = (currentPlayer + 1) % players.Count;
 
@@ -175,8 +173,6 @@ public class PlayerManager : MonoBehaviour
     }
     private void QuickSwitchPlayerLeft(InputAction.CallbackContext context)
     {
-        print("q 키 누름: 왼쪽 플레이어로 변경");
-
         // 현재 플레이어 인덱스를 1 감소시키고, 0 미만이면 마지막 인덱스로 순환
         selectPlayer = (currentPlayer - 1 + players.Count) % players.Count;
 

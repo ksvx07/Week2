@@ -12665,6 +12665,10 @@ PrefabInstance:
       propertyPath: camControlelr
       value: 
       objectReference: {fileID: 1318149768}
+    - target: {fileID: 6639776584219796212, guid: fa364cde715bebf47b2110d991620531, type: 3}
+      propertyPath: groundLength
+      value: 0.41
+      objectReference: {fileID: 0}
     - target: {fileID: 7592563111717813845, guid: fa364cde715bebf47b2110d991620531, type: 3}
       propertyPath: m_Name
       value: Player
