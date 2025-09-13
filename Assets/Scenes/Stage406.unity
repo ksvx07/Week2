@@ -8541,6 +8541,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc317dc937f7cab45948b6612edf966a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startPlayer: 0
   players:
   - {fileID: 360526193}
   - {fileID: 198900405}
