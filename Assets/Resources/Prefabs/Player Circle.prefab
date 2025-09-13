@@ -337,12 +337,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSpeed: 10
-  maxAcceleration: 10
-  maxDecceleration: 30
-  maxTurnSpeed: 100
-  maxAirAcceleration: 100
-  maxAirDeceleration: 100
-  maxAirTurnSpeed: 40
+  maxAcceleration: 7
+  maxDecceleration: 10
+  maxTurnSpeed: 20
+  maxAirAcceleration: 7
+  maxAirDeceleration: 10
+  maxAirTurnSpeed: 20
   turboSpeed: 13
   bounceStrength: 5
   bounceHeight: 10
