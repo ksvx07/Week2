@@ -11,7 +11,7 @@ public class RespawnManager : MonoBehaviour
     [Header("Checkpoint System")]
     [SerializeField] private Vector3 defaultSpawn = Vector3.zero;
 
-    private Transform player => PlayerManager.Instance._currentPlayer.transform;
+    private Transform player => PlayerManager.Instance._currentPlayerPrefab.transform;
     private int currentCheckpointId = 0;
     private Vector3 currentSpawnPosition;
     private Dictionary<int, Vector3> checkpoints = new Dictionary<int, Vector3>();

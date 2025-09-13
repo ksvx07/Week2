@@ -12,7 +12,7 @@ public class MissileBodyController : MonoBehaviour
     private Quaternion offsetRotation = Quaternion.Euler(0, 0, 90);
     private Vector3 offsetPosition = new Vector3(-0.5f, 0f, 0f);
 
-    private Transform _player => PlayerManager.Instance._currentPlayer.transform;
+    private Transform _player => PlayerManager.Instance._currentPlayerPrefab.transform;
     private float _shootingCurrentTime;
     private int _maxEnemy = 5;
     public List<GameObject> _activeMissiles = new();
