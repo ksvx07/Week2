@@ -180,17 +180,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSpeed: 5
-  speedAcceleration: 20
-  SpeedDeceleration: 20
+  speedAcceleration: 40
+  SpeedDeceleration: 40
   hopHeight: 5
-  hopCooldownTime: 0.25
+  hopCooldownTime: 0.2
   maxJumpSpeed: 12
   jumpDcceleration: 20
   maxGravity: 50
   gravityAcceleration: 40
   maxDownSpeed: 10
   coyoteTime: 0.1
-  jumpBufferTime: 0.3
+  jumpBufferTime: 0.2
   wallCheckDistance: 0.6
   wallJumpXSpeed: 5
   wallJumpYSpeed: -1
