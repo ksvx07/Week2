@@ -5,7 +5,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-    public Dictionary<string, StageScriptableObject> StageDics { get; private set; } = new();
+    public Dictionary<int, StageScriptableObject> StageDics { get; private set; } = new();
 
     #region Respawn System  
     [Header("Respawn System")]
@@ -65,7 +65,7 @@ public class GameManager : MonoBehaviour
 
         foreach (var stage in stages)
         {
-            StageDics.Add(stage.name, stage);
+            StageDics.Add(stage.Id, stage);
         }
     }
     #endregion
