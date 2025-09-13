@@ -1,4 +1,5 @@
 using System.Linq;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,7 +10,7 @@ public class StarController : MonoBehaviour, IPlayerController
     private Rigidbody2D rb;
     private CircleCollider2D col;
 
-    // Inspector Á¶Àý °¡´É º¯¼öµé
+    // Inspector ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     [Header("Move")]
     [SerializeField] private float maxSpeed = 2f;
     [SerializeField] private float speedAcceleration = 100f;
@@ -21,8 +22,8 @@ public class StarController : MonoBehaviour, IPlayerController
     [SerializeField] private float maxGravity = 50f;
     [SerializeField] private float gravityAcceleration = 40f;
     [SerializeField] private float maxDownSpeed = 10f;
-    [SerializeField] private float coyoteTime = 0.1f;       // ÄÚ¿äÅ× Å¸ÀÓ ±æÀÌ
-    [SerializeField] private float jumpBufferTime = 0.1f;   // Á¡ÇÁ ¹öÆÛ ±æÀÌ
+    [SerializeField] private float coyoteTime = 0.1f;       // ï¿½Ú¿ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    [SerializeField] private float jumpBufferTime = 0.1f;   // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
     [Header("Wall Jump")]
     [SerializeField] private float wallCheckDistance = 0.4f;
@@ -47,6 +48,11 @@ public class StarController : MonoBehaviour, IPlayerController
     [SerializeField] private Transform starPivotTransform;
     [SerializeField] private float starWallGravity = 2f;
     [SerializeField] private float starMaxWallGravityDistance = 0.34f;
+    [SerializeField] private float starNormalMaxSpeed = 8f;
+    [SerializeField] private float starNormalAccel = 40f;
+    [SerializeField] private float starNormalDecel = 40f;
+    [SerializeField] private float starNormalairAccelMulti = 0.05f;
+    [SerializeField] private float starNormalairDecelMulti = 0.1f;
 
     private LayerMask wallLayer;
 
@@ -54,16 +60,15 @@ public class StarController : MonoBehaviour, IPlayerController
     private RaycastHit2D[] hitWalls;
     Vector2[] rayDirs;
     private float currentGravity;
-    private float coyoteTimeCounter; // ¶¥À» ¶°³­ ÈÄ ³²Àº Á¡ÇÁ °¡´É ½Ã°£
-    private float jumpBufferCounter; // Á¡ÇÁ ÀÔ·Â À¯Áö ½Ã°£
-    private float dashTimeCounter;
-    // ³»ºÎ »óÅÂ
+    private float coyoteTimeCounter; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
+    private float jumpBufferCounter; // ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     private bool isGrounded;
     private bool isJumping;
     private bool isTouchingWall;
-    private bool isDashing;
-    private int dashCount;
+    private bool isActiveAbility;
     private bool isStarClimbing;
+    private bool isFastFalling;
 
     Vector2 avgNormal;
 
@@ -74,14 +79,13 @@ public class StarController : MonoBehaviour, IPlayerController
         rb = GetComponent<Rigidbody2D>();
         currentGravity = jumpDcceleration;
         wallLayer = LayerMask.GetMask("Ground");
-        dashCount = maxDashCount;
 
         hitWalls = new RaycastHit2D[rayCount];
         rayDirs = new Vector2[rayCount];
 
-        // Rigidbody ¼³Á¤
+        // Rigidbody ï¿½ï¿½ï¿½ï¿½
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-        rb.gravityScale = 0f; // Áß·ÂÀº Á÷Á¢ Ã³¸®
+        rb.gravityScale = 0f; // ï¿½ß·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
     }
 
     private void OnEnable()
@@ -112,6 +116,7 @@ public class StarController : MonoBehaviour, IPlayerController
     private void OnJump(InputAction.CallbackContext ctx)
     {
         jumpBufferCounter = jumpBufferTime;
+        isFastFalling = false;
     }
 
     private void OffJump(InputAction.CallbackContext ctx)
@@ -121,7 +126,10 @@ public class StarController : MonoBehaviour, IPlayerController
 
     private void OnDash(InputAction.CallbackContext ctx)
     {
-        StarDash();
+        if (isActiveAbility)
+            isActiveAbility = false;
+        else
+            isActiveAbility = true;
     }
 
     private void Update()
@@ -129,30 +137,22 @@ public class StarController : MonoBehaviour, IPlayerController
         TimeCounters();
     }
 
-    // ½Ã°£ Ä«¿îÅÍµé
+    // ï¿½Ã°ï¿½ Ä«ï¿½ï¿½ï¿½Íµï¿½
     private void TimeCounters()
     {
-        // Á¡ÇÁ ¹öÆÛ (¿¹¾à) & ÄÚ¿äÅ× Å¸ÀÓ
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½) & ï¿½Ú¿ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½
         jumpBufferCounter -= Time.deltaTime;
         if (isGrounded)
         {
             coyoteTimeCounter = coyoteTime;
-            dashCount = maxDashCount;
+
         }
 
         else
             coyoteTimeCounter -= Time.deltaTime;
 
-        // ÀÏÁ¤ ½Ã°£ ´ë½ÃÇÔ, ´ë½Ã ³¡³ª¸é Damping ÁÜ
-        if (isDashing)
-        {
-            dashTimeCounter -= Time.deltaTime;
-            if (dashTimeCounter < 0)
-            {
-                isDashing = false;
-                StardampAfterDash();
-            }
-        }
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Damping ï¿½ï¿½
+
     }
 
     private void FixedUpdate()
@@ -160,15 +160,12 @@ public class StarController : MonoBehaviour, IPlayerController
         StarDetectWalls();
         StarRoll();
         StarDetectGround();
-        if (!isDashing)
-        {
-            StarApplyGravity();
-            StarAirControl();
-            StarWallClimbing();
-            StarJump();
-            StarWallJump();
-
-        }
+        StarApplyGravity();
+        StarAirControl();
+        StarMove();
+        StarWallClimbing();
+        StarJump();
+        StarWallJump();
 
 
         //Debug.Log($"x: {rb.linearVelocity.x:F2}, y: {rb.linearVelocity.y:F2}");
@@ -178,11 +175,11 @@ public class StarController : MonoBehaviour, IPlayerController
     {
         if (isJumping) return;
 
-        // Ãæµ¹ ¾øÀ¸¸é Á¾·á
+        // ï¿½æµ¹ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (hitWalls.All(hit => hit.collider == null))
             return;
 
-        // º® normal Æò±Õ ±¸ÇÏ±â
+        // ï¿½ï¿½ normal ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï±ï¿½
         avgNormal = Vector2.zero;
         float closestDistance = float.MaxValue;
         int count = 0;
@@ -201,16 +198,19 @@ public class StarController : MonoBehaviour, IPlayerController
 
         if (count == 0) return;
 
-        avgNormal.Normalize(); // Æò±Õ normal
+        avgNormal.Normalize(); // ï¿½ï¿½ï¿½ normal
 
-        // tangent °è»ê
+        if (!isActiveAbility) return;
+
+
+        // tangent ï¿½ï¿½ï¿½
         Vector2 tangent = (moveInput.x > 0)
-            ? new Vector2(avgNormal.y, -avgNormal.x)   // ½Ã°è ¹æÇâ
-            : new Vector2(-avgNormal.y, avgNormal.x);  // ¹Ý½Ã°è ¹æÇâ
+            ? new Vector2(avgNormal.y, -avgNormal.x)   // ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½
+            : new Vector2(-avgNormal.y, avgNormal.x);  // ï¿½Ý½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½
 
         Vector2 moveDir = tangent.normalized;
 
-        // °¡¼Ó/°¨¼Ó °è¼ö
+        // ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
         float accel = speedAcceleration;
         float decel = SpeedDeceleration;
         if (!isStarClimbing)
@@ -219,16 +219,16 @@ public class StarController : MonoBehaviour, IPlayerController
             decel *= airDecelMulti;
         }
 
-        // ¸ñÇ¥ ¼Óµµ
+        // ï¿½ï¿½Ç¥ ï¿½Óµï¿½
         Vector2 targetVel = moveDir * maxSpeed * Mathf.Abs(moveInput.x);
 
-        // º¸°£ ºñÀ²
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         float lerpAmount = ((moveInput.x != 0) ? accel : decel) * Time.fixedDeltaTime;
 
-        // ¼Óµµ º¸°£
+        // ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½
         Vector2 newVel = Vector2.Lerp(rb.linearVelocity, targetVel, lerpAmount);
 
-        // º® ÂÊÀ¸·Î ´ç±â´Â Èû Àû¿ë
+        // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (closestDistance > starMaxWallGravityDistance)
         {
             newVel -= avgNormal * starWallGravity;
@@ -242,27 +242,30 @@ public class StarController : MonoBehaviour, IPlayerController
     private void StarRoll()
     {
         if (hitWalls.All(hit => hit.collider == null))
-            return; // ÀüºÎ Ãæµ¹ ¾øÀ½ ¡æ ÇÔ¼ö Á¾·á
-        if (Mathf.Abs(moveInput.x) < 0.01f)
-            return;
-
+            return; // ï¿½ï¿½ï¿½ï¿½ ï¿½æµ¹ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½ï¿½
+        
         float scale = Mathf.Max(starPivotTransform.lossyScale.x, starPivotTransform.lossyScale.y);
         float radius = col.radius * scale;
-
-        // ¼±¼Óµµ Å©±â
+        // ï¿½ï¿½ï¿½Óµï¿½ Å©ï¿½ï¿½
         float speed = rb.linearVelocity.magnitude;
 
-        // °¢¼Óµµ (¶óµð¾È/ÃÊ ¡æ µµ/ÃÊ º¯È¯)
+        // ï¿½ï¿½ï¿½Óµï¿½ (ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½/ï¿½ï¿½ ï¿½ï¿½È¯)
         float angularSpeed = speed / radius * Mathf.Rad2Deg;
+        float dir;
+        if (Mathf.Abs(moveInput.x) < 0.01f)
+        {
+            dir = Mathf.Sign(rb.linearVelocity.x);
+            starPivotTransform.Rotate(Vector3.forward, -angularSpeed * dir * Time.fixedDeltaTime);
+        }
+        else
+        {
 
-        // ÀÌµ¿ ¹æÇâ¿¡ µû¶ó ºÎÈ£ °áÁ¤
-        float dir = Mathf.Sign(moveInput.x);
+            // ï¿½Ìµï¿½ ï¿½ï¿½ï¿½â¿¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ ï¿½ï¿½ï¿½ï¿½
+            dir = Mathf.Sign(moveInput.x);
 
-        //starPivotTransform.Rotate()
-        starPivotTransform.Rotate(Vector3.forward, -angularSpeed * dir * Time.fixedDeltaTime);
-
-        // Rigidbody2D È¸Àü Àû¿ë
-        //rb.MoveRotation(rb.rotation - angularSpeed * dir * Time.fixedDeltaTime);
+            //starPivotTransform.Rotate()
+            starPivotTransform.Rotate(Vector3.forward, -angularSpeed * dir * Time.fixedDeltaTime);
+        }
     }
 
     private void StarDetectWalls()
@@ -272,7 +275,7 @@ public class StarController : MonoBehaviour, IPlayerController
         for (int i = 0; i < rayCount; i++)
         {
             float angle = 360f / rayCount * i; //
-            // starSpriteTransform.upÀ» ZÃà ±âÁØÀ¸·Î angle¸¸Å­ È¸Àü
+            // starSpriteTransform.upï¿½ï¿½ Zï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ angleï¿½ï¿½Å­ È¸ï¿½ï¿½
             //Vector3 dir3 = Quaternion.Euler(0f, 0f, angle) * Vector2.up;
             ////Vector3 dir3 = Quaternion.Euler(0f, 0f, angle) * starPivotTransform.up;
             //Vector2 dir = new Vector2(dir3.x, dir3.y);
@@ -287,7 +290,7 @@ public class StarController : MonoBehaviour, IPlayerController
 
             Debug.DrawRay(origin, dir * starRayGravityDistance,
                 hitWalls[i] ? Color.red : Color.green,
-                Time.fixedDeltaTime); // ÇÑ ¹°¸® ÇÁ·¹ÀÓ µ¿¾È Ç¥½Ã
+                Time.fixedDeltaTime); // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½
 
         }
         isStarClimbing = hitWalls.Any(hit => hit.collider != null);
@@ -296,21 +299,43 @@ public class StarController : MonoBehaviour, IPlayerController
 
     private void StarAirControl()
     {
-        if (!isStarClimbing) // °øÁßÀÌ¸é ¹è¼ö Àû¿ë
+        if (isActiveAbility)
         {
             float accel = speedAcceleration;
             float decel = SpeedDeceleration;
-            accel *= airAccelMulti;
-            decel *= airDecelMulti;
+            if (!isStarClimbing)
+            {
+                accel *= airAccelMulti;
+                decel *= airDecelMulti;
+            }
             float targetX = moveInput.x * maxSpeed;
             float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
-            // ¼Óµµ°¡ ºü¸¦¼ö·Ï °¡¼Óµµ °¨¼Ò
+            // ï¿½Óµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½
             float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
             rb.linearVelocity = new Vector2(newX, rb.linearVelocity.y);
         }
     }
 
-    // ¹Ù´Ú °¨Áö (¹ý¼±º¤ÅÍ Vector.upÀÏ¶§)
+    private void StarMove()
+    {
+        if (!isActiveAbility)
+        {
+            float accel = starNormalAccel;
+            float decel = starNormalDecel;
+            if (!isStarClimbing)
+            {
+                accel *= starNormalairAccelMulti;
+                decel *= starNormalairDecelMulti;
+            }
+            float targetX = moveInput.x * starNormalMaxSpeed;
+            float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
+            // ï¿½Óµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½
+            float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
+            rb.linearVelocity = new Vector2(newX, rb.linearVelocity.y);
+        }
+    }
+
+    // ï¿½Ù´ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Vector.upï¿½Ï¶ï¿½)
     private void StarDetectGround()
     {
         bool hasUpNormal = hitWalls.Any(hit =>
@@ -333,19 +358,19 @@ public class StarController : MonoBehaviour, IPlayerController
         }
     }
 
-    // Áß·Â
+    // ï¿½ß·ï¿½
     private void StarApplyGravity()
     {
         float newY;
         if (isJumping)
         {
-            // Á¡ÇÁ Áß Áß·Â(¿Ã¶ó°¥ ¶§)
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ß·ï¿½(ï¿½Ã¶ï¿½ ï¿½ï¿½)
             newY = rb.linearVelocity.y - jumpDcceleration * Time.fixedDeltaTime;
         }
         else
         {
-            // Á¡ÇÁ ÈÄ Áß·Â(¶³¾îÁú ¶§)
-            // Á¡ÇÁ Áß Áß·Â(¾àÇÔ)¿¡¼­ Á¡ÇÁ ÈÄ Áß·Â(°­ÇÔ)À¸·Î ¿¬¼ÓÀûÀ¸·Î Áõ°¡
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ß·ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½)
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ß·ï¿½(ï¿½ï¿½ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ß·ï¿½(ï¿½ï¿½ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             if (currentGravity < maxGravity)
                 currentGravity += gravityAcceleration * Time.fixedDeltaTime;
             else
@@ -354,56 +379,81 @@ public class StarController : MonoBehaviour, IPlayerController
             newY = rb.linearVelocity.y - currentGravity * Time.fixedDeltaTime;
         }
 
-        // º®Àâ°í ÀÖÀ¸¸é Áß·Â ³·À½
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß·ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (isTouchingWall)
             if (newY < -wallSlideMaxSpeed)
                 newY = -wallSlideMaxSpeed;
 
         if (hitWalls.Any(hit => hit.collider != null))
         {
-            if (newY < 0)
+            if (isActiveAbility)
+            {
+                if (newY < 0)
                 newY = 0;
+            }
+
         }
 
 
-        // yÃà ÃÖ´ë ¼Óµµ
+        // yï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½Óµï¿½
         newY = Mathf.Clamp(newY, -maxDownSpeed, maxJumpSpeed);
 
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, newY);
     }
 
-    // Á¡ÇÁ
+    // ï¿½ï¿½ï¿½ï¿½
     private void StarJump()
     {
-        if (jumpBufferCounter > 0 && coyoteTimeCounter > 0)
+        if (isActiveAbility)
         {
-            if (avgNormal != Vector2.zero)
+            if (jumpBufferCounter > 0 && coyoteTimeCounter > 0)
             {
-                //if (selectedWallNormal != null)
-                // +y·Î linearVelocity ¼³Á¤
+                if (avgNormal != Vector2.zero)
+                {
+                    //if (selectedWallNormal != null)
+                    // +yï¿½ï¿½ linearVelocity ï¿½ï¿½ï¿½ï¿½
+                    Debug.Log("Jump!");
+                    isJumping = true;
+
+                    //rb.linearVelocity = new Vector2(rb.linearVelocity.x, maxJumpSpeed);
+                    rb.linearVelocity = avgNormal * maxJumpSpeed;
+                    jumpBufferCounter = 0;
+                    coyoteTimeCounter = 0;
+                }
+                if (isFastFalling)
+                    isJumping = false;
+            }
+        }
+        else
+        {
+            if (jumpBufferCounter > 0 && coyoteTimeCounter > 0)
+            {
                 Debug.Log("Jump!");
                 isJumping = true;
 
-                //rb.linearVelocity = new Vector2(rb.linearVelocity.x, maxJumpSpeed);
-                rb.linearVelocity = avgNormal * maxJumpSpeed;
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, maxJumpSpeed);
                 jumpBufferCounter = 0;
                 coyoteTimeCounter = 0;
+                if (isFastFalling)
+                    isJumping = false;
             }
-           
         }
+
     }
 
-    // Á¡ÇÁ Å° ¶§¸é isJumping = false -> Áß·Â °­ÇØÁü -> »¡¸® ¶³¾îÁü
+    // ï¿½ï¿½ï¿½ï¿½ Å° ï¿½ï¿½ï¿½ï¿½ isJumping = false -> ï¿½ß·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ -> ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     private void StarFastFall()
     {
         if (isJumping)
         {
             isJumping = false;
         }
+        if (jumpBufferCounter > 0)
+            isFastFalling = true;
     }
 
 
-    // º®Á¡ÇÁ Å° ÀÔ·Â ¹Ý´ë À§·Î linearVelocity ¼³Á¤
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å° ï¿½Ô·ï¿½ ï¿½Ý´ï¿½ ï¿½ï¿½ï¿½ï¿½ linearVelocity ï¿½ï¿½ï¿½ï¿½
     private void StarWallJump()
     {
 
@@ -416,26 +466,19 @@ public class StarController : MonoBehaviour, IPlayerController
         }
     }
 
-    // ´ë½Ã, ´ë½Ã Áß ¸ðµç º¯¼ö ¹«½ÃÇÏ°í linearVelocity´Â ¹«Á¶°Ç moveInput.normalized * dashSpeedµÊ.
-    private void StarDash()
-    {
-        if (moveInput == Vector2.zero) return;
-        if (dashCount <= 0) return;
-        isDashing = true;
-        dashCount -= 1;
-        dashTimeCounter = dashTime;
-        rb.linearVelocity = moveInput.normalized * dashSpeed;
-    }
+    // ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ linearVelocityï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ moveInput.normalized * dashSpeedï¿½ï¿½.
+    // private void StarAbility()
+    // {
+    //     if (moveInput == Vector2.zero) return;
+    //     if (dashCount <= 0) return;
+    //     isDashing = true;
+    //     dashCount -= 1;
+    //     dashTimeCounter = dashTime;
+    //     rb.linearVelocity = moveInput.normalized * dashSpeed;
+    // }
 
-    // ´ë½Ã ÈÄ ´ïÇÎ, ´ë½Ã ³¡³ª¸é ÃÖ´ë¼Óµµ Á¶Àý
-    private void StardampAfterDash()
-    {
-        float dampedSpeedX = rb.linearVelocity.x;
-        float dampedSpeedY = rb.linearVelocity.y;
-        dampedSpeedX = Mathf.Clamp(dampedSpeedX, -maxSpeedAfterDashX, maxSpeedAfterDashX);
-        dampedSpeedY = Mathf.Min(dampedSpeedY, maxSpeedAfterDashUp);
-        rb.linearVelocity = new Vector2(dampedSpeedX, dampedSpeedY);
-    }
+    // ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½
+
 
     public void OnEnableSetVelocity(float newVelX, float newVelY)
     {
@@ -443,14 +486,13 @@ public class StarController : MonoBehaviour, IPlayerController
         rb = GetComponent<Rigidbody2D>();
         currentGravity = jumpDcceleration;
         wallLayer = LayerMask.GetMask("Ground");
-        dashCount = maxDashCount;
 
         hitWalls = new RaycastHit2D[rayCount];
         rayDirs = new Vector2[rayCount];
 
-        // Rigidbody ¼³Á¤
+        // Rigidbody ï¿½ï¿½ï¿½ï¿½
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-        rb.gravityScale = 0f; // Áß·ÂÀº Á÷Á¢ Ã³¸®
+        rb.gravityScale = 0f; // ï¿½ß·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
 
         rb.linearVelocity = new Vector2(newVelX, newVelY);
     }
