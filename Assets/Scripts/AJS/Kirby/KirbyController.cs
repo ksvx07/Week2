@@ -141,7 +141,7 @@ public class KirbyController : MonoBehaviour, IPlayerController
     {
         // 바운스 상태거나 터보모드가 아니면 감지할 필요 없음
         if (isBouncing || !turboMode) return;
-        if (((1 << collision.gameObject.layer) & groundLayer) == 0)
+        if ((groundLayer) != 0)
         {
             // 모든 충돌 지점을 순회하며 수직 벽인지 확인합니다.
             foreach (ContactPoint2D contact in collision.contacts)
