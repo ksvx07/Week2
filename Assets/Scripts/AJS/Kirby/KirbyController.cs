@@ -31,6 +31,8 @@ public class KirbyController : MonoBehaviour, IPlayerController
     private bool isFixedBouncing = false; // 튕겨 나가지는 최소 유지 시간
 
     [Header("Current State")]
+    [SerializeField]
+    private LayerMask groundLayer;
     public bool onGround;
     public bool pressingKey; // 이동키를 누르고 있는지 여부
     private bool turboMode;
@@ -88,8 +90,8 @@ public class KirbyController : MonoBehaviour, IPlayerController
         // 바운스 상태에서 입력이 없으면, 계속 바운스 vector 유지
         if (isBouncing)
         {
-            if(pressingKey) {isBouncing = false;}
-            else  return;
+            if (pressingKey) { isBouncing = false; }
+            else return;
         }
 
 
@@ -114,7 +116,7 @@ public class KirbyController : MonoBehaviour, IPlayerController
         // 바운스 상태에서는 땅이 닿으면, 바운스 상태 종료
         if (isBouncing)
         {
-            if(onGround) { isBouncing = false; }
+            if (onGround) { isBouncing = false; }
             return;
         }
         //현재 velocity 값을 가져오기
@@ -134,13 +136,28 @@ public class KirbyController : MonoBehaviour, IPlayerController
     // Hack: 임시로 Wall tag 만듬
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // 벽 태그를 가진 오브젝트와 충돌했는지, 현재 바운스 중이 아닌지, 터보모드인지 확인
-        if (collision.gameObject.CompareTag("Wall") && turboMode)
+        // 바운스 상태거나 터보모드가 아니면 감지할 필요 없음
+        if (isBouncing || !turboMode) return;
+
+        print(1);
+
+        if (((1 << collision.gameObject.layer) & groundLayer) == 0)
         {
-            if (isBouncing) return;
-            turboMode = false;
-            // 충돌 시 바운스 코루틴 시작
-            StartCoroutine(Bounce(collision));
+            // 모든 충돌 지점을 순회하며 수직 벽인지 확인합니다.
+            foreach (ContactPoint2D contact in collision.contacts)
+            {
+                Vector2 normal = contact.normal;
+
+                // 법선 벡터의 y 성분이 0에 가까운지 확인합니다.
+                if (Mathf.Abs(normal.y) < 0.01f)
+                {
+                    turboMode = false;
+                    print(4);
+                    // 충돌 시 바운스 코루틴 시작
+                    StartCoroutine(Bounce(collision));
+                    return;
+                }
+            }
         }
     }
 
