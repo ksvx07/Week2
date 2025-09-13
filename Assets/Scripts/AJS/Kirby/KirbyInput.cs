@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 public class KirbyInput : MonoBehaviour
 {
     #region References
-    private InputSystem_Actions _inputs;
+    private PlayerInput _inputs;
     private KirbyController _playerMove;
     private KirbyJump _playerJump;
     #endregion
@@ -11,7 +11,7 @@ public class KirbyInput : MonoBehaviour
     #region Unity Lifecycle
     private void Awake()
     {
-        _inputs = new InputSystem_Actions();
+        _inputs = new PlayerInput();
         _playerMove = GetComponent<KirbyController>();
         _playerJump = GetComponent<KirbyJump>();
     }
@@ -33,11 +33,11 @@ public class KirbyInput : MonoBehaviour
         {
             return;
         }
-        _inputs.Kirby.Enable(); // 정의한 모든 액션맵 활성화
-        _inputs.Kirby.Move.performed += OnMoveInput;
-        _inputs.Kirby.Move.canceled += OnMoveInput;
-        _inputs.Kirby.Jump.performed += OnJumpClicked;
-        _inputs.Kirby.TurboMode.performed += OnTurboClicked;
+        _inputs.Player.Enable(); // 정의한 모든 액션맵 활성화
+        _inputs.Player.Move.performed += OnMoveInput;
+        _inputs.Player.Move.canceled += OnMoveInput;
+        _inputs.Player.Jump.performed += OnJumpClicked;
+        _inputs.Player.Dash.performed += OnTurboClicked;
     }
 
     private void DisableInput()
@@ -46,11 +46,11 @@ public class KirbyInput : MonoBehaviour
         {
             return;
         }
-        _inputs.Kirby.Disable(); // 모든 액션맵 비활성화
-        _inputs.Kirby.Move.performed -= OnMoveInput;
-        _inputs.Kirby.Move.canceled -= OnMoveInput;
-        _inputs.Kirby.Jump.performed -= OnJumpClicked;
-        _inputs.Kirby.TurboMode.performed -= OnTurboClicked;
+        _inputs.Player.Disable(); // 모든 액션맵 비활성화
+        _inputs.Player.Move.performed -= OnMoveInput;
+        _inputs.Player.Move.canceled -= OnMoveInput;
+        _inputs.Player.Jump.performed -= OnJumpClicked;
+        _inputs.Player.Dash.performed -= OnTurboClicked;
     }
 
     #endregion
