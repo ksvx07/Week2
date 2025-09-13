@@ -34,9 +34,11 @@ public class PlayerController : MonoBehaviour, IPlayerController
     [Header("Dash")]
     [SerializeField] private float dashSpeed = 5f;
     [SerializeField] private float dashTime = 0.5f;
+    [SerializeField] private float dashCooldown = 0.1f;
     [SerializeField] private float maxSpeedAfterDashX = 5f;
     [SerializeField] private float maxSpeedAfterDashUp = 5f;
     [SerializeField] private int maxDashCount = 1;
+
 
     [Header("AirTimeMultiplier")]
     [SerializeField] private float airAccelMulti = 0.65f;
@@ -48,15 +50,17 @@ public class PlayerController : MonoBehaviour, IPlayerController
     private float coyoteTimeCounter; // ???? ???? ?? ???? ???? ???? ?ÔøΩÔøΩ?
     private float jumpBufferCounter; // ???? ??? ???? ?ÔøΩÔøΩ?
     private float dashTimeCounter;
+    private float dashCooldownCounter;
     // ???? ????
     public bool IsGrounded { get; private set; }
     public bool IsJumping { get; private set; }
-    private bool isTouchingWall;
+    private bool isTouchingWallRight;
+    private bool isTouchingWallLeft;
     private bool isDashing;
     private int dashCount;
     private bool isFastFalling;
-    private int facingDirection = 1; // 1: Ïò§Î•∏Ï™Ω, -1: ÏôºÏ™Ω
-    private Vector3 originalScale; // ÏõêÎ≥∏ ÌÅ¨Í∏∞ Ï†ÄÏû•
+    private int facingDirection = 1; // 1: ?ò§Î•∏Ï™Ω, -1: ?ôºÏ™?
+    private Vector3 originalScale; // ?õêÎ≥? ?Å¨Í∏? ????û•
 
     private void Awake()
     {
@@ -67,10 +71,10 @@ public class PlayerController : MonoBehaviour, IPlayerController
         wallLayer = LayerMask.GetMask("Ground");
         dashCount = maxDashCount;
 
-        // ÏõêÎ≥∏ ÌÅ¨Í∏∞ Ï†ÄÏû•
+        // ?õêÎ≥? ?Å¨Í∏? ????û•
         originalScale = transform.localScale;
 
-        // ÏõêÎ≥∏ ÌÅ¨Í∏∞ Ï†ÄÏû•
+        // ?õêÎ≥? ?Å¨Í∏? ????û•
         originalScale = transform.localScale;
 
         // Rigidbody ????
@@ -152,6 +156,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
                 dampAfterDash();
             }
         }
+        dashCooldownCounter -= Time.deltaTime;
     }
 
     private void FixedUpdate()
@@ -171,7 +176,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
     }
 
     // ???
-    private void Move() 
+    private void Move()
     {
         float accel = speedAcceleration;
         float decel = SpeedDeceleration;
@@ -180,25 +185,25 @@ public class PlayerController : MonoBehaviour, IPlayerController
             accel *= airAccelMulti;
             decel *= airDecelMulti;
         }
-        // Î∞îÎùºÎ≥¥Îäî Î∞©Ìñ• ÏóÖÎç∞Ïù¥Ìä∏ Î∞è Ïä§ÌîÑÎùºÏù¥Ìä∏ ÌöåÏ†Ñ
+        // Î∞îÎùºÎ≥¥Îäî Î∞©Ìñ• ?óÖ?ç∞?ù¥?ä∏ Î∞? ?ä§?îÑ?ùº?ù¥?ä∏ ?öå?†Ñ
         if (moveInput.x > 0)
         {
             facingDirection = 1;
-            transform.localScale = originalScale; // Ïò§Î•∏Ï™Ω
+            transform.localScale = originalScale; // ?ò§Î•∏Ï™Ω
         }
         else if (moveInput.x < 0)
         {
             facingDirection = -1;
             Vector3 flippedScale = originalScale;
             flippedScale.x = -originalScale.x;
-            transform.localScale = flippedScale; // ÏôºÏ™Ω (XÏ∂ï Î∞òÏ†Ñ)
+            transform.localScale = flippedScale; // ?ôºÏ™? (XÏ∂? Î∞òÏ†Ñ)
         }
 
         float targetX = moveInput.x * maxSpeed;
         float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
-        // Ïù¥Îèô Î∞©Ìñ•Ïóê Îî∞Î•∏ ÏÉàÎ°úÏö¥ XÏ∂ï ÏÜçÎèÑ Í≥ÑÏÇ∞
+        // ?ù¥?èô Î∞©Ìñ•?óê ?î∞Î•? ?ÉàÎ°úÏö¥ XÏ∂? ?Üç?èÑ Í≥ÑÏÇ∞
         float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
-        rb.linearVelocityX = newX; 
+        rb.linearVelocityX = newX;
     }
 
     // ??? ???? (BoxCast)
@@ -211,7 +216,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
             extraHeight, wallLayer);
 
         IsGrounded = hit.collider != null;
-        
+
 
         if (IsJumping && rb.linearVelocity.y <= 0)
         {
@@ -242,7 +247,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
         }
 
         // ????? ?????? ??? ????
-        if (isTouchingWall)
+        if (isTouchingWallRight || isTouchingWallLeft)
             if (newY < -wallSlideMaxSpeed)
                 newY = -wallSlideMaxSpeed;
 
@@ -284,29 +289,32 @@ public class PlayerController : MonoBehaviour, IPlayerController
     private void WallCheck()
     {
         Vector2 origin = transform.position;
-        RaycastHit2D hitWall = new RaycastHit2D(); // ???????? ????
+        RaycastHit2D hitWallRight = new RaycastHit2D(); // ???????? ????
+        RaycastHit2D hitWallLeft = new RaycastHit2D(); // ???????? ????
+        hitWallRight = Physics2D.Raycast(origin, Vector2.right, wallCheckDistance, wallLayer);
+        Debug.DrawRay(origin, Vector2.right * wallCheckDistance, Color.red);
+        hitWallLeft = Physics2D.Raycast(origin, Vector2.left, wallCheckDistance, wallLayer);
+        Debug.DrawRay(origin, Vector2.left * wallCheckDistance, Color.red);
 
-        if (moveInput.x > 0)
-        {
-            hitWall = Physics2D.Raycast(origin, Vector2.right, wallCheckDistance, wallLayer);
-            Debug.DrawRay(origin, Vector2.right * wallCheckDistance, Color.red);
-        }
-        else if (moveInput.x < 0)
-        {
-            hitWall = Physics2D.Raycast(origin, Vector2.left, wallCheckDistance, wallLayer);
-            Debug.DrawRay(origin, Vector2.left * wallCheckDistance, Color.red);
-        }
 
-        isTouchingWall = hitWall.collider != null;
+        isTouchingWallRight = hitWallRight.collider != null;
+        isTouchingWallLeft = hitWallLeft.collider != null;
+
     }
 
     // ?????? ? ??? ??? ???? linearVelocity ????
     private void WallJump()
     {
-        if (isTouchingWall && jumpBufferCounter > 0 && !IsGrounded)
+        if ((isTouchingWallRight || isTouchingWallLeft) && jumpBufferCounter > 0 && !IsGrounded)
         {
+            int wallJumpDir;
+            if (isTouchingWallRight)
+                wallJumpDir = -1;
+            else
+                wallJumpDir = 1;
+
             IsJumping = true;
-            rb.linearVelocity = new Vector2(wallJumpXSpeed * -Mathf.Sign(moveInput.x), wallJumpYSpeed);
+            rb.linearVelocity = new Vector2(wallJumpXSpeed * wallJumpDir, wallJumpYSpeed);
             Debug.Log("Wall Jump");
         }
     }
@@ -315,11 +323,13 @@ public class PlayerController : MonoBehaviour, IPlayerController
     private void Dash()
     {
         if (dashCount <= 0) return;
+        if (dashCooldownCounter > 0) return;
         isDashing = true;
         dashCount -= 1;
         dashTimeCounter = dashTime;
+        dashCooldownCounter = dashCooldown;
 
-        // Ìï≠ÏÉÅ Î∞îÎùºÎ≥¥Îäî Î∞©Ìñ•ÏúºÎ°ú ÎåÄÏãú
+        // ?ï≠?ÉÅ Î∞îÎùºÎ≥¥Îäî Î∞©Ìñ•?úºÎ°? ????ãú
         rb.linearVelocity = new Vector2(facingDirection * dashSpeed, 0);
     }
 
