@@ -9,7 +9,11 @@ public class KirbyTurboMode : MonoBehaviour
     #endregion
     [Header("Trail")]
     [SerializeField] private TrailRenderer trail;
-
+    private Color normalColor;
+    private void Awake()
+    {
+        normalColor = spriteRenderer.color;
+    }
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -39,6 +43,6 @@ public class KirbyTurboMode : MonoBehaviour
     {
         trail.emitting = false;
         rb.excludeLayers = 0;
-        spriteRenderer.color = Color.white;
+        spriteRenderer.color = normalColor;
     }
 }

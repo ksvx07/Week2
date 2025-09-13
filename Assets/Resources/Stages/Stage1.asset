@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3be35d7407d4eb545885102775eb30e6, type: 3}
   m_Name: Stage1
   m_EditorClassIdentifier: 
+  Id: 1
   minX: -16.06
   maxX: 59.3
   minY: -6.98
-  maxY: 10.18
+  maxY: 14.4

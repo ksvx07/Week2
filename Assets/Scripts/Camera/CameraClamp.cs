@@ -11,11 +11,12 @@ public class CameraClamp : MonoBehaviour
     [SerializeField] private float _minY;
     [SerializeField] private float _maxY;
 
+    private int _defaultStageId = 1;
     private float _targetMinX, _targetMinY, _targetMaxX, _targetMaxY;
 
     private void Start()
     {
-        SetMapBounds(Stages.STAGE1);
+        SetMapBounds(_defaultStageId);
         SetInitMapBounds();
     }
 
@@ -38,9 +39,9 @@ public class CameraClamp : MonoBehaviour
         return new Vector3(clampX, clampY, desiredPos.z);
     }
 
-    public void SetMapBounds(string stageName)
+    public void SetMapBounds(int Id)
     {
-        if(GameManager.Instance.StageDics.TryGetValue(stageName, out var mapDefinition))
+        if(GameManager.Instance.StageDics.TryGetValue(Id, out var mapDefinition))
         {
             _targetMinX = mapDefinition.minX;
             _targetMaxX = mapDefinition.maxX;
@@ -51,7 +52,7 @@ public class CameraClamp : MonoBehaviour
 
     private void SetInitMapBounds()
     {
-        if (GameManager.Instance.StageDics.TryGetValue(Stages.STAGE1, out var mapDefinition))
+        if (GameManager.Instance.StageDics.TryGetValue(_defaultStageId, out var mapDefinition))
         {
             _minX = mapDefinition.minX;
             _maxX = mapDefinition.maxX;

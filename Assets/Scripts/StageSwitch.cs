@@ -3,6 +3,7 @@ using UnityEngine;
 public class StageSwitch : MonoBehaviour
 {
     [SerializeField] private CameraClamp Clamp;
+    [SerializeField] private int Id;
 
     private Transform Player => PlayerManager.Instance._currentPlayerPrefab.transform;
 
@@ -12,7 +13,7 @@ public class StageSwitch : MonoBehaviour
 
         if(Player.position.x > transform.position.x)
         {
-            Clamp.SetMapBounds(gameObject.name);
+            Clamp.SetMapBounds(Id);
         }
     }
 }
