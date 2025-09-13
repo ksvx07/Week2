@@ -28,7 +28,6 @@ public class CircleController : MonoBehaviour
     [SerializeField] private float wallJumpXSpeed = 5f;
     [SerializeField] private float wallJumpYSpeed = 5f;
     [SerializeField] private float wallSlideMaxSpeed = 5f;
-    [SerializeField] private float wallSlideDecceleration = 5f;
 
     [Header("Dash")]
     [SerializeField] private float dashSpeed = 5f;

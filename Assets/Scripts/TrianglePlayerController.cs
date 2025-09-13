@@ -39,7 +39,6 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
     [SerializeField] private float wallJumpXSpeed = 5f; //벽 점프 X 속도
     [SerializeField] private float wallJumpYSpeed = 5f; //벽 점프 Y 속도
     [SerializeField] private float wallSlideMaxSpeed = 5f; //벽 미끄럼 최대 속도
-    [SerializeField] private float wallSlideDecceleration = 5f; //벽 미끄럼 감속도
 
     [Header("Dash")]
     [SerializeField] private float dashSpeed = 5f; //대쉬 속도

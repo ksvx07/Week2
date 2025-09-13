@@ -7,7 +7,6 @@ public class PatrolEnemy : MonoBehaviour
     [SerializeField] private float groundCheckDistance = 0.1f;
     [SerializeField] private float wallCheckDistance = 0.1f;
     [SerializeField] private float enemyMaxSpeed = 3f;
-    [SerializeField] private float enemyMaxRunSpeed = 3f;
     [SerializeField] private float enemyAccel = 3f;
     [SerializeField] private float enemyDecel = 3f;
     private LayerMask groundLayer;
