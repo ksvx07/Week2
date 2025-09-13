@@ -2,13 +2,10 @@ using UnityEngine;
 
 public class StageSwitch : MonoBehaviour
 {
-    [SerializeField] private Transform Player;
     [SerializeField] private CameraClamp Clamp;
 
-    private void Awake()
-    {
-        Player = GameObject.FindWithTag("Player").transform;
-    }
+    private Transform Player => PlayerManager.Instance._currentPlayer.transform;
+
     void Update()
     {
         if (Player == null) return;
@@ -17,10 +14,5 @@ public class StageSwitch : MonoBehaviour
         {
             Clamp.SetMapBounds(gameObject.name);
         }
-    }
-
-    public void SetPlayer(Transform player)
-    {
-        Player = player;
     }
 }
