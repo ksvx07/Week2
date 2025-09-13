@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3563690845158814221}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Pivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42,7 +42,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7220316412196544980}
   - component: {fileID: 668741958047121973}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Star
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -131,13 +131,13 @@ GameObject:
   - component: {fileID: 1131677851178859682}
   - component: {fileID: 8811884819558988042}
   - component: {fileID: 8961996613887151925}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Star
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2451364804330423230
 Transform:
   m_ObjectHideFlags: 0
@@ -146,7 +146,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8455643674171885529}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -3.17, z: 0}
   m_LocalScale: {x: 0.62, y: 0.62, z: 0.62}
   m_ConstrainProportionsScale: 1
@@ -192,6 +192,11 @@ MonoBehaviour:
   starPivotTransform: {fileID: 3563690845158814221}
   starWallGravity: 2
   starMaxWallGravityDistance: 0.34
+  starNormalMaxSpeed: 3.5
+  starNormalAccel: 10
+  starNormalDecel: 10
+  starNormalairAccelMulti: 0.5
+  starNormalairDecelMulti: 0.5
 --- !u!50 &8811884819558988042
 Rigidbody2D:
   serializedVersion: 5
