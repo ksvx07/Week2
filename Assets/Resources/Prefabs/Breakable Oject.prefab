@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 8885684014672208897}
   - component: {fileID: 8364988329106854981}
   - component: {fileID: 3156672121598541445}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Breakable Oject
   m_TagString: Untagged
   m_Icon: {fileID: 0}

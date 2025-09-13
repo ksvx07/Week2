@@ -81,8 +81,8 @@ public class StarController : MonoBehaviour, IPlayerController
     private void OnEnable()
     {
         inputActions.Player.Enable();
-        inputActions.Player.Move.performed += OnMove;
         inputActions.Player.Move.canceled += OnMove;
+        inputActions.Player.Move.performed += OnMove;
         inputActions.Player.Jump.started += OnJump;
         inputActions.Player.Jump.canceled += OffJump;
         inputActions.Player.Dash.performed += OnDash;
@@ -90,17 +90,18 @@ public class StarController : MonoBehaviour, IPlayerController
 
     private void OnDisable()
     {
-        inputActions.Player.Move.performed -= OnMove;
         inputActions.Player.Move.canceled -= OnMove;
+        inputActions.Player.Move.performed -= OnMove;
         inputActions.Player.Jump.started -= OnJump;
         inputActions.Player.Jump.canceled -= OffJump;
         inputActions.Player.Dash.performed -= OnDash;
         inputActions.Player.Disable();
+        moveInput = Vector2.zero;
     }
 
     private void OnMove(InputAction.CallbackContext ctx)
     {
-        if (PlayerManager.Instance.IsHold) return;
+        // if (PlayerManager.Instance.IsHold) return;
 
         moveInput = ctx.ReadValue<Vector2>();
     }
@@ -235,7 +236,7 @@ public class StarController : MonoBehaviour, IPlayerController
     {
         if (hitWalls.All(hit => hit.collider == null))
             return; // ���� �浹 ���� �� �Լ� ����
-        
+
         float scale = Mathf.Max(starPivotTransform.lossyScale.x, starPivotTransform.lossyScale.y);
         float radius = col.radius * scale;
         // ���ӵ� ũ��
@@ -381,7 +382,7 @@ public class StarController : MonoBehaviour, IPlayerController
             if (isActiveAbility)
             {
                 if (newY < 0)
-                newY = 0;
+                    newY = 0;
             }
 
         }

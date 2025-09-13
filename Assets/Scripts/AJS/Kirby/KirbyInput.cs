@@ -17,23 +17,19 @@ public class KirbyInput : MonoBehaviour
     }
     private void OnEnable()
     {
-        EnableInput(); // Input System È°¼ºÈ­
+        EnableInput(); // Input System È°ï¿½ï¿½È­
     }
 
     private void OnDisable()
     {
-        DisableInput(); // Input System ºñÈ°¼ºÈ­
+        DisableInput(); // Input System ï¿½ï¿½È°ï¿½ï¿½È­
     }
     #endregion
 
     #region Input Event Handler
     private void EnableInput()
     {
-        if (_inputs == null)
-        {
-            return;
-        }
-        _inputs.Player.Enable(); // Á¤ÀÇÇÑ ¸ðµç ¾×¼Ç¸Ê È°¼ºÈ­
+        _inputs.Player.Enable(); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½×¼Ç¸ï¿½ È°ï¿½ï¿½È­
         _inputs.Player.Move.performed += OnMoveInput;
         _inputs.Player.Move.canceled += OnMoveInput;
         _inputs.Player.Jump.performed += OnJumpClicked;
@@ -42,15 +38,12 @@ public class KirbyInput : MonoBehaviour
 
     private void DisableInput()
     {
-        if (_inputs == null)
-        {
-            return;
-        }
-        _inputs.Player.Disable(); // ¸ðµç ¾×¼Ç¸Ê ºñÈ°¼ºÈ­
         _inputs.Player.Move.performed -= OnMoveInput;
         _inputs.Player.Move.canceled -= OnMoveInput;
         _inputs.Player.Jump.performed -= OnJumpClicked;
         _inputs.Player.Dash.performed -= OnTurboClicked;
+        _inputs.Player.Disable(); // ï¿½ï¿½ï¿½ ï¿½×¼Ç¸ï¿½ ï¿½ï¿½È°ï¿½ï¿½È­
+        _playerMove.DirectionX = 0f;
     }
 
     #endregion
