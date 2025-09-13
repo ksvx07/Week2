@@ -1,3 +1,5 @@
+using NUnit.Framework;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,7 +10,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
     private Rigidbody2D rb;
     private BoxCollider2D col;
 
-    // Inspector 조절 가능 변수들
+    // Inspector ???? ???? ??????
     [Header("Move")]
     [SerializeField] private float maxSpeed = 5f;
     [SerializeField] private float speedAcceleration = 5f;
@@ -20,8 +22,8 @@ public class PlayerController : MonoBehaviour, IPlayerController
     [SerializeField] private float maxGravity = 5f;
     [SerializeField] private float gravityAcceleration = 5f;
     [SerializeField] private float maxDownSpeed = 5f;
-    [SerializeField] private float coyoteTime = 0.1f;       // 코요테 타임 길이
-    [SerializeField] private float jumpBufferTime = 0.1f;   // 점프 버퍼 길이
+    [SerializeField] private float coyoteTime = 0.1f;       // ????? ??? ????
+    [SerializeField] private float jumpBufferTime = 0.1f;   // ???? ???? ????
 
     [Header("Wall Jump")]
     [SerializeField] private float wallCheckDistance = 0.4f;
@@ -43,15 +45,16 @@ public class PlayerController : MonoBehaviour, IPlayerController
     private LayerMask wallLayer;
 
     private float currentGravity;
-    private float coyoteTimeCounter; // 땅을 떠난 후 남은 점프 가능 시간
-    private float jumpBufferCounter; // 점프 입력 유지 시간
+    private float coyoteTimeCounter; // ???? ???? ?? ???? ???? ???? ?ð?
+    private float jumpBufferCounter; // ???? ??? ???? ?ð?
     private float dashTimeCounter;
-    // 내부 상태
+    // ???? ????
     public bool IsGrounded { get; private set; }
     public bool IsJumping { get; private set; }
     private bool isTouchingWall;
     private bool isDashing;
     private int dashCount;
+    private bool isFastFalling;
 
     private void Awake()
     {
@@ -62,9 +65,9 @@ public class PlayerController : MonoBehaviour, IPlayerController
         wallLayer = LayerMask.GetMask("Ground");
         dashCount = maxDashCount;
 
-        // Rigidbody 설정
+        // Rigidbody ????
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-        rb.gravityScale = 0f; // 중력은 직접 처리
+        rb.gravityScale = 0f; // ????? ???? ???
     }
 
     private void OnEnable()
@@ -95,6 +98,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
     private void OnJump(InputAction.CallbackContext ctx)
     {
         jumpBufferCounter = jumpBufferTime;
+        isFastFalling = false;
     }
 
     private void OffJump(InputAction.CallbackContext ctx)
@@ -112,11 +116,13 @@ public class PlayerController : MonoBehaviour, IPlayerController
         TimeCounters();
     }
 
-    // 시간 카운터들
+    // ?ð? ??????
     private void TimeCounters()
     {
-        // 점프 버퍼 (예약) & 코요테 타임
+        // ???? ???? (????) & ????? ???
         jumpBufferCounter -= Time.deltaTime;
+        if (jumpBufferCounter < 0)
+            isFastFalling = false;
         if (IsGrounded)
         {
             coyoteTimeCounter = coyoteTime;
@@ -126,7 +132,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
         else
             coyoteTimeCounter -= Time.deltaTime;
 
-        // 일정 시간 대시함, 대시 끝나면 Damping 줌
+        // ???? ?ð? ?????, ??? ?????? Damping ??
         if (isDashing)
         {
             dashTimeCounter -= Time.deltaTime;
@@ -154,24 +160,24 @@ public class PlayerController : MonoBehaviour, IPlayerController
         //Debug.Log($"x: {rb.linearVelocity.x:F2}, y: {rb.linearVelocity.y:F2}");
     }
 
-    // 이동
+    // ???
     private void Move() 
     {
         float accel = speedAcceleration;
         float decel = SpeedDeceleration;
-        if (!IsGrounded) // 공중이면 배수 적용
+        if (!IsGrounded) // ??????? ??? ????
         {
             accel *= airAccelMulti;
             decel *= airDecelMulti;
         }
         float targetX = moveInput.x * maxSpeed;
         float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
-        // 속도가 빠를수록 가속도 감소
+        // ????? ???????? ????? ????
         float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
         rb.linearVelocityX = newX; 
     }
 
-    // 바닥 감지 (BoxCast)
+    // ??? ???? (BoxCast)
     private void DetectGround()
     {
         Bounds bounds = col.bounds;
@@ -190,19 +196,19 @@ public class PlayerController : MonoBehaviour, IPlayerController
         }
     }
 
-    // 중력
+    // ???
     private void ApplyGravity()
     {
         float newY;
         if (IsJumping)
         {
-            // 점프 중 중력(올라갈 때)
+            // ???? ?? ???(??? ??)
             newY = rb.linearVelocity.y - jumpDcceleration * Time.fixedDeltaTime;
         }
         else
         {
-            // 점프 후 중력(떨어질 때)
-            // 점프 중 중력(약함)에서 점프 후 중력(강함)으로 연속적으로 증가
+            // ???? ?? ???(?????? ??)
+            // ???? ?? ???(????)???? ???? ?? ???(????)???? ?????????? ????
             if (currentGravity < maxGravity)
                 currentGravity += gravityAcceleration * Time.fixedDeltaTime;
             else
@@ -211,45 +217,50 @@ public class PlayerController : MonoBehaviour, IPlayerController
             newY = rb.linearVelocity.y - currentGravity * Time.fixedDeltaTime;
         }
 
-        // 벽잡고 있으면 중력 낮음
+        // ????? ?????? ??? ????
         if (isTouchingWall)
             if (newY < -wallSlideMaxSpeed)
                 newY = -wallSlideMaxSpeed;
 
-        // y축 최대 속도
+        // y?? ??? ???
         newY = Mathf.Clamp(newY, -maxDownSpeed, maxJumpSpeed);
 
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, newY);
     }
 
-    // 점프
+    // ????
     private void Jump()
     {
         if (jumpBufferCounter > 0 && coyoteTimeCounter > 0)
         {
-            // +y로 linearVelocity 설정
+            // +y?? linearVelocity ????
             Debug.Log("Jump!");
             IsJumping = true;
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, maxJumpSpeed);
             jumpBufferCounter = 0;
             coyoteTimeCounter = 0;
+            if (isFastFalling)
+                IsJumping = false;
         }
     }
 
-    // 점프 키 때면 isJumping = false -> 중력 강해짐 -> 빨리 떨어짐
+    // ???? ? ???? isJumping = false -> ??? ?????? -> ???? ??????
     private void FastFall()
     {
         if (IsJumping)
         {
             IsJumping = false;
         }
+        if (jumpBufferCounter > 0)
+            isFastFalling = true;
+
     }
 
-    // 벽 감지 (Raycast)
+    // ?? ???? (Raycast)
     private void WallCheck()
     {
         Vector2 origin = transform.position;
-        RaycastHit2D hitWall = new RaycastHit2D(); // 기본값으로 초기화
+        RaycastHit2D hitWall = new RaycastHit2D(); // ???????? ????
 
         if (moveInput.x > 0)
         {
@@ -265,7 +276,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
         isTouchingWall = hitWall.collider != null;
     }
 
-    // 벽점프 키 입력 반대 위로 linearVelocity 설정
+    // ?????? ? ??? ??? ???? linearVelocity ????
     private void WallJump()
     {
         if (isTouchingWall && jumpBufferCounter > 0 && !IsGrounded)
@@ -276,7 +287,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
         }
     }
 
-    // 대시, 대시 중 모든 변수 무시하고 linearVelocity는 무조건 moveInput.normalized * dashSpeed됨.
+    // ???, ??? ?? ??? ???? ??????? linearVelocity?? ?????? moveInput.normalized * dashSpeed??.
     private void Dash()
     {
         if (moveInput == Vector2.zero) return;
@@ -287,7 +298,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
         rb.linearVelocity = moveInput.normalized * dashSpeed;
     }
 
-    // 대시 후 댐핑, 대시 끝나면 최대속도 조절
+    // ??? ?? ????, ??? ?????? ????? ????
     private void dampAfterDash()
     {
         float dampedSpeedX = rb.linearVelocity.x;
@@ -305,9 +316,9 @@ public class PlayerController : MonoBehaviour, IPlayerController
         wallLayer = LayerMask.GetMask("Ground");
         dashCount = maxDashCount;
 
-        // Rigidbody 설정
+        // Rigidbody ????
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-        rb.gravityScale = 0f; // 중력은 직접 처리
+        rb.gravityScale = 0f; // ????? ???? ???
 
         rb.linearVelocity = new Vector2(newVelX, newVelY);
 
