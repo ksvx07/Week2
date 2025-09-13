@@ -7,17 +7,17 @@ public class CamZoomOutTrigger : MonoBehaviour
     private float _zoomInSize = 3f;
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if(collision.gameObject.name == "Player")
+        if(collision.gameObject.tag == "Player")
         {
-            CameraController.instance.TriggerZoomOut(_zoomOutSize);
+            CameraController.Instance.TriggerZoomOut(_zoomOutSize);
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject.name == "Player")
+        if (collision.gameObject.tag == "Player")
         {
-            CameraController.instance.TriggerZoomIn(_zoomInSize);
+            CameraController.Instance.TriggerZoomIn(_zoomInSize);
         }
     }
 }

@@ -32,15 +32,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
-                },
-                {
-                    "name": "Hold",
-                    "type": "Button",
-                    "id": "cbc53f67-e74a-4379-a311-e9a56fcb05cd",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -230,28 +221,6 @@
                     "action": "Dash",
                     "isComposite": false,
                     "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "f7491f2c-64e3-4497-8ca0-05828d15d6df",
-                    "path": "<Keyboard>/ctrl",
-                    "interactions": "Hold",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Hold",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "448c7934-1bf8-4a7f-b871-feb12ade66b6",
-                    "path": "<Gamepad>/leftShoulder",
-                    "interactions": "Hold",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Hold",
-                    "isComposite": false,
-                    "isPartOfComposite": false
                 }
             ]
         },
@@ -260,13 +229,22 @@
             "id": "e142499f-d016-4315-a8c5-9a3f1230dd8c",
             "actions": [
                 {
-                    "name": "Move",
+                    "name": "Select",
                     "type": "Value",
                     "id": "e471f739-6836-4649-8147-ef66c5b55a43",
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Hold",
+                    "type": "Button",
+                    "id": "ec5f559a-98e6-436d-b349-67a679262710",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -277,7 +255,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "Select",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -288,7 +266,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "Select",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -299,7 +277,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "Select",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -310,7 +288,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "Select",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -321,7 +299,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "Select",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -332,7 +310,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "Select",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -343,7 +321,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "Select",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -354,7 +332,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "Select",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -365,7 +343,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "Select",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -376,7 +354,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "Select",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -387,7 +365,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "Select",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -398,7 +376,29 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "Select",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ace45573-8401-4c92-bdc4-ae86b281bee6",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "Hold",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Hold",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b21e2380-60f1-4e8a-acff-c6821f7fb5a2",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "Hold",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Hold",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
