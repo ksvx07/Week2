@@ -1,19 +1,21 @@
 using System.Collections.Generic;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance;
+    public static GameManager Instance { get; private set; }
     public Dictionary<string, StageScriptableObject> StageDics { get; private set; } = new();
-
 
     #region Respawn System  
     [Header("Respawn System")]
     [SerializeField] private RespawnManager respawnManager;
-
     // RespawnManager에 쉽게 접근할 수 있는 프로퍼티
     public RespawnManager RespawnManager => respawnManager;
     #endregion
+
+    private bool _isDestroyManager;
+
     private void Awake()
     {
         if (null == Instance)
@@ -25,10 +27,31 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
         LoadScriptableObject("Stages");
+
+        Initialize();
     }
 
-    void Start()
+    public static void Initialize()
+    {
+  
+    }
+
+    public void OnApplicationQuit()
+    {
+        DestroyManager();
+    }
+
+    private void DestroyManager()
+    {
+        if (_isDestroyManager) return;
+
+        _isDestroyManager = true;
+        Release();
+    }
+
+    private void Release()
     {
 
     }
