@@ -346,7 +346,5 @@ public class PlayerController : MonoBehaviour, IPlayerController
         rb.gravityScale = 0f; // ????? ???? ???
 
         rb.linearVelocity = new Vector2(newVelX, newVelY);
-
-        Debug.Log(rb.linearVelocity);
     }
 }
