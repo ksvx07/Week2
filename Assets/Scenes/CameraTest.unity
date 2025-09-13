@@ -3724,6 +3724,13 @@ MonoBehaviour:
   - {fileID: 1604274596}
   - {fileID: 265248874}
   - {fileID: 1661856605}
+  pannels:
+  - {fileID: 646226287}
+  - {fileID: 732138932}
+  - {fileID: 439388563}
+  - {fileID: 182680762}
+  originColor: {r: 1, g: 1, b: 1, a: 1}
+  highLightColor: {r: 1, g: 0.09067254, b: 0, a: 1}
   camControlelr: {fileID: 773959066}
   selectPlayerPanel: {fileID: 981760582}
   _selectPanelSpeed: 0.05
