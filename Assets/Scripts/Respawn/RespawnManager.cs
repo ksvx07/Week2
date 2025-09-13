@@ -9,9 +9,9 @@ public class RespawnManager : MonoBehaviour
 
     #region Checkpoint System
     [Header("Checkpoint System")]
-    [SerializeField] private Transform player;
     [SerializeField] private Vector3 defaultSpawn = Vector3.zero;
-    
+
+    private Transform player => PlayerManager.Instance._currentPlayer.transform;
     private int currentCheckpointId = 0;
     private Vector3 currentSpawnPosition;
     private Dictionary<int, Vector3> checkpoints = new Dictionary<int, Vector3>();
@@ -114,7 +114,7 @@ public class RespawnManager : MonoBehaviour
     {
         if (!ValidatePlayer()) return;
         
-        player.position = currentSpawnPosition;
+        player.localPosition = currentSpawnPosition;
         OnPlayerSpawned?.Invoke(currentSpawnPosition);
     }
 
