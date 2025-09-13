@@ -26,6 +26,24 @@ public class DeathZone : MonoBehaviour
         // 플레이어 리스폰
         GameManager.Instance.RespawnPlayer();
     }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        // 플레이어가 아니면 무시
+        if (!collision.gameObject.CompareTag("Player")) return;
+
+        // GameManager 인스턴스 존재 여부 확인
+        if (GameManager.Instance == null)
+        {
+            Debug.LogError("[DeathZone] GameManager instance not found!");
+            return;
+        }
+
+        Debug.Log($"[DeathZone] Player entered death zone at {transform.position}");
+
+        // 플레이어 리스폰
+        GameManager.Instance.RespawnPlayer();
+    }
     #endregion
 
     #region Debug Methods

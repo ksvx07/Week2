@@ -11,7 +11,7 @@ public class RespawnManager : MonoBehaviour
     [Header("Checkpoint System")]
     [SerializeField] private Vector3 defaultSpawn = Vector3.zero;
 
-    private Transform player => PlayerManager.Instance._currentPlayer.transform;
+    private Transform player => PlayerManager.Instance?._currentPlayer?.transform;
     private int currentCheckpointId = 0;
     private Vector3 currentSpawnPosition;
     private Dictionary<int, Vector3> checkpoints = new Dictionary<int, Vector3>();
@@ -94,7 +94,6 @@ public class RespawnManager : MonoBehaviour
     {
         if (player == null)
         {
-            Debug.LogError("[RespawnManager] Player Transform is not assigned!");
             return false;
         }
         return true;
@@ -114,7 +113,8 @@ public class RespawnManager : MonoBehaviour
     {
         if (!ValidatePlayer()) return;
         
-        player.localPosition = currentSpawnPosition;
+        player.position = currentSpawnPosition;
+        CameraController.Instance.Cam.transform.position = currentSpawnPosition + new Vector3(0,0,-10f);
         OnPlayerSpawned?.Invoke(currentSpawnPosition);
     }
 

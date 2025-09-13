@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    [SerializeField] private Camera Cam;
+    [SerializeField] public Camera Cam;
     [SerializeField] private float SmoothTime = 0.2f;
     [SerializeField] private CameraClamp Clamp;
 
@@ -17,7 +17,7 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float ZoomLerpSpeed = 1f;
     [SerializeField] private float SpeedThreshold = 5f;
 
-    private Transform Player => PlayerManager.Instance._currentPlayer.transform;
+    private Transform Player => PlayerManager.Instance?._currentPlayer?.transform;
     private float targetZoom;
     private Rigidbody2D _rb;
 
@@ -38,11 +38,19 @@ public class CameraController : MonoBehaviour
         }
 
         Cam = GetComponent<Camera>();
-        _rb = Player.GetComponent<Rigidbody2D>();
+    }
+
+    private void Start()
+    {
+        if (Player != null)
+            _rb = Player.GetComponent<Rigidbody2D>();
     }
 
     private void Update()
     {
+        if (Player == null)
+            return;
+
         var desiredPos = HandleFollow();
 
         transform.position = Clamp.HandleClamp(desiredPos);
