@@ -70,11 +70,11 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
     #endregion
 
     #region 상태 플래그
-    private bool isHopping; //깡충깡충 점프 중인지 여부
     private bool isGrounded; //땅에 닿았는지 여부
     private bool isJumping; //점프 중인지 여부
     private bool isTouchingWall; //벽에 닿았는지 여부
     private bool isDashing; //대쉬 중인지 여부
+    private bool isFastFalling; //빠른 낙하 중인지 여부
     #endregion
 
     private int dashCount; //남은 대쉬 횟수
@@ -129,6 +129,7 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
     private void OnJump(InputAction.CallbackContext ctx)
     {
         jumpBufferCounter = jumpBufferTime;
+        isFastFalling = false;
     }
 
     private void OffJump(InputAction.CallbackContext ctx)
@@ -219,12 +220,6 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
         // 둘 중 하나라도 바닥에 닿으면 grounded 상태
         isGrounded = hitLeft.collider != null || hitRight.collider != null;
 
-        // 땅에 착지했을 때 hop 상태 해제
-        if (isGrounded && isHopping)
-        {
-            isHopping = false;
-        }
-
         if (isJumping && rb.linearVelocity.y <= 0)
         {
             isJumping = false;
@@ -254,9 +249,8 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
         // 이동 방향에 따라 속도 보간
         float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
 
-        if (moveInput.x != 0 && isGrounded)
+        if (moveInput.x != 0 && isGrounded && !isJumping)
         {
-            isHopping = true; // hop 상태 설정
             rb.linearVelocity = new Vector2(newX, hopHeight);
             hopCooldown = hopCooldownTime; // 쿨다운 시간 설정
         }
@@ -299,14 +293,15 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
     #region 점프
     private void Jump()
     {
-        if (jumpBufferCounter > 0 && (coyoteTimeCounter > 0 || isHopping))
+        if (jumpBufferCounter > 0 && coyoteTimeCounter > 0)
         {
             Debug.Log("Jump!");
             isJumping = true;
-            isHopping = false; // 점프 시 hop 상태 해제
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, maxJumpSpeed);
             jumpBufferCounter = 0;
             coyoteTimeCounter = 0;
+            if (isFastFalling)
+                isJumping = false;
         }
     }
     #endregion
@@ -319,6 +314,8 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
             isJumping = false;
             //rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
         }
+        if (jumpBufferCounter > 0)
+            isFastFalling = true;
     }
     #endregion
 
@@ -379,39 +376,6 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
     #endregion
 
     #region 세모 특수 능력
-    //아래 3방향 대쉬
-    // private void TriangleSpecialAbility()
-    // {
-    //     if (moveInput == Vector2.zero) return;
-    //     if (dashCount <= 0) return;
-
-    //     // 8방향 중 아래 3방향만 허용 (아래, 왼쪽아래, 오른쪽아래)
-    //     Vector2 dashDirection = GetDownwardDashDirection(moveInput);
-    //     if (dashDirection == Vector2.zero) return; // 아래 방향이 아니면 대시 불가
-
-    //     isDashing = true;
-    //     dashCount -= 1;
-    //     dashTimeCounter = dashTime;
-    //     rb.linearVelocity = dashDirection * dashSpeed;
-    // }
-
-    // private Vector2 GetDownwardDashDirection(Vector2 input)
-    // {
-    //     // 입력을 8방향으로 정규화
-    //     Vector2 direction = Vector2.zero;
-
-    //     // X 방향 결정
-    //     if (input.x > 0.3f) direction.x = 1f;      // 오른쪽
-    //     else if (input.x < -0.3f) direction.x = -1f; // 왼쪽
-    //     else direction.x = 0f;                      // 가운데
-
-    //     // Y 방향 결정 (아래쪽만 허용)
-    //     if (input.y < -0.3f) direction.y = -1f;    // 아래
-    //     else return Vector2.zero; // 아래가 아니면 대시 불가
-
-    //     return direction.normalized;
-    // }
-
     private void TriangleSpecialAbility()
     {
         if (dashCount <= 0) return;
@@ -453,16 +417,21 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
         afterImageSR.sortingLayerName = spriteRenderer.sortingLayerName;
         afterImageSR.sortingOrder = spriteRenderer.sortingOrder - 1;
 
+        // 안전장치: afterImageLifetime * 2 시간 후 강제 삭제
+        Destroy(afterImage, afterImageLifetime * 2f);
+
         // 잔상 페이드아웃 코루틴 시작
         StartCoroutine(FadeOutAfterImage(afterImageSR, afterImage));
     }
 
     private System.Collections.IEnumerator FadeOutAfterImage(SpriteRenderer sr, GameObject obj)
     {
+        if (sr == null || obj == null) yield break; // null 체크
+
         float elapsed = 0f;
         Color originalColor = sr.color;
         
-        while (elapsed < afterImageLifetime)
+        while (elapsed < afterImageLifetime && sr != null && obj != null)
         {
             elapsed += Time.deltaTime;
             float alpha = Mathf.Lerp(originalColor.a, 0f, elapsed / afterImageLifetime);
@@ -470,9 +439,15 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
             yield return null;
         }
         
-        Destroy(obj);
+        // 오브젝트가 여전히 존재한다면 삭제
+        if (obj != null)
+        {
+            Destroy(obj);
+        }
     }
+    #endregion
 
+    #region 변신
     public void OnEnableSetVelocity(float newVelX, float newVelY)
     {
         col = GetComponent<PolygonCollider2D>();
@@ -485,8 +460,8 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
         // Rigidbody 설정
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         rb.gravityScale = 0f; // 중력 스케일 초기화
-
-        rb.linearVelocity = new Vector2(newVelX, newVelY);
+        if (!isDashing) 
+            rb.linearVelocity = new Vector2(newVelX, newVelY);
     }
     #endregion
 }

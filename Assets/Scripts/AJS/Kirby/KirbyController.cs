@@ -19,6 +19,7 @@ public class KirbyController : MonoBehaviour, IPlayerController
 
     [Header("Turbo Stats")]
     [SerializeField, Range(0f, 20f)][Tooltip("터보속도")] private float turboSpeed = 20f;
+    [SerializeField, Range(0f, 100f)][Tooltip("방향 전환시, 얼마나 빨리 변경")] private float turboDecceleration = 52f;
 
     [Header("Bounce Settings")]
     [Tooltip("X축으로 튕겨 나가는 힘")]
@@ -31,6 +32,8 @@ public class KirbyController : MonoBehaviour, IPlayerController
     private bool isFixedBouncing = false; // 튕겨 나가지는 최소 유지 시간
 
     [Header("Current State")]
+    [SerializeField]
+    private LayerMask groundLayer;
     public bool onGround;
     public bool pressingKey; // 이동키를 누르고 있는지 여부
     private bool turboMode;
@@ -39,6 +42,7 @@ public class KirbyController : MonoBehaviour, IPlayerController
     private Vector2 desiredVelocity; // 이동하고 싶어 하는 Velocity값
     private Vector2 moveVelocity; // 실제 이동할 Velocity 값
     private float directionX; // 누르고 있는 방향 왼쪽: -1, 오른쪽 +1
+    private float turboDirectionX; // 누르고 있는 방향 왼쪽: -1, 오른쪽 +1
     private float maxSpeedChangeAmount; // 현재 적용 할 수 있는 최대 속도 변경량
     private float acceleration; // 현재 적용되는 가속도
     private float deceleration; // 현재 적용되는 감속도
@@ -88,8 +92,8 @@ public class KirbyController : MonoBehaviour, IPlayerController
         // 바운스 상태에서 입력이 없으면, 계속 바운스 vector 유지
         if (isBouncing)
         {
-            if(pressingKey) {isBouncing = false;}
-            else  return;
+            if (pressingKey) { isBouncing = false; }
+            else return;
         }
 
 
@@ -97,6 +101,7 @@ public class KirbyController : MonoBehaviour, IPlayerController
         {
             // 터보 speed로 이동
             desiredVelocity = new Vector2(transform.localScale.x, 0f) * turboSpeed;
+            turboDirectionX = desiredVelocity.x; // 현재 가려는 방향
         }
         else
         {
@@ -114,7 +119,7 @@ public class KirbyController : MonoBehaviour, IPlayerController
         // 바운스 상태에서는 땅이 닿으면, 바운스 상태 종료
         if (isBouncing)
         {
-            if(onGround) { isBouncing = false; }
+            if (onGround) { isBouncing = false; }
             return;
         }
         //현재 velocity 값을 가져오기
@@ -134,13 +139,24 @@ public class KirbyController : MonoBehaviour, IPlayerController
     // Hack: 임시로 Wall tag 만듬
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // 벽 태그를 가진 오브젝트와 충돌했는지, 현재 바운스 중이 아닌지, 터보모드인지 확인
-        if (collision.gameObject.CompareTag("Wall") && turboMode)
+        // 바운스 상태거나 터보모드가 아니면 감지할 필요 없음
+        if (isBouncing || !turboMode) return;
+        if ((groundLayer) != 0)
         {
-            if (isBouncing) return;
-            turboMode = false;
-            // 충돌 시 바운스 코루틴 시작
-            StartCoroutine(Bounce(collision));
+            // 모든 충돌 지점을 순회하며 수직 벽인지 확인합니다.
+            foreach (ContactPoint2D contact in collision.contacts)
+            {
+                Vector2 normal = contact.normal;
+
+                // 법선 벡터의 y 성분이 0에 가까운지 확인합니다.
+                if (Mathf.Abs(normal.y) < 0.01f)
+                {
+                    turboMode = false;
+                    // 충돌 시 바운스 코루틴 시작
+                    StartCoroutine(Bounce(collision));
+                    return;
+                }
+            }
         }
     }
 
@@ -181,6 +197,25 @@ public class KirbyController : MonoBehaviour, IPlayerController
 
     // 가속도 적용 없이 바로 최고 속도로 이동
     private void runWithoutAcceleration()
+    {
+
+        //현재 이동 x 방향과, 움직여야 하는 방향 x값의 부호가 다르다는 것은. 방향키를 바꿨다는 뜻으로, turnSpeed를 적용한다
+        if (Mathf.Sign(turboDirectionX) != Mathf.Sign(moveVelocity.x))
+        {
+            maxSpeedChangeAmount = turboDecceleration * Time.deltaTime;
+
+            //현재 velocity 값과, 가야 되는 velocity 값의 차이를 구하되, 현재 최대 속도변경량을 넘지 않은 값을 반환
+            moveVelocity.x = Mathf.MoveTowards(moveVelocity.x, desiredVelocity.x, maxSpeedChangeAmount);
+        }
+        else
+        {
+            // 방향이 같으면 단순하게, 누른 방향 * 최대속도 linearVelocity 값을 Rigidbody 전달
+            moveVelocity.x = desiredVelocity.x;
+        }
+        _rb.linearVelocity = moveVelocity;
+    }
+
+    private void TurboWithAcceleration()
     {
         // 가속도나 감속이 없으면
         //단순하게, 누른 방향 * 최대속도 linearVelocity 값을 Rigidbody 전달
