@@ -45,8 +45,8 @@ public class PlayerController : MonoBehaviour, IPlayerController
     private LayerMask wallLayer;
 
     private float currentGravity;
-    private float coyoteTimeCounter; // ???? ???? ?? ???? ???? ???? ?��?
-    private float jumpBufferCounter; // ???? ??? ???? ?��?
+    private float coyoteTimeCounter; // ???? ???? ?? ???? ???? ???? ?��?
+    private float jumpBufferCounter; // ???? ??? ???? ?��?
     private float dashTimeCounter;
     // ???? ????
     public bool IsGrounded { get; private set; }
@@ -55,6 +55,8 @@ public class PlayerController : MonoBehaviour, IPlayerController
     private bool isDashing;
     private int dashCount;
     private bool isFastFalling;
+    private int facingDirection = 1; // 1: 오른쪽, -1: 왼쪽
+    private Vector3 originalScale; // 원본 크기 저장
 
     private void Awake()
     {
@@ -64,6 +66,12 @@ public class PlayerController : MonoBehaviour, IPlayerController
         currentGravity = jumpDcceleration;
         wallLayer = LayerMask.GetMask("Ground");
         dashCount = maxDashCount;
+
+        // 원본 크기 저장
+        originalScale = transform.localScale;
+
+        // 원본 크기 저장
+        originalScale = transform.localScale;
 
         // Rigidbody ????
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
@@ -118,7 +126,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
         TimeCounters();
     }
 
-    // ?��? ??????
+    // ?��? ??????
     private void TimeCounters()
     {
         // ???? ???? (????) & ????? ???
@@ -134,7 +142,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
         else
             coyoteTimeCounter -= Time.deltaTime;
 
-        // ???? ?��? ?????, ??? ?????? Damping ??
+        // ???? ?��? ?????, ??? ?????? Damping ??
         if (isDashing)
         {
             dashTimeCounter -= Time.deltaTime;
@@ -172,9 +180,23 @@ public class PlayerController : MonoBehaviour, IPlayerController
             accel *= airAccelMulti;
             decel *= airDecelMulti;
         }
+        // 바라보는 방향 업데이트 및 스프라이트 회전
+        if (moveInput.x > 0)
+        {
+            facingDirection = 1;
+            transform.localScale = originalScale; // 오른쪽
+        }
+        else if (moveInput.x < 0)
+        {
+            facingDirection = -1;
+            Vector3 flippedScale = originalScale;
+            flippedScale.x = -originalScale.x;
+            transform.localScale = flippedScale; // 왼쪽 (X축 반전)
+        }
+
         float targetX = moveInput.x * maxSpeed;
         float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
-        // ????? ???????? ????? ????
+        // 이동 방향에 따른 새로운 X축 속도 계산
         float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
         rb.linearVelocityX = newX; 
     }
@@ -292,12 +314,13 @@ public class PlayerController : MonoBehaviour, IPlayerController
     // ???, ??? ?? ??? ???? ??????? linearVelocity?? ?????? moveInput.normalized * dashSpeed??.
     private void Dash()
     {
-        if (moveInput == Vector2.zero) return;
         if (dashCount <= 0) return;
         isDashing = true;
         dashCount -= 1;
         dashTimeCounter = dashTime;
-        rb.linearVelocity = moveInput.normalized * dashSpeed;
+
+        // 항상 바라보는 방향으로 대시
+        rb.linearVelocity = new Vector2(facingDirection * dashSpeed, 0);
     }
 
     // ??? ?? ????, ??? ?????? ????? ????
