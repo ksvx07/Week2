@@ -5,7 +5,7 @@ public class KirbyTurboMode : MonoBehaviour
     #region Reference
     Rigidbody2D rb;
     KirbyController kirbyController;
-    [SerializeField] SpriteRenderer renderer;
+    [SerializeField] SpriteRenderer spriteRenderer;
     #endregion
     [Header("Trail")]
     [SerializeField] private TrailRenderer trail;
@@ -32,13 +32,13 @@ public class KirbyTurboMode : MonoBehaviour
     {
         trail.emitting = true;
         rb.excludeLayers = LayerMask.GetMask("Breakable");
-        renderer.color = Color.red;
+        spriteRenderer.color = Color.red;
     }
 
     private void TurboModeDeActive()
     {
         trail.emitting = false;
         rb.excludeLayers = 0;
-        renderer.color = Color.white;
+        spriteRenderer.color = Color.white;
     }
 }

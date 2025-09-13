@@ -121,6 +121,8 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
     #region 입력 처리
     private void OnMove(InputAction.CallbackContext ctx)
     {
+        if (PlayerManager.Instance.IsHold) return;
+
         moveInput = ctx.ReadValue<Vector2>();
     }
 
