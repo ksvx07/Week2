@@ -9,9 +9,9 @@ public class RespawnManager : MonoBehaviour
 
     #region Checkpoint System
     [Header("Checkpoint System")]
-    [SerializeField] private Vector3 defaultSpawn = Vector3.zero;
+    [SerializeField] private Transform defaultSpawn;
 
-    private Transform player => PlayerManager.Instance._currentPlayerPrefab.transform;
+    private Transform player => PlayerManager.Instance?._currentPlayerPrefab?.transform;
     private int currentCheckpointId = 0;
     private Vector3 currentSpawnPosition;
     private Dictionary<int, Vector3> checkpoints = new Dictionary<int, Vector3>();
@@ -48,8 +48,8 @@ public class RespawnManager : MonoBehaviour
     #region Checkpoint System Methods
     private void InitializeCheckpointSystem()
     {
-        currentSpawnPosition = defaultSpawn;
-        checkpoints[0] = defaultSpawn;
+        currentSpawnPosition = defaultSpawn.position;
+        checkpoints[0] = defaultSpawn.position;
         SpawnPlayerAtCheckpoint();
     }
 
@@ -94,7 +94,6 @@ public class RespawnManager : MonoBehaviour
     {
         if (player == null)
         {
-            Debug.LogError("[RespawnManager] Player Transform is not assigned!");
             return false;
         }
         return true;
@@ -114,14 +113,15 @@ public class RespawnManager : MonoBehaviour
     {
         if (!ValidatePlayer()) return;
         
-        player.localPosition = currentSpawnPosition;
+        player.position = currentSpawnPosition;
+        CameraController.Instance.Cam.transform.position = currentSpawnPosition + new Vector3(0,0,-10f);
         OnPlayerSpawned?.Invoke(currentSpawnPosition);
     }
 
     public void ResetCheckpoints()
     {
         currentCheckpointId = 0;
-        currentSpawnPosition = defaultSpawn;
+        currentSpawnPosition = defaultSpawn.position;
         Debug.Log("[RespawnManager] Checkpoints reset to default");
     }
     #endregion
