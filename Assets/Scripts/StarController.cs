@@ -26,17 +26,7 @@ public class StarController : MonoBehaviour, IPlayerController
     [SerializeField] private float jumpBufferTime = 0.1f;   // ���� ���� ����
 
     [Header("Wall Jump")]
-    [SerializeField] private float wallCheckDistance = 0.4f;
-    [SerializeField] private float wallJumpXSpeed = 5f;
-    [SerializeField] private float wallJumpYSpeed = 0f;
     [SerializeField] private float wallSlideMaxSpeed = 2f;
-
-    [Header("Dash")]
-    [SerializeField] private float dashSpeed = 20f;
-    [SerializeField] private float dashTime = 0.1f;
-    [SerializeField] private float maxSpeedAfterDashX = 5f;
-    [SerializeField] private float maxSpeedAfterDashUp = 5f;
-    [SerializeField] private int maxDashCount = 1;
 
     [Header("AirTimeMultiplier")]
     [SerializeField] private float airAccelMulti = 0.05f;

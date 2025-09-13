@@ -5,7 +5,6 @@ public class FollowMissile : MonoBehaviour
 {
     [SerializeField] private float _shootingSpeed = 8f;
     [SerializeField] private float _rotateSpeed = 150f;
-    [SerializeField] private float _updateInterval = 0.05f; // 연산 주기 (초)
 
     private MissileBodyController _missileController;
     private Transform _player => PlayerManager.Instance._currentPlayerPrefab.transform;

@@ -118,6 +118,7 @@ MonoBehaviour:
   wallSlideMaxSpeed: 2
   dashSpeed: 20
   dashTime: 0.1
+  dashCooldown: 0.3
   maxSpeedAfterDashX: 5
   maxSpeedAfterDashUp: 5
   maxDashCount: 1

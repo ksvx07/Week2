@@ -4,7 +4,6 @@ public class DeathZone : MonoBehaviour
 {
     #region 상태변수
     [Header("Death Zone Settings")]
-    [SerializeField] private bool playDeathSound = true;
     [SerializeField] private float respawnDelay = 0.5f;
     #endregion
     
