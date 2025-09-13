@@ -92,6 +92,8 @@ public class PlayerController : MonoBehaviour, IPlayerController
 
     private void OnMove(InputAction.CallbackContext ctx)
     {
+        if (PlayerManager.Instance.IsHold) return;
+
         moveInput = ctx.ReadValue<Vector2>();
     }
 

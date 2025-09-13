@@ -1,17 +1,15 @@
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class CameraController : MonoBehaviour
 {
     [SerializeField] private Camera Cam;
-    [SerializeField] private Transform Player;
     [SerializeField] private float SmoothTime = 0.2f;
     [SerializeField] private CameraClamp Clamp;
 
     [Header("DeadZone / SoftZone")]
-    [SerializeField] private Vector2 deadZoneSize = new Vector2(2f, 1f);   // �÷��̾ �� ���� �ȿ� ������ ī�޶� ����
-    [SerializeField] private Vector2 softZoneSize = new Vector2(4f, 2f);   // DeadZone�� �Ѿ SoftZone���� �� �� ī�޶� �������ϰ� ����
+    [SerializeField] private Vector2 deadZoneSize = new Vector2(7f, 2f);   // �÷��̾ �� ���� �ȿ� ������ ī�޶� ����
+    [SerializeField] private Vector2 softZoneSize = new Vector2(4f, 1f);   // DeadZone�� �Ѿ SoftZone���� �� �� ī�޶� �������ϰ� ����
+    [SerializeField] private Vector3 _velocity = new Vector3(4, 4, 4);
 
     [Header("Zoom In Out")]
     [SerializeField] private float MaxZoomIn = 3f;
@@ -19,18 +17,18 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float ZoomLerpSpeed = 1f;
     [SerializeField] private float SpeedThreshold = 5f;
 
-    private Vector3 _velocity = new Vector3(2, 2, 2);
+    private Transform Player => PlayerManager.Instance._currentPlayer.transform;
     private float targetZoom;
     private Rigidbody2D _rb;
 
-    public static CameraController instance = null;
+    public static CameraController Instance;
     public bool IsTriggerZoom { get; private set; }
 
     private void Awake()
     {
-        if(null == instance)
+        if(null == Instance)
         {
-            instance = this;
+            Instance = this;
 
             DontDestroyOnLoad(gameObject);
         }
@@ -39,18 +37,8 @@ public class CameraController : MonoBehaviour
             Destroy(gameObject);
         }
 
-        Player = GameObject.FindWithTag("Player").transform;
+        Cam = GetComponent<Camera>();
         _rb = Player.GetComponent<Rigidbody2D>();
-    }
-
-    private void LateUpdate()
-    {
-        
-    }
-
-    private void FixedUpdate()
-    {
-        
     }
 
     private void Update()
@@ -65,47 +53,53 @@ public class CameraController : MonoBehaviour
         }
     }
 
-    public void SetPlayer(Transform player)
-    {
-        Player = player;
-    }
-
     private Vector3 HandleFollow()
     {
         Vector3 camPos = transform.position;
         Vector3 playerPos = Player.position;
 
-        Vector2 dz = deadZoneSize;   // DeadZone ũ��
-        Vector2 sz = softZoneSize;   // SoftZone ũ��
+        Vector2 dz = deadZoneSize;   // DeadZone 크기
+        Vector2 sz = softZoneSize;   // SoftZone 크기
 
         float newX = camPos.x;
         float newY = camPos.y;
 
-        // x
+        // --- X축 ---
         float deltaX = playerPos.x - camPos.x;
+        float absDeltaX = Mathf.Abs(deltaX);
 
-        if (Mathf.Abs(deltaX) > dz.x)
+        if (absDeltaX > dz.x + sz.x)
         {
-            // DeadZone ����� SmoothDamp�� ���󰡱�
+            // DeadZone + SoftZone 밖 → 플레이어 중앙에 오도록 SmoothDamp
             newX = Mathf.SmoothDamp(camPos.x, playerPos.x, ref _velocity.x, SmoothTime);
+        }
+        else if (absDeltaX > dz.x)
+        {
+            // DeadZone 밖, SoftZone 안 → 천천히 따라감
+            float factor = (absDeltaX - dz.x) / sz.x; // 0~1 비율
+            newX += deltaX * factor * 0.1f;           // 이동량 조정
         }
         else
         {
-            // DeadZone �ȿ����� ��¦ ���󰡵��� ���� ����
-            float moveFactorX = deltaX / dz.x;
-            newX += moveFactorX * SmoothTime / 2f;
+            // DeadZone 안 → 거의 움직이지 않음
+            newX += deltaX * 0.05f;
         }
 
-        // y
+        // --- Y축 ---
         float deltaY = playerPos.y - camPos.y;
+        float absDeltaY = Mathf.Abs(deltaY);
 
-        if (Mathf.Abs(deltaY) > dz.y)
+        if (absDeltaY > dz.y + sz.y)
         {
-            // DeadZone ���̸� SmoothDamp
             newY = Mathf.SmoothDamp(camPos.y, playerPos.y, ref _velocity.y, SmoothTime);
         }
-        // DeadZone ���̸� Y���� ����
+        else if (absDeltaY > dz.y)
+        {
+            float factor = (absDeltaY - dz.y) / sz.y;
+            newY += deltaY * factor * 0.1f;
+        }
 
+        // 맵 Clamp는 여기서 처리하지 않고, Clamp.HandleClamp(desiredPos)에서 적용 가능
         return new Vector3(newX, newY, camPos.z);
     }
 

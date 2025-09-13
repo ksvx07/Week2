@@ -15,23 +15,33 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private Button leftButton;
     [SerializeField] private Button rightButton;
 
-    private List<StageSwitch> StageSwitch;
-    private GameObject _currentPlayer;
+    public GameObject _currentPlayer { get; private set; }
     private PlayerInput inputActions;
 
-    private bool _isHold = false;
+    public bool IsHold { get; private set; }
     private Vector2 _inputNavi = Vector2.zero;
     private Vector3 _originScale = Vector3.zero;
     private Vector3 _MaxScale = new Vector3(1.2f, 1.2f, 1.2f);
-    private float _selectPanelSpeed = 10f;
-
+    private float _selectPanelSpeed = 60f;
     private Button _currentButton;
+
+    public static  PlayerManager Instance;
 
     private void Awake()
     {
+        if(null == Instance)
+        {
+            Instance = this;
+
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+
         inputActions = new PlayerInput();
         _currentPlayer = GameObject.FindWithTag("Player");
-        StageSwitch = FindObjectsByType<StageSwitch>(FindObjectsSortMode.None).ToList();
 
         upButton.onClick.AddListener(() => { SetActivePlayer(_currentPlayer, players.Find(x => x.name == upButton.name)); });
         downButton.onClick.AddListener(() => { SetActivePlayer(_currentPlayer, players.Find(x => x.name == downButton.name)); });
@@ -41,36 +51,36 @@ public class PlayerManager : MonoBehaviour
 
     private void OnEnable()
     {
-        inputActions.Player.Enable();
         inputActions.UI.Enable();
-
-        inputActions.Player.Hold.started += OnHold;
-        inputActions.Player.Hold.canceled += OnHold;
-        inputActions.UI.Move.started += OnSelectPlayer;
-        inputActions.UI.Move.canceled += OnSelectPlayer;
+        
+        inputActions.UI.Hold.started += OnHold;
+        inputActions.UI.Hold.canceled += OnHold;
+        inputActions.UI.Select.started += OnSelectPlayer;
+        inputActions.UI.Select.canceled += OnSelectPlayer;
     }
 
     private void OnDisable()
     {
-        inputActions.Player.Hold.started -= OnHold;
-        inputActions.Player.Hold.canceled -= OnHold;
-        inputActions.UI.Move.started -= OnSelectPlayer;
-        inputActions.UI.Move.canceled -= OnSelectPlayer;
+        inputActions.UI.Hold.started -= OnHold;
+        inputActions.UI.Hold.canceled -= OnHold;
+        inputActions.UI.Select.started -= OnSelectPlayer;
+        inputActions.UI.Select.canceled -= OnSelectPlayer;
 
-        inputActions.Player.Disable();
         inputActions.UI.Disable();
     }
 
     private void OnHold(InputAction.CallbackContext ctx)
     {
         if (ctx.started)
-            _isHold = true;
+        {
+            IsHold = true;
+        }
         else if (ctx.canceled)
         {
-            _isHold = false;
+            IsHold = false;
 
             // 홀드 상태 취소되면, 그 선택되어있던 버튼 클릭 invoke
-            if(_currentButton  != null) _currentButton.onClick.Invoke();
+            if (_currentButton  != null) _currentButton.onClick.Invoke();
         }
     }
 
@@ -81,8 +91,6 @@ public class PlayerManager : MonoBehaviour
 
     private void Highlight(Button button)
     {
-        if (_currentButton == button) return;
-
         if (_currentButton != null) _currentButton.OnDeselect(null);
 
         _currentButton = button;
@@ -92,11 +100,12 @@ public class PlayerManager : MonoBehaviour
     private void Update()
     {
         // 키 눌렀을 때 변환
-        if (_isHold)
+        if (IsHold)
         {
-            Time.timeScale = 0.3f;
+            Time.timeScale = 0.1f;
+            Time.fixedDeltaTime = 0.02f * Time.timeScale;
 
-            if(!selectPlayerPanel.activeSelf) selectPlayerPanel.SetActive(true);
+            if (!selectPlayerPanel.activeSelf) selectPlayerPanel.SetActive(true);
             selectPlayerPanel.transform.position = _currentPlayer.transform.position;
             selectPlayerPanel.transform.localScale = Vector3.Lerp(selectPlayerPanel.transform.localScale, _MaxScale, _selectPanelSpeed * Time.deltaTime);
 
@@ -118,8 +127,9 @@ public class PlayerManager : MonoBehaviour
         else
         {
             Time.timeScale = 1f;
+            Time.fixedDeltaTime = 0.02f * Time.timeScale;
 
-            if(selectPlayerPanel.activeSelf) selectPlayerPanel.SetActive(false);
+            if (selectPlayerPanel.activeSelf) selectPlayerPanel.SetActive(false);
             selectPlayerPanel.transform.localScale = Vector3.Lerp(selectPlayerPanel.transform.localScale, _originScale, _selectPanelSpeed * Time.deltaTime);
 
         }
@@ -152,19 +162,11 @@ public class PlayerManager : MonoBehaviour
     {
         var lastPosition = _lastPlayer.transform.position;
         var lastVelocity = _lastPlayer.GetComponent<Rigidbody2D>().linearVelocity;
-        Debug.Log(lastVelocity);
         _lastPlayer.SetActive(false);
 
         _currentPlayer = _nowPlayer;
         _currentPlayer.transform.position = lastPosition;
         _currentPlayer.SetActive(true);
         _currentPlayer.GetComponent<IPlayerController>().OnEnableSetVelocity(lastVelocity.x, lastVelocity.y);
-        Debug.Log(_currentPlayer.GetComponent<Rigidbody2D>().linearVelocity);
-
-        camControlelr.SetPlayer(_currentPlayer.transform);
-        foreach (var stageSwitch in StageSwitch)
-        {
-            stageSwitch.SetPlayer(_currentPlayer.transform);
-        }
     }
 }

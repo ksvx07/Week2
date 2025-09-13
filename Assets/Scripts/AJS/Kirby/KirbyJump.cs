@@ -14,7 +14,10 @@ public class KirbyJump : MonoBehaviour
     [Tooltip("최고 높이까지 걸리는 시간, 2배시 총 점프 시간")]
     public float timeToJumpApex = 1.2f;  // 실제로는 떨어질 때 걸리는 시간, (하강시 중력값 동일할 경우 2배시 총 점프 시간)
 
+    public float fixedGravity; // 점프하지 않을 때의 기본 중력
+
     private bool desiredJump; // 점프버튼을 누르면 true, 실제 점프가 실행된 후에 false
+    private bool isJumping; // 점프버튼을 누르면 true, 실제 점프가 실행된 후에 false
     private float _jumpForce; //  내가 설정한 점프 높이랑, 구한 위 중력값을 바탕으로 물리공식으로 필요한 파워 계산
 
     private void Awake()
@@ -24,7 +27,16 @@ public class KirbyJump : MonoBehaviour
     }
     private void Update()
     {
-        setBaseGravity();
+        if (_groundCheck.GetOnGround())
+        {
+            isJumping = false;
+            _rb.gravityScale = fixedGravity;
+        }
+        else
+        {
+            setJumpGravity();
+        }
+
     }
 
     private void FixedUpdate()
@@ -35,6 +47,9 @@ public class KirbyJump : MonoBehaviour
         //desiredJump을 true 일 경에는, 계속 점프 실행을 시도 합니다
         if (desiredJump)
         {
+            isJumping = true;
+
+            setJumpGravity();
             // 점프 수행시 적용해야 할 jumpVelocity 값을 계산 후 적용 합니다
             PerformJump();
 
@@ -52,7 +67,7 @@ public class KirbyJump : MonoBehaviour
     /// <summary>
     /// 설정한 점프 높이 값과 점프 시간을 토대로 알맞은 중력값을 새로 설정합니다
     /// </summary>
-    private void setBaseGravity()
+    private void setJumpGravity()
     {
         // 내가 설정한 점프 높이랑, 점프 시간을 바탕으로 물리공식으로 중력을 재설정
         // 지루하고 현학적인 등가속도 공식

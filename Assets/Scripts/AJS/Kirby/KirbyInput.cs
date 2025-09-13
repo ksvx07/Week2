@@ -65,6 +65,8 @@ public class KirbyInput : MonoBehaviour
     }
     void OnMoveInput(InputAction.CallbackContext context)
     {
+        if (PlayerManager.Instance.IsHold) return;
+
         _playerMove.OnMoveInput(context.ReadValue<Vector2>());
     }
 }
