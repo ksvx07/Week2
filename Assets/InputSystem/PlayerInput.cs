@@ -177,61 +177,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""WASD"",
-                    ""id"": ""f15f1be1-6906-4e28-bbcc-26867ce71c2a"",
-                    ""path"": ""2DVector"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""up"",
-                    ""id"": ""2ad6b7d8-f54a-46b2-b496-454d68465636"",
-                    ""path"": ""<Keyboard>/w"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""down"",
-                    ""id"": ""70dddf65-4fcd-4cb3-a9d9-ac1324c9d394"",
-                    ""path"": ""<Keyboard>/s"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""left"",
-                    ""id"": ""57aa210b-52b8-46bf-8be9-0b785ad3fc6d"",
-                    ""path"": ""<Keyboard>/a"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""right"",
-                    ""id"": ""bcc5eeba-764b-44d5-9fe4-7ed01f6a5843"",
-                    ""path"": ""<Keyboard>/d"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
                     ""name"": """",
                     ""id"": ""f5bfd7b7-169a-45df-8927-d88752c2852c"",
                     ""path"": ""<Gamepad>/dpad"",
@@ -250,17 +195,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""eb8abed1-3354-43a3-bd1e-61b6c593ca50"",
-                    ""path"": ""<Keyboard>/z"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -289,7 +223,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""4b06ce23-eae0-4767-84e5-6bfc1de70d7b"",
-                    ""path"": ""<Keyboard>/x"",
+                    ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -324,15 +258,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""QuckSwitch"",
-                    ""type"": ""Button"",
-                    ""id"": ""b8e742f9-6806-48e1-94ae-8fa196e0491e"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""SelectPlayer"",
                     ""type"": ""Value"",
                     ""id"": ""f79f3a47-ac9a-4e54-8c08-6325c58e9bda"",
@@ -340,13 +265,42 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""QuickSwitchRight"",
+                    ""type"": ""Button"",
+                    ""id"": ""cb062c4c-a003-4e1a-8aff-81b9c739e522"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""QuickSwitchLeft"",
+                    ""type"": ""Button"",
+                    ""id"": ""c89ba81a-3054-4657-adfd-3bab1f791632"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
                 {
                     ""name"": """",
                     ""id"": ""ace45573-8401-4c92-bdc4-ae86b281bee6"",
-                    ""path"": ""<Keyboard>/shift"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": ""Hold(pressPoint=0.3)"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SwitchHold"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""58bd4922-75f1-4fa8-b41a-ec09cb0bb8f2"",
+                    ""path"": ""<Keyboard>/a"",
                     ""interactions"": ""Hold(pressPoint=0.3)"",
                     ""processors"": """",
                     ""groups"": """",
@@ -362,17 +316,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""SwitchHold"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""2c4b4831-741a-4055-9f7d-524d79c87130"",
-                    ""path"": ""<Keyboard>/shift"",
-                    ""interactions"": ""Tap"",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""QuckSwitch"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -430,6 +373,28 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""action"": ""SelectPlayer"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""86700d91-9702-4eb5-93b5-00002e6152fe"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": ""Tap"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""QuickSwitchRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e7dab9f2-61b2-4547-992e-2e2353b51933"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": ""Tap"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""QuickSwitchLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -444,8 +409,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_SwitchHold = m_UI.FindAction("SwitchHold", throwIfNotFound: true);
-        m_UI_QuckSwitch = m_UI.FindAction("QuckSwitch", throwIfNotFound: true);
         m_UI_SelectPlayer = m_UI.FindAction("SelectPlayer", throwIfNotFound: true);
+        m_UI_QuickSwitchRight = m_UI.FindAction("QuickSwitchRight", throwIfNotFound: true);
+        m_UI_QuickSwitchLeft = m_UI.FindAction("QuickSwitchLeft", throwIfNotFound: true);
     }
 
     ~@PlayerInput()
@@ -646,8 +612,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_UI;
     private List<IUIActions> m_UIActionsCallbackInterfaces = new List<IUIActions>();
     private readonly InputAction m_UI_SwitchHold;
-    private readonly InputAction m_UI_QuckSwitch;
     private readonly InputAction m_UI_SelectPlayer;
+    private readonly InputAction m_UI_QuickSwitchRight;
+    private readonly InputAction m_UI_QuickSwitchLeft;
     /// <summary>
     /// Provides access to input actions defined in input action map "UI".
     /// </summary>
@@ -664,13 +631,17 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @SwitchHold => m_Wrapper.m_UI_SwitchHold;
         /// <summary>
-        /// Provides access to the underlying input action "UI/QuckSwitch".
-        /// </summary>
-        public InputAction @QuckSwitch => m_Wrapper.m_UI_QuckSwitch;
-        /// <summary>
         /// Provides access to the underlying input action "UI/SelectPlayer".
         /// </summary>
         public InputAction @SelectPlayer => m_Wrapper.m_UI_SelectPlayer;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/QuickSwitchRight".
+        /// </summary>
+        public InputAction @QuickSwitchRight => m_Wrapper.m_UI_QuickSwitchRight;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/QuickSwitchLeft".
+        /// </summary>
+        public InputAction @QuickSwitchLeft => m_Wrapper.m_UI_QuickSwitchLeft;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -700,12 +671,15 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @SwitchHold.started += instance.OnSwitchHold;
             @SwitchHold.performed += instance.OnSwitchHold;
             @SwitchHold.canceled += instance.OnSwitchHold;
-            @QuckSwitch.started += instance.OnQuckSwitch;
-            @QuckSwitch.performed += instance.OnQuckSwitch;
-            @QuckSwitch.canceled += instance.OnQuckSwitch;
             @SelectPlayer.started += instance.OnSelectPlayer;
             @SelectPlayer.performed += instance.OnSelectPlayer;
             @SelectPlayer.canceled += instance.OnSelectPlayer;
+            @QuickSwitchRight.started += instance.OnQuickSwitchRight;
+            @QuickSwitchRight.performed += instance.OnQuickSwitchRight;
+            @QuickSwitchRight.canceled += instance.OnQuickSwitchRight;
+            @QuickSwitchLeft.started += instance.OnQuickSwitchLeft;
+            @QuickSwitchLeft.performed += instance.OnQuickSwitchLeft;
+            @QuickSwitchLeft.canceled += instance.OnQuickSwitchLeft;
         }
 
         /// <summary>
@@ -720,12 +694,15 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @SwitchHold.started -= instance.OnSwitchHold;
             @SwitchHold.performed -= instance.OnSwitchHold;
             @SwitchHold.canceled -= instance.OnSwitchHold;
-            @QuckSwitch.started -= instance.OnQuckSwitch;
-            @QuckSwitch.performed -= instance.OnQuckSwitch;
-            @QuckSwitch.canceled -= instance.OnQuckSwitch;
             @SelectPlayer.started -= instance.OnSelectPlayer;
             @SelectPlayer.performed -= instance.OnSelectPlayer;
             @SelectPlayer.canceled -= instance.OnSelectPlayer;
+            @QuickSwitchRight.started -= instance.OnQuickSwitchRight;
+            @QuickSwitchRight.performed -= instance.OnQuickSwitchRight;
+            @QuickSwitchRight.canceled -= instance.OnQuickSwitchRight;
+            @QuickSwitchLeft.started -= instance.OnQuickSwitchLeft;
+            @QuickSwitchLeft.performed -= instance.OnQuickSwitchLeft;
+            @QuickSwitchLeft.canceled -= instance.OnQuickSwitchLeft;
         }
 
         /// <summary>
@@ -803,18 +780,25 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSwitchHold(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "QuckSwitch" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnQuckSwitch(InputAction.CallbackContext context);
-        /// <summary>
         /// Method invoked when associated input action "SelectPlayer" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSelectPlayer(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "QuickSwitchRight" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnQuickSwitchRight(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "QuickSwitchLeft" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnQuickSwitchLeft(InputAction.CallbackContext context);
     }
 }

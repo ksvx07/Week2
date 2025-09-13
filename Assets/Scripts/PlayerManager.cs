@@ -58,16 +58,18 @@ public class PlayerManager : MonoBehaviour
         inputActions.UI.SwitchHold.canceled += OnSwitchPlayerCancled;
         inputActions.UI.SelectPlayer.performed += ChangeSelectPlayer;
 
-        inputActions.UI.QuckSwitch.performed += QuickSwitchPlayer;
+        inputActions.UI.QuickSwitchRight.performed += QuickSwitchPlayerRight;
+        inputActions.UI.QuickSwitchLeft.performed += QuickSwitchPlayerLeft;
     }
 
     private void OnDisable()
     {
-        inputActions.UI.SwitchHold.performed -= OnSwithPlayerHold; // 홀드키 0.5초 이상 누르면 OnSwithPlayerHold 호출
+        inputActions.UI.SwitchHold.performed -= OnSwithPlayerHold; // 홀드키 0.2초 이상 누르면 OnSwithPlayerHold 호출
         inputActions.UI.SwitchHold.canceled -= OnSwitchPlayerCancled;
         inputActions.UI.SelectPlayer.performed -= ChangeSelectPlayer;
 
-        inputActions.UI.QuckSwitch.performed -= QuickSwitchPlayer;
+        inputActions.UI.QuickSwitchRight.performed -= QuickSwitchPlayerRight;
+        inputActions.UI.QuickSwitchLeft.performed -= QuickSwitchPlayerLeft;
 
         inputActions.UI.Disable();
     }
@@ -136,8 +138,12 @@ public class PlayerManager : MonoBehaviour
     {
         if (context.phase == InputActionPhase.Performed)
         {
-            // 1초 이상 Shift 키를 눌렀을 때, 선택 UI 활성화
-            AcitveSelectUI();
+            // 선택 UI가 활성화 되지 않았으면
+            if (!isSelectUIActive)
+            {
+                // 0.2초 이상 홀드 키를 눌렀을 때, 선택 UI 활성화
+                AcitveSelectUI();
+            }
         }
     }
 
@@ -153,20 +159,22 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-
-
-    private void QuickSwitchPlayer(InputAction.CallbackContext context)
+    private void QuickSwitchPlayerRight(InputAction.CallbackContext context)
     {
-        print("변경키 짧게 누름: 바로변경");
+        print("e 키 누름: 오른쪽 플레이어로 변경");
 
-        if (currentPlayer + 1 < players.Count)
-        {
-            selectPlayer++;
-        }
-        else
-        {
-            selectPlayer = 0;
-        }
+        // 현재 플레이어 인덱스를 1 증가시키고, 플레이어 수 이상이면 0으로 순환
+        selectPlayer = (currentPlayer + 1) % players.Count;
+
+        ActiveSelectPlayer(currentPlayer, selectPlayer);
+    }
+    private void QuickSwitchPlayerLeft(InputAction.CallbackContext context)
+    {
+        print("q 키 누름: 왼쪽 플레이어로 변경");
+
+        // 현재 플레이어 인덱스를 1 감소시키고, 0 미만이면 마지막 인덱스로 순환
+        selectPlayer = (currentPlayer - 1 + players.Count) % players.Count;
+
         ActiveSelectPlayer(currentPlayer, selectPlayer);
     }
 
