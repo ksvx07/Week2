@@ -15,7 +15,7 @@ public class PlayerManager : MonoBehaviour
     private bool isSelectUIActive = false;  // UI가 현재 활성화되어 있는지 여부
 
     [SerializeField] private List<GameObject> players;
-    
+
 
     [SerializeField] private CameraController camControlelr;
     [SerializeField] private GameObject selectPlayerPanel;
@@ -24,7 +24,6 @@ public class PlayerManager : MonoBehaviour
     private PlayerInput inputActions;
 
     public bool IsHold { get; private set; }
-    private Vector3 _originScale = Vector3.zero;
     private Vector3 _MaxScale = new Vector3(1.2f, 1.2f, 1.2f);
     [SerializeField] private float _selectPanelSpeed = 60f;
     private Coroutine pannelActive;
@@ -58,7 +57,7 @@ public class PlayerManager : MonoBehaviour
         inputActions.UI.SwitchHold.performed += OnSwithPlayerHold; // 홀드키 0.5초 이상 누르면 OnSwithPlayerHold 호출
         inputActions.UI.SwitchHold.canceled += OnSwitchPlayerCancled;
         inputActions.UI.SelectPlayer.performed += ChangeSelectPlayer;
-            
+
         inputActions.UI.QuckSwitch.performed += QuickSwitchPlayer;
     }
 
@@ -111,19 +110,23 @@ public class PlayerManager : MonoBehaviour
 
         if (pannelActive != null)
         {
-        StopCoroutine(pannelActive);
+            StopCoroutine(pannelActive);
         }
-        pannelActive =StartCoroutine(ScalePanel(selectPlayerPanel.transform, _originScale, _MaxScale, _selectPanelSpeed));
+        pannelActive = StartCoroutine(ScaleOverTime());
         selectPlayerPanel.SetActive(true);
 
         isSelectUIActive = true;  // UI가 현재 활성화되어 있는지 여부
-}
+    }
 
-private void DeActiveSelectUI()
+    private void DeActiveSelectUI()
     {
         Time.timeScale = 1f;
         Time.fixedDeltaTime = 0.02f * Time.timeScale;
 
+        if (pannelActive != null)
+        {
+            StopCoroutine(pannelActive);
+        }
         selectPlayerPanel.SetActive(false);
         isSelectUIActive = false;
     }
@@ -175,7 +178,7 @@ private void DeActiveSelectUI()
         GameObject oldPlayerPrefab = players[oldPlayer];
         Transform lastPos = oldPlayerPrefab.transform;
         Vector2 lastVelocity = oldPlayerPrefab.GetComponent<Rigidbody2D>().linearVelocity;
-        oldPlayerPrefab.SetActive(false);   
+        oldPlayerPrefab.SetActive(false);
 
         _currentPlayerPrefab = players[newPlayer];
         _currentPlayerPrefab.transform.position = lastPos.position;
@@ -185,28 +188,38 @@ private void DeActiveSelectUI()
         currentPlayer = selectPlayer; // 인덱스 동기화
     }
 
-    IEnumerator ScalePanel(Transform targetTransform, Vector3 startScale, Vector3 endScale, float duration)
+    IEnumerator ScaleOverTime()
     {
+        selectPlayerPanel.SetActive(true);
+        selectPlayerPanel.transform.localScale = Vector3.zero;
+
+        Vector3 initialScale = selectPlayerPanel.transform.localScale;
         float elapsedTime = 0f;
 
-        // 경과 시간이 설정한 지속 시간보다 작을 때까지 루프를 실행합니다.
-        while (elapsedTime < duration)
+        // 경과 시간이 설정된 지속 시간보다 작을 때까지 반복
+        while (elapsedTime < _selectPanelSpeed)
         {
-            // t 값은 0부터 1까지 부드럽게 증가하는 비율입니다.
-            // 이 값이 Lerp 함수의 마지막 인자로 사용됩니다.
-            float t = elapsedTime / duration;
+            // 매 프레임마다 현재 플레이어의 위치를 추적
+            selectPlayerPanel.transform.position = _currentPlayerPrefab.transform.position;
 
-            // Vector3.Lerp를 사용하여 시작 크기에서 최종 크기로 보간합니다.
-            targetTransform.localScale = Vector3.Lerp(startScale, endScale, t);
+            // Time.deltaTime을 사용하여 경과 시간 계산 (Time.timeScale에 영향 받음)
+            elapsedTime += Time.deltaTime;
 
-            // 경과 시간을 업데이트합니다. Time.deltaTime은 이전 프레임으로부터의 시간입니다.
-            elapsedTime += Time.unscaledDeltaTime;
+            // 진행률을 0.0에서 1.0 사이로 계산
+            float t = Mathf.Clamp01(elapsedTime / _selectPanelSpeed);
 
-            // 다음 프레임까지 기다립니다.
+            // Lerp 함수로 크기를 부드럽게 보간
+            selectPlayerPanel.transform.localScale = Vector3.Lerp(initialScale, _MaxScale, t);
+
+            // 다음 프레임까지 대기
             yield return null;
         }
-
-        // 루프가 끝난 후, 최종 크기를 정확하게 설정하여 오차를 방지합니다.
-        targetTransform.localScale = endScale;
+        // 이 시점부터는 패널의 위치만 추적하고 크기 애니메이션은 종료
+        while (true)
+        {
+            selectPlayerPanel.transform.position = _currentPlayerPrefab.transform.position;
+            yield return null;
+        }
     }
+
 }

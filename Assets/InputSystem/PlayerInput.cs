@@ -347,7 +347,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""name"": """",
                     ""id"": ""ace45573-8401-4c92-bdc4-ae86b281bee6"",
                     ""path"": ""<Keyboard>/shift"",
-                    ""interactions"": ""Hold"",
+                    ""interactions"": ""Hold(pressPoint=0.3)"",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""SwitchHold"",
