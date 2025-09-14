@@ -98,7 +98,6 @@ GameObject:
   - component: {fileID: 963339374398426870}
   - component: {fileID: 7626367255073039629}
   - component: {fileID: 4840283980013670351}
-  - component: {fileID: 4678346302036502132}
   m_Layer: 0
   m_Name: PatrolEnemy
   m_TagString: Enemy
@@ -186,19 +185,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &4678346302036502132
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4928782226090271233}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f63ecef4b75749248a4d349eccbc56d5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  respawnDelay: 0.5
 --- !u!1 &6040313261494051666
 GameObject:
   m_ObjectHideFlags: 0
