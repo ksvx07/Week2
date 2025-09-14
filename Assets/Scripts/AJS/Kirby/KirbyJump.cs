@@ -17,7 +17,7 @@ public class KirbyJump : MonoBehaviour
     public float fixedGravity; // 점프하지 않을 때의 기본 중력
 
     private bool desiredJump; // 점프버튼을 누르면 true, 실제 점프가 실행된 후에 false
-    private bool isJumping; // 점프버튼을 누르면 true, 실제 점프가 실행된 후에 false
+    private bool isGround; // 점프버튼을 누르면 true, 실제 점프가 실행된 후에 false
     private float _jumpForce; //  내가 설정한 점프 높이랑, 구한 위 중력값을 바탕으로 물리공식으로 필요한 파워 계산
 
     private void Awake()
@@ -29,14 +29,20 @@ public class KirbyJump : MonoBehaviour
     {
         if (_groundCheck.GetOnGround())
         {
-            isJumping = false;
+            isGround = true;
             _rb.gravityScale = fixedGravity;
         }
         else
         {
+            isGround = false;
             setJumpGravity();
         }
 
+    }
+
+    private void OnDisable()
+    {
+        isGround = false;
     }
 
     private void FixedUpdate()
@@ -47,8 +53,6 @@ public class KirbyJump : MonoBehaviour
         //desiredJump을 true 일 경에는, 계속 점프 실행을 시도 합니다
         if (desiredJump)
         {
-            isJumping = true;
-
             setJumpGravity();
             // 점프 수행시 적용해야 할 jumpVelocity 값을 계산 후 적용 합니다
             PerformJump();
@@ -109,7 +113,7 @@ public class KirbyJump : MonoBehaviour
     #region Public - PlayerInput
     public void OnJumpClicked()
     {
-        if (_groundCheck.GetOnGround())
+        if (isGround)
         {            
         // 점프키를 눌렀음을 확인
         desiredJump = true;
