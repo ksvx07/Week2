@@ -322,7 +322,6 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
     {
         if (jumpBufferCounter > 0 && coyoteTimeCounter > 0)
         {
-            Debug.Log("Jump!");
             isJumping = true;
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, maxJumpSpeed);
             jumpBufferCounter = 0;
