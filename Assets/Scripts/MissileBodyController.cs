@@ -27,15 +27,16 @@ public class MissileBodyController : MonoBehaviour
     void Update()
     {
         if (_activeMissiles.Count > _maxEnemy) return;
+        if(_player == null) return;
 
         var distance = Vector3.Distance(transform.position, _player.position);
-        Vector3 directionToTarget = _player.position - transform.position;
 
-        if (Mathf.Abs(distance) < 5f)
+        if (distance < 5f)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+            Vector2 dir = (_player.position - transform.position);
+            float anleZ = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 180f;
 
-            transform.rotation = targetRotation * Quaternion.Euler(0, 90, 0);
+            transform.rotation = Quaternion.Euler(0f, 0f, anleZ);
 
             if (Time.time - _shootingCurrentTime > shootingCooldown)
             {
@@ -72,4 +73,6 @@ public class MissileBodyController : MonoBehaviour
         bullet.SetActive(true);
         _activeMissiles.Add(bullet);
     }
+
+
 }

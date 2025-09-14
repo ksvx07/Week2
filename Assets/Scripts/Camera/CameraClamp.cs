@@ -6,10 +6,10 @@ public class CameraClamp : MonoBehaviour
     [SerializeField] private Camera cam;
     [SerializeField] private float SwitchSpeed;
 
-    [SerializeField] private float _minX;
-    [SerializeField] private float _maxX;
-    [SerializeField] private float _minY;
-    [SerializeField] private float _maxY;
+    [SerializeField] public float _minX;
+    [SerializeField] public float _maxX;
+    [SerializeField] public float _minY;
+    [SerializeField] public float _maxY;
 
     private int _defaultStageId = 1;
     private float _targetMinX, _targetMinY, _targetMaxX, _targetMaxY;

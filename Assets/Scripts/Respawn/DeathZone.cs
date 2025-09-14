@@ -40,6 +40,13 @@ public class DeathZone : MonoBehaviour
 
         Debug.Log($"[DeathZone] Player entered death zone at {transform.position}");
 
+        if(transform.parent.name == "Spike")
+        {
+            if(collision.gameObject.name == "Triangle")
+            {
+                return;
+            }
+        }
         // 플레이어 리스폰
         GameManager.Instance.RespawnPlayer();
     }

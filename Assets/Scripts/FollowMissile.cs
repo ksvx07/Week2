@@ -14,49 +14,62 @@ public class FollowMissile : MonoBehaviour
     {
         _missileController = missileController;
         _rb = GetComponent<Rigidbody2D>();
+
+        // 속도, 각속도 초기화
+        _rb.linearVelocity = Vector2.zero;
+        _rb.angularVelocity = 0f;
+
+        if(_player != null)
+        {
+            Vector2 toTarget = (Vector2)_player.position - (Vector2)transform.position;
+            float startAngle = Mathf.Atan2(toTarget.y, toTarget.x) * Mathf.Rad2Deg - 90f;
+            _rb.SetRotation(startAngle);
+        }
+        else
+        {
+            _rb.SetRotation(transform.eulerAngles.z);
+        }
     }
 
     void FixedUpdate()
     {
         if (_player == null) return;
 
-/*        Vector2 toTarget = ((Vector2)_player.position - _rb.position).normalized;
+        Vector2 toTarget = (Vector2)_player.position - _rb.position;
+        if (toTarget.sqrMagnitude < 0.0001f) return; // 너무 가까우면 무시
 
-        Vector2 forward = (Vector2)transform.up;
+        float currentAngle = _rb.rotation;
+        float targetAngle = Mathf.Atan2(toTarget.y, toTarget.x) * Mathf.Rad2Deg - 90f;
 
-        float rotateAmount = Vector3.Cross(forward, toTarget).z;
+        float delta = Mathf.DeltaAngle(currentAngle, targetAngle);
+        float maxStep = _rotateSpeed * Time.fixedDeltaTime;
+        float step = Mathf.Clamp(delta, -maxStep, maxStep);
 
-        _rb.angularVelocity = rotateAmount * _rotateSpeed;
+        _rb.MoveRotation(currentAngle + step);
 
-        _rb.linearVelocity = forward * _shootingSpeed;*/
-
-        if (_player == null) return;
-
-        // 목표 방향
-        Vector2 toTarget = ((Vector2)_player.position - _rb.position).normalized;
-        Vector2 forward = (Vector2)transform.up;
-
-        // Cross.z 로 회전량 계산 (원본과 동일)
-        float rotateAmount = Vector3.Cross(forward, toTarget).z;
-
-        // angularVelocity : MoveRotation 방식
-        float rotation = _rb.rotation + (rotateAmount * _rotateSpeed * Time.fixedDeltaTime);
-        _rb.MoveRotation(rotation);
-
-        // linearVelocity : velocity 방식
+        Vector2 forward = _rb.GetRelativeVector(Vector2.up);
         _rb.linearVelocity = forward * _shootingSpeed;
     }
 
-    private void OnTriggerEnter2D(UnityEngine.Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            gameObject.SetActive(false);
-            if (_missileController != null)
+            // Triangle 내려찍기 중이면 미사일만 사라지게
+            var triangle = collision.GetComponent<TrianglePlayerController>();
+            if (triangle != null && triangle.IsDownDash)
             {
-                _missileController._missilePool.Enqueue(gameObject);
-                _missileController._activeMissiles.Remove(gameObject);
+                gameObject.SetActive(false);
+                if (_missileController != null)
+                {
+                    _missileController._missilePool.Enqueue(gameObject);
+                    _missileController._activeMissiles.Remove(gameObject);
+                }
+                return;
             }
+
+            // 그 외에는 플레이어 리스폰 처리
+            GameManager.Instance.RespawnPlayer();
         }
     }
 }

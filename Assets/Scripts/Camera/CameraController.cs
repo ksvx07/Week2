@@ -20,6 +20,7 @@ public class CameraController : MonoBehaviour
     private Transform Player => PlayerManager.Instance?._currentPlayerPrefab?.transform;
     private float targetZoom;
     private Rigidbody2D _rb;
+    private bool _forceCentering = false;
 
     public static CameraController Instance;
     public bool IsTriggerZoom { get; private set; }
@@ -48,10 +49,24 @@ public class CameraController : MonoBehaviour
 
     private void Update()
     {
-        if (Player == null)
-            return;
+        if (Player == null) return;
 
-        var desiredPos = HandleFollow();
+        Vector3 desiredPos;
+
+        if (_forceCentering)
+        {
+            desiredPos = new Vector3(Player.position.x, Player.position.y, transform.position.z);
+
+            // 줌인 완료 판정 후 강제 모드 해제
+            if (Mathf.Abs(Cam.orthographicSize - MaxZoomIn) < 0.05f)
+            {
+                _forceCentering = false;
+            }
+        }
+        else
+        {
+            desiredPos = HandleFollow();
+        }
 
         transform.position = Clamp.HandleClamp(desiredPos);
 
@@ -121,13 +136,12 @@ public class CameraController : MonoBehaviour
     private void HandleZoomInOut()
     {
         var playerVelocity = _rb.linearVelocity;
-
         _velocity = playerVelocity;
        
         float speed = playerVelocity.magnitude;
         if (speed > SpeedThreshold)
         {
-            targetZoom = MaxZoomOut;
+            targetZoom = GetMaxAllowedZoom();
         }
         else
         {
@@ -140,11 +154,15 @@ public class CameraController : MonoBehaviour
     public void TriggerZoomOut(float targetZoom)
     {
         IsTriggerZoom = true;
-        Cam.orthographicSize = Mathf.Lerp(Cam.orthographicSize, targetZoom, Time.deltaTime * ZoomLerpSpeed);
+        float maxAllowedZoom = GetMaxAllowedZoom();
+        float clampedZoom = Mathf.Min(targetZoom, maxAllowedZoom);
+        Cam.orthographicSize = Mathf.Lerp(Cam.orthographicSize, clampedZoom, Time.deltaTime * ZoomLerpSpeed);
     }
 
     public void TriggerZoomIn(float targetZoom)
     {
+        _forceCentering = true;
+
         Cam.orthographicSize = Mathf.Lerp(Cam.orthographicSize, targetZoom, Time.deltaTime * ZoomLerpSpeed);
         IsTriggerZoom = false;
     }
@@ -155,5 +173,19 @@ public class CameraController : MonoBehaviour
         Vector3 center = new Vector3(transform.position.x, transform.position.y, 0f);
         Vector3 size = new Vector3(deadZoneSize.x * 2f, deadZoneSize.y * 2f, 0f);
         Gizmos.DrawWireCube(center, size);
+    }
+
+    private float GetMaxAllowedZoom()
+    {
+        // Clamp에서 min/max 값 가져오기
+        float mapWidth = Clamp._maxX - Clamp._minX;
+        float mapHeight = Clamp._maxY - Clamp._minY;
+
+        // 카메라 비율에 따라 최대 zoom 계산
+        float maxZoomByWidth = mapWidth / (2f * Cam.aspect);
+        float maxZoomByHeight = mapHeight / 2f;
+
+        // 둘 중 작은 값이 실제 최대 zoom
+        return Mathf.Min(maxZoomByWidth, maxZoomByHeight, MaxZoomOut);
     }
 }
