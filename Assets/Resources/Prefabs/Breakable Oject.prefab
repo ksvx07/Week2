@@ -66,7 +66,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.015585482, y: 0.0021578074}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -76,7 +76,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.0311729, y: 1.0043154}
+  m_Size: {x: 1.05, y: 1}
   m_EdgeRadius: 0
 --- !u!1 &3643832769396833774
 GameObject:
@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 8885684014672208897}
   - component: {fileID: 8364988329106854981}
   - component: {fileID: 3156672121598541445}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Breakable Oject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -107,7 +107,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -4.72, y: -1.1923, z: 0}
-  m_LocalScale: {x: 0.78169507, y: 5.646429, z: 1}
+  m_LocalScale: {x: 0.78169507, y: 4.319518, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3935510686621779998}

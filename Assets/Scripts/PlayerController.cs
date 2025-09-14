@@ -1,5 +1,3 @@
-using NUnit.Framework;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -24,6 +22,10 @@ public class PlayerController : MonoBehaviour, IPlayerController
     [SerializeField] private float maxDownSpeed = 5f;
     [SerializeField] private float coyoteTime = 0.1f;       // ????? ??? ????
     [SerializeField] private float jumpBufferTime = 0.1f;   // ???? ???? ????
+    [SerializeField] private float cornerRayPosX = 0.3f;
+    [SerializeField] private float cornerRayOffsetX = 0.1f;
+    [SerializeField] private float cornerRayLength = 0.1f;
+
 
     [Header("Wall Jump")]
     [SerializeField] private float wallCheckDistance = 0.4f;
@@ -59,8 +61,8 @@ public class PlayerController : MonoBehaviour, IPlayerController
     private bool isDashing;
     private int dashCount;
     private bool isFastFalling;
-    private int facingDirection = 1; // 1: ?ò§Î•∏Ï™Ω, -1: ?ôºÏ™?
-    private Vector3 originalScale; // ?õêÎ≥? ?Å¨Í∏? ????û•
+    private int facingDirection = 1; // 1: ?ÔøΩÔøΩÎ•∏Ï™Ω, -1: ?ÔøΩÔøΩÔøΩ?
+    private Vector3 originalScale; // ?ÔøΩÔøΩÔøΩ? ?ÔøΩÔøΩÔøΩ? ????ÔøΩÔøΩ
 
     private void Awake()
     {
@@ -71,10 +73,10 @@ public class PlayerController : MonoBehaviour, IPlayerController
         wallLayer = LayerMask.GetMask("Ground");
         dashCount = maxDashCount;
 
-        // ?õêÎ≥? ?Å¨Í∏? ????û•
+        // ?ÔøΩÔøΩÔøΩ? ?ÔøΩÔøΩÔøΩ? ????ÔøΩÔøΩ
         originalScale = transform.localScale;
 
-        // ?õêÎ≥? ?Å¨Í∏? ????û•
+        // ?ÔøΩÔøΩÔøΩ? ?ÔøΩÔøΩÔøΩ? ????ÔøΩÔøΩ
         originalScale = transform.localScale;
 
         // Rigidbody ????
@@ -85,8 +87,8 @@ public class PlayerController : MonoBehaviour, IPlayerController
     private void OnEnable()
     {
         inputActions.Player.Enable();
-        inputActions.Player.Move.performed += OnMove;
         inputActions.Player.Move.canceled += OnMove;
+        inputActions.Player.Move.performed += OnMove;
         inputActions.Player.Jump.started += OnJump;
         inputActions.Player.Jump.canceled += OffJump;
         inputActions.Player.Dash.performed += OnDash;
@@ -94,18 +96,18 @@ public class PlayerController : MonoBehaviour, IPlayerController
 
     private void OnDisable()
     {
-        inputActions.Player.Move.performed -= OnMove;
         inputActions.Player.Move.canceled -= OnMove;
+        inputActions.Player.Move.performed -= OnMove;
         inputActions.Player.Jump.started -= OnJump;
         inputActions.Player.Jump.canceled -= OffJump;
         inputActions.Player.Dash.performed -= OnDash;
         inputActions.Player.Disable();
+        moveInput = Vector2.zero;
     }
 
     private void OnMove(InputAction.CallbackContext ctx)
     {
         if (PlayerManager.Instance.IsHold) return;
-
         moveInput = ctx.ReadValue<Vector2>();
     }
 
@@ -166,6 +168,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
         if (!isDashing)
         {
             Jump();
+            CornerCorrection();
             WallJump();
             ApplyGravity();
             Move();
@@ -174,6 +177,30 @@ public class PlayerController : MonoBehaviour, IPlayerController
 
         //Debug.Log($"x: {rb.linearVelocity.x:F2}, y: {rb.linearVelocity.y:F2}");
     }
+
+
+
+    private void CornerCorrection()
+    {
+        RaycastHit2D CornerHitRight = Physics2D.Raycast(transform.position + new Vector3(cornerRayPosX, 0, 0), Vector2.up, cornerRayLength, wallLayer);
+        RaycastHit2D CornerHitRightOffset = Physics2D.Raycast(transform.position + new Vector3(cornerRayPosX + cornerRayOffsetX, 0, 0), Vector2.up, cornerRayLength, wallLayer);
+        RaycastHit2D CornerHitLeft = Physics2D.Raycast(transform.position + new Vector3(-cornerRayPosX, 0, 0), Vector2.up, cornerRayLength, wallLayer);
+        RaycastHit2D CornerHitLeftOffset = Physics2D.Raycast(transform.position + new Vector3(-cornerRayPosX - cornerRayOffsetX, 0, 0), Vector2.up, cornerRayLength, wallLayer);
+        Debug.DrawRay(transform.position + new Vector3(cornerRayPosX, 0, 0), Vector2.up * cornerRayLength, Color.red);
+        Debug.DrawRay(transform.position + new Vector3(cornerRayPosX + cornerRayOffsetX, 0, 0), Vector2.up * cornerRayLength, Color.red);
+        Debug.DrawRay(transform.position + new Vector3(-cornerRayPosX, 0, 0), Vector2.up * cornerRayLength, Color.red);
+        Debug.DrawRay(transform.position + new Vector3(-cornerRayPosX - cornerRayOffsetX, 0, 0), Vector2.up * cornerRayLength, Color.red);
+
+        if (!CornerHitRight && CornerHitRightOffset && moveInput.x <= 0)
+        {
+            rb.MovePosition(rb.position + new Vector2(-cornerRayPosX + cornerRayOffsetX, 0));
+        }
+        else if (!CornerHitLeft && CornerHitLeftOffset && moveInput.x >= 0)
+        {
+            rb.MovePosition(rb.position + new Vector2(cornerRayPosX - cornerRayOffsetX, 0));
+        }
+    }
+
 
     // ???
     private void Move()
@@ -185,23 +212,23 @@ public class PlayerController : MonoBehaviour, IPlayerController
             accel *= airAccelMulti;
             decel *= airDecelMulti;
         }
-        // Î∞îÎùºÎ≥¥Îäî Î∞©Ìñ• ?óÖ?ç∞?ù¥?ä∏ Î∞? ?ä§?îÑ?ùº?ù¥?ä∏ ?öå?†Ñ
+        // Î∞îÎùºÎ≥¥Îäî Î∞©Ìñ• ?ÔøΩÔøΩ?ÔøΩÔøΩ?ÔøΩÔøΩ?ÔøΩÔøΩ ÔøΩ? ?ÔøΩÔøΩ?ÔøΩÔøΩ?ÔøΩÔøΩ?ÔøΩÔøΩ?ÔøΩÔøΩ ?ÔøΩÔøΩ?ÔøΩÔøΩ
         if (moveInput.x > 0)
         {
             facingDirection = 1;
-            transform.localScale = originalScale; // ?ò§Î•∏Ï™Ω
+            transform.localScale = originalScale; // ?ÔøΩÔøΩÎ•∏Ï™Ω
         }
         else if (moveInput.x < 0)
         {
             facingDirection = -1;
             Vector3 flippedScale = originalScale;
             flippedScale.x = -originalScale.x;
-            transform.localScale = flippedScale; // ?ôºÏ™? (XÏ∂? Î∞òÏ†Ñ)
+            transform.localScale = flippedScale; // ?ÔøΩÔøΩÔøΩ? (XÔøΩ? Î∞òÏ†Ñ)
         }
 
         float targetX = moveInput.x * maxSpeed;
         float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
-        // ?ù¥?èô Î∞©Ìñ•?óê ?î∞Î•? ?ÉàÎ°úÏö¥ XÏ∂? ?Üç?èÑ Í≥ÑÏÇ∞
+        // ?ÔøΩÔøΩ?ÔøΩÔøΩ Î∞©Ìñ•?ÔøΩÔøΩ ?ÔøΩÔøΩÔøΩ? ?ÔøΩÔøΩÎ°úÏö¥ XÔøΩ? ?ÔøΩÔøΩ?ÔøΩÔøΩ Í≥ÑÏÇ∞
         float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
         rb.linearVelocityX = newX;
     }
@@ -329,7 +356,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
         dashTimeCounter = dashTime;
         dashCooldownCounter = dashCooldown;
 
-        // ?ï≠?ÉÅ Î∞îÎùºÎ≥¥Îäî Î∞©Ìñ•?úºÎ°? ????ãú
+        // ?ÔøΩÔøΩ?ÔøΩÔøΩ Î∞îÎùºÎ≥¥Îäî Î∞©Ìñ•?ÔøΩÔøΩÔøΩ? ????ÔøΩÔøΩ
         rb.linearVelocity = new Vector2(facingDirection * dashSpeed, 0);
     }
 

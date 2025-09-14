@@ -26,6 +26,7 @@ public class PlayerManager : MonoBehaviour
     private PlayerInput inputActions;
 
     public bool IsHold { get; private set; }
+    public bool IsTimeSlow { get; private set; }
     private Vector3 _MaxScale = new Vector3(1.2f, 1.2f, 1.2f);
     [SerializeField] private float _selectPanelSpeed = 60f;
     private Coroutine pannelActive;
@@ -59,23 +60,32 @@ public class PlayerManager : MonoBehaviour
     {
         inputActions.UI.Enable();
 
-        inputActions.UI.SwitchHold.performed += OnSwithPlayerHold; // 홀드키 0.5초 이상 누르면 OnSwithPlayerHold 호출
-        inputActions.UI.SwitchHold.canceled += OnSwitchPlayerCancled;
-        inputActions.UI.SelectPlayer.performed += ChangeSelectPlayer;
+        inputActions.UI.QuickSwitchRight.started += SlowTimeScale; // 일단 누르면 시간 느려짐
+        inputActions.UI.QuickSwitchLeft.started += SlowTimeScale;
 
-        inputActions.UI.QuickSwitchRight.performed += QuickSwitchPlayerRight;
+        inputActions.UI.QuickSwitchRight.performed += QuickSwitchPlayerRight; // 0.2초 전에 떼면 QuickSwitch 호출
         inputActions.UI.QuickSwitchLeft.performed += QuickSwitchPlayerLeft;
+
+        inputActions.UI.SwitchHold.performed += OnSwithPlayerHold; // 0.2초 이상 누르면 OnSwithPlayerHold 호출
+
+        inputActions.UI.SwitchHold.canceled += OnSwitchPlayerCancled;
+
+        inputActions.UI.SelectPlayer.performed += ChangeSelectPlayer;// 선택 완료하면 호출
     }
 
     private void OnDisable()
     {
-        inputActions.UI.SwitchHold.performed -= OnSwithPlayerHold; // 홀드키 0.2초 이상 누르면 OnSwithPlayerHold 호출
-        inputActions.UI.SwitchHold.canceled -= OnSwitchPlayerCancled;
-        inputActions.UI.SelectPlayer.performed -= ChangeSelectPlayer;
 
-        inputActions.UI.QuickSwitchRight.performed -= QuickSwitchPlayerRight;
+        inputActions.UI.QuickSwitchLeft.started -= SlowTimeScale;
+
+        inputActions.UI.QuickSwitchRight.performed -= QuickSwitchPlayerRight; // 0.2초 전에 떼면 QuickSwitch 호출
         inputActions.UI.QuickSwitchLeft.performed -= QuickSwitchPlayerLeft;
 
+        inputActions.UI.SwitchHold.performed -= OnSwithPlayerHold; // 0.2초 이상 누르면 OnSwithPlayerHold 호출
+
+        inputActions.UI.SwitchHold.canceled -= OnSwitchPlayerCancled;
+
+        inputActions.UI.SelectPlayer.performed -= ChangeSelectPlayer;// 선택 완료하면 호출
         inputActions.UI.Disable();
     }
 
@@ -107,11 +117,23 @@ public class PlayerManager : MonoBehaviour
 
     }
 
-    private void AcitveSelectUI()
+    private void SlowTimeScale(InputAction.CallbackContext context)
     {
+        if (IsTimeSlow) return;
+        IsTimeSlow = true;
         Time.timeScale = 0.1f;
         Time.fixedDeltaTime = 0.02f * Time.timeScale;
+    }
 
+    private void OriginalTimeScale()
+    {
+        IsTimeSlow = false;
+        Time.timeScale = 1f;
+        Time.fixedDeltaTime = 0.02f * Time.timeScale;
+    }
+
+    private void AcitveSelectUI()
+    {
         Vector3 screenPosition = Camera.main.WorldToScreenPoint(_currentPlayerPrefab.transform.position);
         selectPlayerPanel.GetComponent<RectTransform>().position = screenPosition;
 
@@ -121,15 +143,11 @@ public class PlayerManager : MonoBehaviour
         }
         pannelActive = StartCoroutine(ScaleOverTime());
         selectPlayerPanel.SetActive(true);
-
         isSelectUIActive = true;  // UI가 현재 활성화되어 있는지 여부
     }
 
     private void DeActiveSelectUI()
     {
-        Time.timeScale = 1f;
-        Time.fixedDeltaTime = 0.02f * Time.timeScale;
-
         if (pannelActive != null)
         {
             StopCoroutine(pannelActive);
@@ -175,7 +193,6 @@ public class PlayerManager : MonoBehaviour
     {
         // 현재 플레이어 인덱스를 1 감소시키고, 0 미만이면 마지막 인덱스로 순환
         selectPlayer = (currentPlayer - 1 + players.Count) % players.Count;
-
         ActiveSelectPlayer(currentPlayer, selectPlayer);
     }
 
@@ -193,6 +210,8 @@ public class PlayerManager : MonoBehaviour
 
     private void ActiveSelectPlayer(int oldPlayer, int newPlayer)
     {
+        OriginalTimeScale();
+
         // 같은 캐릭터로바꾸려면 return
         if (oldPlayer == newPlayer) return;
 
@@ -206,6 +225,7 @@ public class PlayerManager : MonoBehaviour
         _currentPlayerPrefab.SetActive(true);
         _currentPlayerPrefab.GetComponent<IPlayerController>().OnEnableSetVelocity(lastVelocity.x, lastVelocity.y);
 
+        HighLightSelectPlayer(oldPlayer, newPlayer);
         currentPlayer = selectPlayer; // 인덱스 동기화
     }
 
