@@ -142,8 +142,10 @@ public class KirbyController : MonoBehaviour, IPlayerController
     }
 
     // Hack: �ӽ÷� Wall tag ����
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionStay2D(Collision2D collision)
     {
+        print("닿음");
+
         // �ٿ ���°ų� �ͺ���尡 �ƴϸ� ������ �ʿ� ����
         if (isBouncing || !turboMode) return;
         if ((groundLayer) != 0)
@@ -164,6 +166,7 @@ public class KirbyController : MonoBehaviour, IPlayerController
             }
         }
     }
+
 
     private void InitializedCircle()
     {
