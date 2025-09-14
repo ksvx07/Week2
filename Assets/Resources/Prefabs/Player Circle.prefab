@@ -342,8 +342,8 @@ MonoBehaviour:
   maxTurnSpeed: 20
   maxAirAcceleration: 7
   maxAirDeceleration: 10
-  maxAirTurnSpeed: 20
-  turboSpeed: 13
+  maxAirTurnSpeed: 7
+  turboSpeed: 20
   turboDecceleration: 52
   bounceStrength: 5
   bounceHeight: 10
