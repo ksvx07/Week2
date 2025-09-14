@@ -208,6 +208,17 @@ public class PlayerManager : MonoBehaviour
         currentPlayer = selectPlayer; // 인덱스 동기화
     }
 
+    public void PlayerRespawn(float respawnTime)
+    {
+        _currentPlayerPrefab.SetActive(false);
+        Invoke("PlayerActive", respawnTime);
+    }
+
+    private void PlayerActive()
+    {
+        _currentPlayerPrefab.SetActive(true);
+    }
+
     private void ActiveSelectPlayer(int oldPlayer, int newPlayer)
     {
         OriginalTimeScale();

@@ -9322,6 +9322,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultSpawn: {fileID: 8615511515064678307}
+  respawnTime: 1
 --- !u!4 &1779215590
 Transform:
   m_ObjectHideFlags: 0

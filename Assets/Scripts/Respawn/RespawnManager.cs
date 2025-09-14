@@ -10,6 +10,7 @@ public class RespawnManager : MonoBehaviour
     #region Checkpoint System
     [Header("Checkpoint System")]
     [SerializeField] private Transform defaultSpawn;
+    [SerializeField] private float respawnTime;
 
     private Transform player => PlayerManager.Instance?._currentPlayerPrefab?.transform;
     private int currentCheckpointId = 0;
@@ -86,6 +87,7 @@ public class RespawnManager : MonoBehaviour
         
         ResetPlayerPhysics();
         SpawnPlayerAtCheckpoint();
+        PlayerManager.Instance.PlayerRespawn(respawnTime); // 단순히 껏다 키기
         
         Debug.Log($"[RespawnManager] Player respawned at checkpoint {currentCheckpointId}: {currentSpawnPosition}");
     }
