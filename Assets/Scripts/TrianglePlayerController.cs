@@ -33,6 +33,9 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
     [SerializeField] private float maxDownSpeed = 5f; //최대 낙하 속도
     [SerializeField] private float coyoteTime = 0.1f;       //코요테 타이머
     [SerializeField] private float jumpBufferTime = 0.1f;   //점프 버퍼 타이머
+    [SerializeField] private float cornerRayPosX = 0.3f;
+    [SerializeField] private float cornerRayOffsetX = 0.1f;
+    [SerializeField] private float cornerRayLength = 0.1f;
 
     [Header("Wall Jump")]
     [SerializeField] private float wallCheckDistance = 0.4f; //벽 체크 거리
@@ -195,11 +198,35 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
         if (!isDashing)
         {
             Jump();
+            CornerCorrection();
             WallJump();
             ApplyGravity();
             Move();
         }
     }
+
+
+    private void CornerCorrection()
+    {
+        RaycastHit2D CornerHitRight = Physics2D.Raycast(transform.position + new Vector3(cornerRayPosX, 0, 0), Vector2.up, cornerRayLength, wallLayer);
+        RaycastHit2D CornerHitRightOffset = Physics2D.Raycast(transform.position + new Vector3(cornerRayPosX + cornerRayOffsetX, 0, 0), Vector2.up, cornerRayLength, wallLayer);
+        RaycastHit2D CornerHitLeft = Physics2D.Raycast(transform.position + new Vector3(-cornerRayPosX, 0, 0), Vector2.up, cornerRayLength, wallLayer);
+        RaycastHit2D CornerHitLeftOffset = Physics2D.Raycast(transform.position + new Vector3(-cornerRayPosX - cornerRayOffsetX, 0, 0), Vector2.up, cornerRayLength, wallLayer);
+        Debug.DrawRay(transform.position + new Vector3(cornerRayPosX, 0, 0), Vector2.up * cornerRayLength, Color.red);
+        Debug.DrawRay(transform.position + new Vector3(cornerRayPosX + cornerRayOffsetX, 0, 0), Vector2.up * cornerRayLength, Color.red);
+        Debug.DrawRay(transform.position + new Vector3(-cornerRayPosX, 0, 0), Vector2.up * cornerRayLength, Color.red);
+        Debug.DrawRay(transform.position + new Vector3(-cornerRayPosX - cornerRayOffsetX, 0, 0), Vector2.up * cornerRayLength, Color.red);
+
+        if (!CornerHitRight && CornerHitRightOffset && moveInput.x <= 0)
+        {
+            rb.MovePosition(rb.position + new Vector2(-cornerRayPosX + cornerRayOffsetX, 0));
+        }
+        else if (!CornerHitLeft && CornerHitLeftOffset && moveInput.x >= 0)
+        {
+            rb.MovePosition(rb.position + new Vector2(cornerRayPosX - cornerRayOffsetX, 0));
+        }
+    }
+
 
     #endregion
 
