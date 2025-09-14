@@ -490,4 +490,6 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
             rb.linearVelocity = new Vector2(newVelX, newVelY);
     }
     #endregion
+
+    public bool IsDownDash => isDashing && rb.linearVelocity.y < 0;
 }
