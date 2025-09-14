@@ -80,7 +80,8 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
     #endregion
 
     private int dashCount; //남은 대쉬 횟수
-
+    private int facingDirection = 1; // 1: ?��른쪽, -1: ?���?
+    private Vector3 originalScale; // ?���? ?���? ????��
     #region 초기화
     private void Awake()
     {
@@ -91,6 +92,12 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
         currentGravity = jumpDcceleration;
         wallLayer = LayerMask.GetMask("Ground");
         dashCount = maxDashCount;
+
+        // ?���? ?���? ????��
+        originalScale = transform.localScale;
+
+        // ?���? ?���? ????��
+        originalScale = transform.localScale;
 
         // Rigidbody 설정
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
@@ -118,6 +125,7 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
         inputActions.Player.Dash.performed -= OnDash;
         moveInput = Vector2.zero;
         inputActions.Player.Disable();
+        isGrounded = false;
     }
     #endregion
 
@@ -276,6 +284,18 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
         // 이동 방향에 따라 속도 보간
         float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
 
+        if (moveInput.x > 0)
+        {
+            facingDirection = 1;
+            transform.localScale = originalScale; // ?��른쪽
+        }
+        else if (moveInput.x < 0)
+        {
+            facingDirection = -1;
+            Vector3 flippedScale = originalScale;
+            flippedScale.x = -originalScale.x;
+            transform.localScale = flippedScale; // ?���? (X�? 반전)
+        }
         if (moveInput.x != 0 && isGrounded && !isJumping)
         {
             rb.linearVelocity = new Vector2(newX, hopHeight);
