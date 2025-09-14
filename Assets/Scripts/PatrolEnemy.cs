@@ -30,10 +30,10 @@ public class PatrolEnemy : MonoBehaviour
     private void DetectGround()
     {
         if (isTurning) return;
-        RaycastHit2D hitForwardGround = Physics2D.Raycast(transform.position + groundCheck* Mathf.Sign(transform.localScale.x), Vector2.down, groundCheckDistance, groundLayer);
-        RaycastHit2D hitWall = Physics2D.Raycast(transform.position, Vector2.right, wallCheckDistance* Mathf.Sign(transform.localScale.x), groundLayer);
-        Debug.DrawRay(transform.position + groundCheck* Mathf.Sign(transform.localScale.x), Vector2.down * groundCheckDistance, Color.red);
-        Debug.DrawRay(transform.position, Vector2.right * wallCheckDistance* Mathf.Sign(transform.localScale.x), Color.blue);
+        RaycastHit2D hitForwardGround = Physics2D.Raycast(transform.position + groundCheck * Mathf.Sign(transform.localScale.x), Vector2.down, groundCheckDistance, groundLayer);
+        RaycastHit2D hitWall = Physics2D.Raycast(transform.position - new Vector3(0f, 0.3f, 0f), Vector2.right, wallCheckDistance * Mathf.Sign(transform.localScale.x), groundLayer);
+        Debug.DrawRay(transform.position + groundCheck * Mathf.Sign(transform.localScale.x), Vector2.down * groundCheckDistance, Color.red);
+        Debug.DrawRay(transform.position - new Vector3(0f, 0.3f, 0f), Vector2.right * wallCheckDistance * Mathf.Sign(transform.localScale.x), Color.blue);
         if (hitForwardGround.collider == null || hitWall.collider != null)
             isTurning = true;
     }
