@@ -115,7 +115,7 @@
                 {
                     "name": "",
                     "id": "be6fdd52-f7ba-4c58-8e0c-cca3e81c53a3",
-                    "path": "<Keyboard>/z",
+                    "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -137,7 +137,7 @@
                 {
                     "name": "",
                     "id": "4b06ce23-eae0-4767-84e5-6bfc1de70d7b",
-                    "path": "<Keyboard>/x",
+                    "path": "<Keyboard>/s",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -203,7 +203,7 @@
                 {
                     "name": "",
                     "id": "ace45573-8401-4c92-bdc4-ae86b281bee6",
-                    "path": "<Keyboard>/c",
+                    "path": "<Keyboard>/d",
                     "interactions": "Hold(duration=0.2,pressPoint=0.5)",
                     "processors": "",
                     "groups": "",
@@ -290,17 +290,6 @@
                 },
                 {
                     "name": "",
-                    "id": "b3b83200-7f19-4d21-9f79-3cd6b4f0d0c1",
-                    "path": "<Gamepad>/rightStick",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "SelectPlayer",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "86700d91-9702-4eb5-93b5-00002e6152fe",
                     "path": "<Keyboard>/d",
                     "interactions": "Tap",
@@ -315,17 +304,6 @@
                     "id": "e7dab9f2-61b2-4547-992e-2e2353b51933",
                     "path": "<Keyboard>/a",
                     "interactions": "Tap",
-                    "processors": "",
-                    "groups": "",
-                    "action": "QuickSwitchLeft",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "1bef163e-f737-4c94-a1c3-d64b615d8921",
-                    "path": "<Gamepad>/rightShoulder",
-                    "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "QuickSwitchLeft",
