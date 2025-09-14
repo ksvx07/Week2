@@ -445,6 +445,7 @@ MonoBehaviour:
   wallSlideMaxSpeed: 2
   dashSpeed: 30
   dashTime: 0.15
+  dashCooldown: 0.1
   maxSpeedAfterDashX: 5
   maxSpeedAfterDashUp: 5
   maxDashCount: 1
@@ -1956,15 +1957,7 @@ MonoBehaviour:
   maxDownSpeed: 10
   coyoteTime: 0.1
   jumpBufferTime: 0.1
-  wallCheckDistance: 0.4
-  wallJumpXSpeed: 5
-  wallJumpYSpeed: 0
   wallSlideMaxSpeed: 2
-  dashSpeed: 20
-  dashTime: 0.1
-  maxSpeedAfterDashX: 5
-  maxSpeedAfterDashUp: 5
-  maxDashCount: 1
   airAccelMulti: 0.05
   airDecelMulti: 0.1
   starRayGravityDistance: 0.4
@@ -2400,7 +2393,6 @@ MonoBehaviour:
   wallJumpXSpeed: 5
   wallJumpYSpeed: -1
   wallSlideMaxSpeed: 2
-  wallSlideDecceleration: 5
   dashSpeed: 20
   dashTime: 0.1
   maxSpeedAfterDashX: 5
@@ -2618,8 +2610,8 @@ MonoBehaviour:
   maxTurnSpeed: 20
   maxAirAcceleration: 7
   maxAirDeceleration: 10
-  maxAirTurnSpeed: 20
-  turboSpeed: 13
+  maxAirTurnSpeed: 7
+  turboSpeed: 20
   turboDecceleration: 52
   bounceStrength: 5
   bounceHeight: 10

@@ -142,7 +142,7 @@ public class KirbyController : MonoBehaviour, IPlayerController
     }
 
     // Hack: �ӽ÷� Wall tag ����
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionStay2D(Collision2D collision)
     {
         // �ٿ ���°ų� �ͺ���尡 �ƴϸ� ������ �ʿ� ����
         if (isBouncing || !turboMode) return;
@@ -164,6 +164,7 @@ public class KirbyController : MonoBehaviour, IPlayerController
             }
         }
     }
+
 
     private void InitializedCircle()
     {
@@ -240,22 +241,34 @@ public class KirbyController : MonoBehaviour, IPlayerController
         isFixedBouncing = true;
         isBouncing = true;
 
-        // ���� ���� ���͸� ������ ƨ�ܳ��� ������ ����
-        Vector2 normal = collision.contacts[0].normal;
+        Vector2 normal = Vector2.zero;
 
-        // ���� �ݴ� ����� ���� ���̸� ������ ���� �ӵ� ���� ����
-        Vector2 fixedBounceVelocity = new Vector2(
-            // ���� x�� ���� ������ �������� �ݴ� �������� ƨ��� ��
-            normal.x * bounceStrength,
-            // ������ ���̷� ƨ��� ��
-            bounceHeight
-        );
+        // collision.contacts 배열을 순회하며 조건을 만족하는 normal을 찾습니다.
+        foreach (ContactPoint2D contact in collision.contacts)
+        {
+            // y 성분의 절대값이 0.01f보다 작은 normal을 찾습니다.
+            if (Mathf.Abs(contact.normal.y) < 0.01f)
+            {
+                normal = contact.normal;
+                break; // 조건을 만족하는 normal을 찾았으므로 루프를 종료합니다.
+            }
+        }
 
-        // Rigidbody�� �ӵ� ����
-        _rb.linearVelocity = fixedBounceVelocity;
+        // 조건을 만족하는 normal이 있을 경우에만 나머지 로직을 실행합니다.
+        if (normal != Vector2.zero)
+        {
+            isFixedBouncing = true;
+            isBouncing = true;
+            Vector2 fixedBounceVelocity = new Vector2(
+                normal.x * bounceStrength,
+                bounceHeight
+            );
 
-        yield return new WaitForSeconds(bounceDuration);
-        isFixedBouncing = false;
+            _rb.linearVelocity = fixedBounceVelocity;
+
+            yield return new WaitForSeconds(bounceDuration);
+            isFixedBouncing = false;
+        }
     }
 
     #region Public - PlayerInput

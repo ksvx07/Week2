@@ -1,7 +1,10 @@
 using UnityEngine;
 
 public class BreakableObject : MonoBehaviour
-{
+{    private void Start()
+    {
+        RespawnManager.Instance.OnPlayerSpawned += PlayerSpawned;
+    }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
@@ -15,6 +18,11 @@ public class BreakableObject : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void PlayerSpawned(Vector3 _noNeed)
+    {
+        gameObject.SetActive(true);
     }
 
     public void TurbomodeDestoy()
