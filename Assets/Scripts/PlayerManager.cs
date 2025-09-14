@@ -53,7 +53,6 @@ public class PlayerManager : MonoBehaviour
         highlightPlayer = selectPlayer;
         _currentPlayerPrefab = players[currentPlayer];
         ActiveStartPlayer(startPlayer);
-        HighLightSelectPlayer(currentPlayer, highlightPlayer);
     }
 
     private void OnEnable()
@@ -153,6 +152,7 @@ public class PlayerManager : MonoBehaviour
         {
             StopCoroutine(pannelActive);
         }
+        IsHold = false;
         selectPlayerPanel.SetActive(false);
         isSelectUIActive = false;
     }
@@ -165,6 +165,7 @@ public class PlayerManager : MonoBehaviour
             // 선택 UI가 활성화 되지 않았으면
             if (!isSelectUIActive)
             {
+                IsHold = true;
                 // 0.2초 이상 홀드 키를 눌렀을 때, 선택 UI 활성화
                 AcitveSelectUI();
             }
@@ -185,6 +186,8 @@ public class PlayerManager : MonoBehaviour
 
     private void QuickSwitchPlayerRight(InputAction.CallbackContext context)
     {
+        // 선택창 활성화된 상태면 변경 불가능
+        if (IsHold) return;
         // 현재 플레이어 인덱스를 1 증가시키고, 플레이어 수 이상이면 0으로 순환
         selectPlayer = (currentPlayer + 1) % players.Count;
 
@@ -192,6 +195,9 @@ public class PlayerManager : MonoBehaviour
     }
     private void QuickSwitchPlayerLeft(InputAction.CallbackContext context)
     {
+        // 선택창 활성화된 상태면 변경 불가능
+        if (IsHold) return;
+
         // 현재 플레이어 인덱스를 1 감소시키고, 0 미만이면 마지막 인덱스로 순환
         selectPlayer = (currentPlayer - 1 + players.Count) % players.Count;
         ActiveSelectPlayer(currentPlayer, selectPlayer);
@@ -216,10 +222,10 @@ public class PlayerManager : MonoBehaviour
     private void ActiveSelectPlayer(int oldPlayer, int newPlayer)
     {
         OriginalTimeScale();
-        HighLightSelectPlayer(oldPlayer, newPlayer);
 
         // 같은 캐릭터로바꾸려면 return
         if (oldPlayer == newPlayer) return;
+        HighLightSelectPlayer(oldPlayer, newPlayer);
 
         GameObject oldPlayerPrefab = players[oldPlayer];
         Transform lastPos = oldPlayerPrefab.transform;
@@ -232,6 +238,7 @@ public class PlayerManager : MonoBehaviour
         _currentPlayerPrefab.GetComponent<IPlayerController>().OnEnableSetVelocity(lastVelocity.x, lastVelocity.y);
 
         currentPlayer = selectPlayer; // 인덱스 동기화
+        highlightPlayer = currentPlayer;
     }
 
     IEnumerator ScaleOverTime()
