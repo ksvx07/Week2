@@ -11,7 +11,7 @@ public class CameraClamp : MonoBehaviour
     [SerializeField] public float _minY;
     [SerializeField] public float _maxY;
 
-    private int _defaultStageId = 1;
+    [SerializeField] private int _defaultStageId = 1;
     private float _targetMinX, _targetMinY, _targetMaxX, _targetMaxY;
 
     private void Start()
