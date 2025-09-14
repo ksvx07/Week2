@@ -56,7 +56,7 @@ public class StarController : MonoBehaviour, IPlayerController
     private bool isGrounded;
     private bool isJumping;
     private bool isTouchingWall;
-    private bool isActiveAbility;
+    private bool isActiveAbility = true;
     private bool isStarClimbing;
     private bool isFastFalling;
 
