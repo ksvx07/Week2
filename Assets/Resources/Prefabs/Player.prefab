@@ -1280,7 +1280,7 @@ MonoBehaviour:
   maxAirAcceleration: 7
   maxAirDeceleration: 10
   maxAirTurnSpeed: 7
-  turboSpeed: 14.1
+  turboSpeed: 20
   turboDecceleration: 52
   bounceStrength: 5
   bounceHeight: 10
@@ -1626,6 +1626,9 @@ MonoBehaviour:
   maxDownSpeed: 10
   coyoteTime: 0.1
   jumpBufferTime: 0.1
+  cornerRayPosX: 0.3
+  cornerRayOffsetX: 0.1
+  cornerRayLength: 0.1
   wallCheckDistance: 0.4
   wallJumpXSpeed: 25
   wallJumpYSpeed: 15
@@ -2067,6 +2070,9 @@ MonoBehaviour:
   maxDownSpeed: 10
   coyoteTime: 0.2
   jumpBufferTime: 0.2
+  cornerRayPosX: 0.3
+  cornerRayOffsetX: 0.1
+  cornerRayLength: 0.1
   wallCheckDistance: 0.6
   wallJumpXSpeed: 5
   wallJumpYSpeed: -1

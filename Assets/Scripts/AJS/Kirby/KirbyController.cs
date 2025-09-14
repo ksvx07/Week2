@@ -259,9 +259,6 @@ public class KirbyController : MonoBehaviour, IPlayerController
         {
             isFixedBouncing = true;
             isBouncing = true;
-
-            print(normal);
-
             Vector2 fixedBounceVelocity = new Vector2(
                 normal.x * bounceStrength,
                 bounceHeight
