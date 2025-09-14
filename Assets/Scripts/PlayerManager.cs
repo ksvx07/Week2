@@ -134,6 +134,7 @@ public class PlayerManager : MonoBehaviour
 
     private void AcitveSelectUI()
     {
+        HighLightSelectPlayer(highlightPlayer, selectPlayer);
         Vector3 screenPosition = Camera.main.WorldToScreenPoint(_currentPlayerPrefab.transform.position);
         selectPlayerPanel.GetComponent<RectTransform>().position = screenPosition;
 
@@ -215,6 +216,7 @@ public class PlayerManager : MonoBehaviour
     private void ActiveSelectPlayer(int oldPlayer, int newPlayer)
     {
         OriginalTimeScale();
+        HighLightSelectPlayer(oldPlayer, newPlayer);
 
         // 같은 캐릭터로바꾸려면 return
         if (oldPlayer == newPlayer) return;
@@ -229,7 +231,6 @@ public class PlayerManager : MonoBehaviour
         _currentPlayerPrefab.SetActive(true);
         _currentPlayerPrefab.GetComponent<IPlayerController>().OnEnableSetVelocity(lastVelocity.x, lastVelocity.y);
 
-        HighLightSelectPlayer(oldPlayer, newPlayer);
         currentPlayer = selectPlayer; // 인덱스 동기화
     }
 
