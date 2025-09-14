@@ -110,7 +110,7 @@ public class GameManager : MonoBehaviour
     {
         if (respawnManager != null)
         {
-            respawnManager.RespawnPlayer();
+            respawnManager.PlayerDead();
         }
     }
 

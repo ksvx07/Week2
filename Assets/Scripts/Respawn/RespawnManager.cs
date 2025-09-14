@@ -81,16 +81,21 @@ public class RespawnManager : MonoBehaviour
         }
     }
 
-    public void RespawnPlayer()
+    public void PlayerDead()
     {
         if (!ValidatePlayer()) return;
-        
+        PlayerManager.Instance.PlayerSetActive(false);
+        Invoke("RespawnPlayer", respawnTime);
+    }
+
+    private void RespawnPlayer()
+    {
         ResetPlayerPhysics();
         SpawnPlayerAtCheckpoint();
-        PlayerManager.Instance.PlayerRespawn(respawnTime); // 단순히 껏다 키기
-        
+        PlayerManager.Instance.PlayerSetActive(true); // 상태 초기화를 위한 껐다 켜기
         Debug.Log($"[RespawnManager] Player respawned at checkpoint {currentCheckpointId}: {currentSpawnPosition}");
     }
+
 
     private bool ValidatePlayer()
     {
