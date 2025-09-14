@@ -103,6 +103,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
         inputActions.Player.Dash.performed -= OnDash;
         inputActions.Player.Disable();
         moveInput = Vector2.zero;
+        IsGrounded = false;
     }
 
     private void OnMove(InputAction.CallbackContext ctx)
