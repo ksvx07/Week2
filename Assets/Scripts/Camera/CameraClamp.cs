@@ -1,4 +1,4 @@
-using System.Security.Cryptography.X509Certificates;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraClamp : MonoBehaviour
@@ -11,7 +11,7 @@ public class CameraClamp : MonoBehaviour
     [SerializeField] public float _minY;
     [SerializeField] public float _maxY;
 
-    private int _defaultStageId = 1;
+    [SerializeField] private int _defaultStageId = 1;
     private float _targetMinX, _targetMinY, _targetMaxX, _targetMaxY;
 
     private void Start()
@@ -48,6 +48,19 @@ public class CameraClamp : MonoBehaviour
             _targetMinY = mapDefinition.minY;
             _targetMaxY = mapDefinition.maxY;
         }
+    }
+
+    public List<float> GetMapBounds()
+    {
+        var bounds = new List<float>
+        {
+            _minX,
+            _maxX,
+            _minY,
+            _maxY
+        };
+
+        return bounds;
     }
 
     private void SetInitMapBounds()
