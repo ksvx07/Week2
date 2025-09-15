@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Stage8
   m_EditorClassIdentifier: 
   Id: 8
-  minX: -16
-  maxX: 25
-  minY: -10
-  maxY: 30
+  minX: 199.8531
+  maxX: 240.8531
+  minY: -29.713932
+  maxY: 10.286074

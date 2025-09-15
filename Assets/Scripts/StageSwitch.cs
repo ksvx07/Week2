@@ -17,38 +17,62 @@ public class StageSwitch : MonoBehaviour
     private CameraClamp Clamp => CameraController.Instance.Clamp;
     private Transform Player => PlayerManager.Instance._currentPlayerPrefab.transform;
 
-    void Update()
-    {
-        if (Player == null) return;
+    private float prevPlayerX;
+    private float prevPlayerY;
+    private bool isPlayerInside;
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            isPlayerInside = true;
+            prevPlayerX = Player.position.x;
+            prevPlayerY = Player.position.y;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            isPlayerInside = false;
+        }
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (!isPlayerInside || Player == null) return;
         if (BeforeId == 0 || AfterId == 0) return;
 
         switch (direction)
         {
             case SwitchDirection.LeftToRight:
-                if (Player.position.x > transform.position.x)
+                if (prevPlayerX <= transform.position.x && Player.position.x > transform.position.x)
                     Clamp.SetMapBounds(AfterId);
-                else if(Player.position.x < transform.position.x)
+                else if (prevPlayerX >= transform.position.x && Player.position.x < transform.position.x)
                     Clamp.SetMapBounds(BeforeId);
                 break;
             case SwitchDirection.RightToLeft:
-                if (Player.position.x < transform.position.x)
+                if (prevPlayerX >= transform.position.x && Player.position.x < transform.position.x)
                     Clamp.SetMapBounds(AfterId);
-                else if (Player.position.x > transform.position.x)
+                else if (prevPlayerX <= transform.position.x && Player.position.x > transform.position.x)
                     Clamp.SetMapBounds(BeforeId);
                 break;
             case SwitchDirection.TopToBottom:
-                if (Player.position.y < transform.position.y)
+                if (prevPlayerY >= transform.position.y && Player.position.y < transform.position.y)
                     Clamp.SetMapBounds(AfterId);
-                else if (Player.position.y > transform.position.y)
+                else if (prevPlayerY <= transform.position.y && Player.position.y > transform.position.y)
                     Clamp.SetMapBounds(BeforeId);
                 break;
             case SwitchDirection.BottomToTop:
-                if (Player.position.y > transform.position.y)
+                if (prevPlayerY <= transform.position.y && Player.position.y > transform.position.y)
                     Clamp.SetMapBounds(AfterId);
-                else if (Player.position.y < transform.position.y)
+                else if (prevPlayerY >= transform.position.y && Player.position.y < transform.position.y)
                     Clamp.SetMapBounds(BeforeId);
                 break;
         }
+
+        prevPlayerX = Player.position.x;
+        prevPlayerY = Player.position.y;
     }
 }
