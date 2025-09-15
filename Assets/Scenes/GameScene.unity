@@ -16397,6 +16397,10 @@ PrefabInstance:
       value: ----Stage1----
       objectReference: {fileID: 0}
     - target: {fileID: 2677050032317667358, guid: 0a245011ae7e67b4a8546dc750f0c925, type: 3}
+      propertyPath: m_margin.z
+      value: -2.6059175
+      objectReference: {fileID: 0}
+    - target: {fileID: 2677050032317667358, guid: 0a245011ae7e67b4a8546dc750f0c925, type: 3}
       propertyPath: m_fontColor.b
       value: 0.630785
       objectReference: {fileID: 0}
@@ -17360,6 +17364,14 @@ PrefabInstance:
       propertyPath: Clamp
       value: 
       objectReference: {fileID: 1318149767}
+    - target: {fileID: 8958072894350101773, guid: 0a245011ae7e67b4a8546dc750f0c925, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -9.04
+      objectReference: {fileID: 0}
+    - target: {fileID: 8958072894350101773, guid: 0a245011ae7e67b4a8546dc750f0c925, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 2.5
+      objectReference: {fileID: 0}
     - target: {fileID: 9002252565788755914, guid: 0a245011ae7e67b4a8546dc750f0c925, type: 3}
       propertyPath: m_text
       value: "\uB124\uBAA8 S KEY\n\uC591 \uC606 \uB300\uC2DC\uAC00 \uAC00\uB2A5\uD574\uC694"
