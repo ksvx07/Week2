@@ -84,8 +84,8 @@ public class StarController : MonoBehaviour, IPlayerController
     private void OnEnable()
     {
         inputActions.Player.Enable();
-        inputActions.Player.Move.canceled += OnMove;
         inputActions.Player.Move.performed += OnMove;
+        inputActions.Player.Move.canceled += OnMove;
         inputActions.Player.Jump.started += OnJump;
         inputActions.Player.Jump.canceled += OffJump;
         inputActions.Player.Dash.performed += OnDash;
@@ -93,8 +93,8 @@ public class StarController : MonoBehaviour, IPlayerController
 
     private void OnDisable()
     {
-        inputActions.Player.Move.canceled -= OnMove;
         inputActions.Player.Move.performed -= OnMove;
+        inputActions.Player.Move.canceled -= OnMove;
         inputActions.Player.Jump.started -= OnJump;
         inputActions.Player.Jump.canceled -= OffJump;
         inputActions.Player.Dash.performed -= OnDash;
@@ -105,8 +105,8 @@ public class StarController : MonoBehaviour, IPlayerController
 
     private void OnMove(InputAction.CallbackContext ctx)
     {
-        // if (PlayerManager.Instance.IsHold) return;
-
+        if (PlayerManager.Instance.IsHold) return;
+        print("Move Input");
         moveInput = ctx.ReadValue<Vector2>();
     }
 
