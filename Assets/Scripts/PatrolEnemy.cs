@@ -20,12 +20,9 @@ public class PatrolEnemy : MonoBehaviour
     {
         groundLayer = LayerMask.GetMask("Ground");
         currentSpeed = enemyMaxSpeed;
+        RespawnManager.Instance.OnPlayerSpawned += PlayerSpawned;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-    }
 
     private void DetectGround()
     {
@@ -83,4 +80,10 @@ public class PatrolEnemy : MonoBehaviour
             GameManager.Instance.RespawnPlayer();
         }
     }
+
+    private void PlayerSpawned(Vector3 _noNeed)
+    {
+        gameObject.SetActive(true);
+    }
+
 }
