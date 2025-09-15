@@ -186,24 +186,35 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    /*    private void QuickSwitchPlayerRight(InputAction.CallbackContext context)
+    public void OnPlayerDead()
+    {
+        // ����â�� Ȱ��ȭ �� ���¿��ٸ�
+        if (isSelectUIActive)
         {
-            // ����â Ȱ��ȭ�� ���¸� ���� �Ұ���
-            if (IsHold) return;
-            // ���� �÷��̾� �ε����� 1 ������Ű��, �÷��̾� �� �̻��̸� 0���� ��ȯ
-            selectPlayer = (currentPlayer + 1) % players.Count;
-
+            //���� UI��Ȱ��ȭ
+            DeActiveSelectUI();
             ActiveSelectPlayer(currentPlayer, selectPlayer);
         }
-        private void QuickSwitchPlayerLeft(InputAction.CallbackContext context)
-        {
-            // ����â Ȱ��ȭ�� ���¸� ���� �Ұ���
-            if (IsHold) return;
+    }
 
-            // ���� �÷��̾� �ε����� 1 ���ҽ�Ű��, 0 �̸��̸� ������ �ε����� ��ȯ
-            selectPlayer = (currentPlayer - 1 + players.Count) % players.Count;
-            ActiveSelectPlayer(currentPlayer, selectPlayer);
-        }*/
+    /*    private void QuickSwitchPlayerRight(InputAction.CallbackContext context)
+            {
+                // ����â Ȱ��ȭ�� ���¸� ���� �Ұ���
+                if (IsHold) return;
+                // ���� �÷��̾� �ε����� 1 ������Ű��, �÷��̾� �� �̻��̸� 0���� ��ȯ
+                selectPlayer = (currentPlayer + 1) % players.Count;
+
+                ActiveSelectPlayer(currentPlayer, selectPlayer);
+            }
+            private void QuickSwitchPlayerLeft(InputAction.CallbackContext context)
+            {
+                // ����â Ȱ��ȭ�� ���¸� ���� �Ұ���
+                if (IsHold) return;
+
+                // ���� �÷��̾� �ε����� 1 ���ҽ�Ű��, 0 �̸��̸� ������ �ε����� ��ȯ
+                selectPlayer = (currentPlayer - 1 + players.Count) % players.Count;
+                ActiveSelectPlayer(currentPlayer, selectPlayer);
+            }*/
 
     private void HighLightSelectPlayer(int oldPlayer, int newPlayer)
     {

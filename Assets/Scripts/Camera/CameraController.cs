@@ -4,7 +4,7 @@ public class CameraController : MonoBehaviour
 {
     [SerializeField] public Camera Cam;
     [SerializeField] private float SmoothTime = 0.2f;
-    [SerializeField] private CameraClamp Clamp;
+    [SerializeField] public CameraClamp Clamp;
 
     [Header("DeadZone / SoftZone")]
     [SerializeField] private Vector2 deadZoneSize = new Vector2(7f, 2f);   // �÷��̾ �� ���� �ȿ� ������ ī�޶� ����

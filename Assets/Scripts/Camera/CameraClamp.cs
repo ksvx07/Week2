@@ -1,4 +1,4 @@
-using System.Security.Cryptography.X509Certificates;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraClamp : MonoBehaviour
@@ -48,6 +48,19 @@ public class CameraClamp : MonoBehaviour
             _targetMinY = mapDefinition.minY;
             _targetMaxY = mapDefinition.maxY;
         }
+    }
+
+    public List<float> GetMapBounds()
+    {
+        var bounds = new List<float>
+        {
+            _minX,
+            _maxX,
+            _minY,
+            _maxY
+        };
+
+        return bounds;
     }
 
     private void SetInitMapBounds()
