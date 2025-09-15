@@ -30,10 +30,10 @@ public class PatrolEnemy : MonoBehaviour
     private void DetectGround()
     {
         if (isTurning) return;
-        RaycastHit2D hitForwardGround = Physics2D.Raycast(transform.position + groundCheck* Mathf.Sign(transform.localScale.x), Vector2.down, groundCheckDistance, groundLayer);
-        RaycastHit2D hitWall = Physics2D.Raycast(transform.position, Vector2.right, wallCheckDistance* Mathf.Sign(transform.localScale.x), groundLayer);
-        Debug.DrawRay(transform.position + groundCheck* Mathf.Sign(transform.localScale.x), Vector2.down * groundCheckDistance, Color.red);
-        Debug.DrawRay(transform.position, Vector2.right * wallCheckDistance* Mathf.Sign(transform.localScale.x), Color.blue);
+        RaycastHit2D hitForwardGround = Physics2D.Raycast(transform.position + groundCheck * Mathf.Sign(transform.localScale.x), Vector2.down, groundCheckDistance, groundLayer);
+        RaycastHit2D hitWall = Physics2D.Raycast(transform.position - new Vector3(0f, 0.3f, 0f), Vector2.right, wallCheckDistance * Mathf.Sign(transform.localScale.x), groundLayer);
+        Debug.DrawRay(transform.position + groundCheck * Mathf.Sign(transform.localScale.x), Vector2.down * groundCheckDistance, Color.red);
+        Debug.DrawRay(transform.position - new Vector3(0f, 0.3f, 0f), Vector2.right * wallCheckDistance * Mathf.Sign(transform.localScale.x), Color.blue);
         if (hitForwardGround.collider == null || hitWall.collider != null)
             isTurning = true;
     }
@@ -65,5 +65,22 @@ public class PatrolEnemy : MonoBehaviour
             }
         }
         transform.Translate(transform.right * currentSpeed * Mathf.Sign(transform.localScale.x) * Time.fixedDeltaTime);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            // Triangle 내려찍기 중이면 미사일만 사라지게
+            var triangle = collision.GetComponent<TrianglePlayerController>();
+            if (triangle != null && triangle.IsDownDash)
+            {
+                gameObject.SetActive(false);
+                return;
+            }
+
+            // 그 외에는 플레이어 리스폰 처리
+            GameManager.Instance.RespawnPlayer();
+        }
     }
 }

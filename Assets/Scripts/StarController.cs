@@ -456,6 +456,7 @@ public class StarController : MonoBehaviour, IPlayerController
         {
             isJumping = true;
             rb.linearVelocity = avgNormal * starWallJumpSpeed;
+            jumpBufferCounter = 0;
             Debug.Log("Wall Jump");
         }
     }
