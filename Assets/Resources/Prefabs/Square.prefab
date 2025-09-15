@@ -112,6 +112,9 @@ MonoBehaviour:
   maxDownSpeed: 10
   coyoteTime: 0.1
   jumpBufferTime: 0.1
+  cornerRayPosX: 0.3
+  cornerRayOffsetX: 0.1
+  cornerRayLength: 0.1
   wallCheckDistance: 0.4
   wallJumpXSpeed: 10
   wallJumpYSpeed: 8
@@ -122,6 +125,9 @@ MonoBehaviour:
   maxSpeedAfterDashX: 5
   maxSpeedAfterDashUp: 5
   maxDashCount: 1
+  afterImagePrefab: {fileID: 0}
+  afterImageLifetime: 0.3
+  afterImageSpawnRate: 0.05
   airAccelMulti: 0.65
   airDecelMulti: 0.65
 --- !u!61 &6223981420285388871
