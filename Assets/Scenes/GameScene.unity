@@ -25143,6 +25143,7 @@ MonoBehaviour:
   Cam: {fileID: 1318149771}
   SmoothTime: 0.2
   Clamp: {fileID: 1318149767}
+  minMaxPos: {x: 6, y: 4}
   deadZoneSize: {x: 6, y: 2.5}
   softZoneSize: {x: 4, y: 1}
   _velocity: {x: 3, y: 3, z: 3}

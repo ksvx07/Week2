@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Stage992
   m_EditorClassIdentifier: 
   Id: 992
-  minX: 576.02045
-  maxX: 592.64044
+  minX: 574.0204
+  maxX: 594.6404
   minY: -8.7199135
   maxY: 50.06008

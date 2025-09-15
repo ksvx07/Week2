@@ -5,6 +5,7 @@ public class CameraController : MonoBehaviour
     [SerializeField] public Camera Cam;
     [SerializeField] private float SmoothTime = 0.2f;
     [SerializeField] public CameraClamp Clamp;
+    [SerializeField] private Vector2 minMaxPos;
 
     [Header("DeadZone / SoftZone")]
     [SerializeField] private Vector2 deadZoneSize = new Vector2(7f, 2f);   // �÷��̾ �� ���� �ȿ� ������ ī�޶� ����
@@ -27,7 +28,7 @@ public class CameraController : MonoBehaviour
 
     private void Awake()
     {
-        if(null == Instance)
+        if (null == Instance)
         {
             Instance = this;
 
@@ -69,7 +70,10 @@ public class CameraController : MonoBehaviour
         }
 
         transform.position = Clamp.HandleClamp(desiredPos);
-
+        Vector3 targetClampPos = transform.position;
+        targetClampPos.x = Mathf.Clamp(targetClampPos.x, Player.position.x - minMaxPos.x, Player.position.x + minMaxPos.x);
+        targetClampPos.y = Mathf.Clamp(targetClampPos.y, Player.position.y - minMaxPos.y, Player.position.y + minMaxPos.y);
+        transform.position = targetClampPos;
         if (!IsTriggerZoom)
         {
             HandleZoomInOut();
@@ -137,7 +141,7 @@ public class CameraController : MonoBehaviour
     {
         var playerVelocity = _rb.linearVelocity;
         _velocity = playerVelocity;
-       
+
         float speed = playerVelocity.magnitude;
         if (speed > SpeedThreshold)
         {
