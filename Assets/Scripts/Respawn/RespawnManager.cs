@@ -85,6 +85,7 @@ public class RespawnManager : MonoBehaviour
     {
         if (!ValidatePlayer()) return;
         PlayerManager.Instance.PlayerSetActive(false);
+        PlayerManager.Instance.OnPlayerDead();
         Invoke("RespawnPlayer", respawnTime);
     }
 
