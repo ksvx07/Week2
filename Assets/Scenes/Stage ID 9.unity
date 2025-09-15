@@ -5282,30 +5282,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 2575406721597680265, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
-      propertyPath: turboSpeed
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 2575406721597680265, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
-      propertyPath: maxAirTurnSpeed
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 2575406721597680265, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
-      propertyPath: maxAirDeceleration
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 3648097124188813456, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963316746436120388, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963316746436120388, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
