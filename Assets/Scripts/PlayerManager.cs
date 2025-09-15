@@ -59,11 +59,11 @@ public class PlayerManager : MonoBehaviour
     {
         inputActions.UI.Enable();
 
-        inputActions.UI.QuickSwitchRight.started += SlowTimeScale; // 일단 누르면 시간 느려짐
-        inputActions.UI.QuickSwitchLeft.started += SlowTimeScale;
+/*        inputActions.UI.QuickSwitchRight.started += SlowTimeScale; // 일단 누르면 시간 느려짐
+        inputActions.UI.QuickSwitchLeft.started += SlowTimeScale;*/
 
-        inputActions.UI.QuickSwitchRight.performed += QuickSwitchPlayerRight; // 0.2초 전에 떼면 QuickSwitch 호출
-        inputActions.UI.QuickSwitchLeft.performed += QuickSwitchPlayerLeft;
+/*        inputActions.UI.QuickSwitchRight.performed += QuickSwitchPlayerRight; // 0.2초 전에 떼면 QuickSwitch 호출
+        inputActions.UI.QuickSwitchLeft.performed += QuickSwitchPlayerLeft;*/
 
         inputActions.UI.SwitchHold.performed += OnSwithPlayerHold; // 0.2초 이상 누르면 OnSwithPlayerHold 호출
 
@@ -75,10 +75,10 @@ public class PlayerManager : MonoBehaviour
     private void OnDisable()
     {
 
-        inputActions.UI.QuickSwitchLeft.started -= SlowTimeScale;
+/*        inputActions.UI.QuickSwitchLeft.started -= SlowTimeScale;*/
 
-        inputActions.UI.QuickSwitchRight.performed -= QuickSwitchPlayerRight; // 0.2초 전에 떼면 QuickSwitch 호출
-        inputActions.UI.QuickSwitchLeft.performed -= QuickSwitchPlayerLeft;
+/*        inputActions.UI.QuickSwitchRight.performed -= QuickSwitchPlayerRight; // 0.2초 전에 떼면 QuickSwitch 호출
+        inputActions.UI.QuickSwitchLeft.performed -= QuickSwitchPlayerLeft;*/
 
         inputActions.UI.SwitchHold.performed -= OnSwithPlayerHold; // 0.2초 이상 누르면 OnSwithPlayerHold 호출
 
@@ -116,7 +116,7 @@ public class PlayerManager : MonoBehaviour
 
     }
 
-    private void SlowTimeScale(InputAction.CallbackContext context)
+    private void SlowTimeScale()
     {
         if (IsTimeSlow) return;
         IsTimeSlow = true;
@@ -160,6 +160,8 @@ public class PlayerManager : MonoBehaviour
 
     public void OnSwithPlayerHold(InputAction.CallbackContext context)
     {
+        SlowTimeScale();
+
         if (context.phase == InputActionPhase.Performed)
         {
             // 선택 UI가 활성화 되지 않았으면
@@ -184,7 +186,7 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    private void QuickSwitchPlayerRight(InputAction.CallbackContext context)
+/*    private void QuickSwitchPlayerRight(InputAction.CallbackContext context)
     {
         // 선택창 활성화된 상태면 변경 불가능
         if (IsHold) return;
@@ -201,7 +203,7 @@ public class PlayerManager : MonoBehaviour
         // 현재 플레이어 인덱스를 1 감소시키고, 0 미만이면 마지막 인덱스로 순환
         selectPlayer = (currentPlayer - 1 + players.Count) % players.Count;
         ActiveSelectPlayer(currentPlayer, selectPlayer);
-    }
+    }*/
 
     private void HighLightSelectPlayer(int oldPlayer, int newPlayer)
     {
