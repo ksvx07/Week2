@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Stage ID 9
   m_EditorClassIdentifier: 
   Id: 9
-  minX: 592.8779
-  maxX: 623.9879
+  minX: 590.1
+  maxX: 625.4
   minY: 46.001507
   maxY: 56.041515
