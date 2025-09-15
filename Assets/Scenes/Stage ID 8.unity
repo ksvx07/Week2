@@ -1484,7 +1484,7 @@ MonoBehaviour:
   _maxX: 25.1
   _minY: -6.98
   _maxY: 7.2
-  _defaultStageId: 5
+  _defaultStageId: 8
 --- !u!114 &1318149768
 MonoBehaviour:
   m_ObjectHideFlags: 0
