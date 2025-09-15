@@ -6,11 +6,11 @@ using UnityEngine.UI;
 
 public class PlayerManager : MonoBehaviour
 {
-    // Hack ;Input º¯°æ
+    // Hack ;Input ï¿½ï¿½ï¿½ï¿½
     private int currentPlayer = 0;
     private int selectPlayer = 0;
     private int highlightPlayer = 0;
-    private bool isSelectUIActive = false;  // UI°¡ ÇöÀç È°¼ºÈ­µÇ¾î ÀÖ´ÂÁö ¿©ºÎ
+    private bool isSelectUIActive = false;  // UIï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È°ï¿½ï¿½È­ï¿½Ç¾ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
     [SerializeField] private int startPlayer = 0;
     [SerializeField] private List<GameObject> players;
@@ -59,38 +59,38 @@ public class PlayerManager : MonoBehaviour
     {
         inputActions.UI.Enable();
 
-/*        inputActions.UI.QuickSwitchRight.started += SlowTimeScale; // ÀÏ´Ü ´©¸£¸é ½Ã°£ ´À·ÁÁü
-        inputActions.UI.QuickSwitchLeft.started += SlowTimeScale;*/
+        /*        inputActions.UI.QuickSwitchRight.started += SlowTimeScale; // ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                inputActions.UI.QuickSwitchLeft.started += SlowTimeScale;*/
 
-/*        inputActions.UI.QuickSwitchRight.performed += QuickSwitchPlayerRight; // 0.2ÃÊ Àü¿¡ ¶¼¸é QuickSwitch È£Ãâ
-        inputActions.UI.QuickSwitchLeft.performed += QuickSwitchPlayerLeft;*/
+        /*        inputActions.UI.QuickSwitchRight.performed += QuickSwitchPlayerRight; // 0.2ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ QuickSwitch È£ï¿½ï¿½
+                inputActions.UI.QuickSwitchLeft.performed += QuickSwitchPlayerLeft;*/
 
-        inputActions.UI.SwitchHold.performed += OnSwithPlayerHold; // 0.2ÃÊ ÀÌ»ó ´©¸£¸é OnSwithPlayerHold È£Ãâ
+        inputActions.UI.SwitchHold.performed += OnSwithPlayerHold; // 0.2ï¿½ï¿½ ï¿½Ì»ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ OnSwithPlayerHold È£ï¿½ï¿½
 
         inputActions.UI.SwitchHold.canceled += OnSwitchPlayerCancled;
 
-        inputActions.UI.SelectPlayer.performed += ChangeSelectPlayer;// ¼±ÅÃ ¿Ï·áÇÏ¸é È£Ãâ
+        inputActions.UI.SelectPlayer.performed += ChangeSelectPlayer;// ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½ï¿½Ï¸ï¿½ È£ï¿½ï¿½
     }
 
     private void OnDisable()
     {
 
-/*        inputActions.UI.QuickSwitchLeft.started -= SlowTimeScale;*/
+        /*        inputActions.UI.QuickSwitchLeft.started -= SlowTimeScale;*/
 
-/*        inputActions.UI.QuickSwitchRight.performed -= QuickSwitchPlayerRight; // 0.2ÃÊ Àü¿¡ ¶¼¸é QuickSwitch È£Ãâ
-        inputActions.UI.QuickSwitchLeft.performed -= QuickSwitchPlayerLeft;*/
+        /*        inputActions.UI.QuickSwitchRight.performed -= QuickSwitchPlayerRight; // 0.2ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ QuickSwitch È£ï¿½ï¿½
+                inputActions.UI.QuickSwitchLeft.performed -= QuickSwitchPlayerLeft;*/
 
-        inputActions.UI.SwitchHold.performed -= OnSwithPlayerHold; // 0.2ÃÊ ÀÌ»ó ´©¸£¸é OnSwithPlayerHold È£Ãâ
+        inputActions.UI.SwitchHold.performed -= OnSwithPlayerHold; // 0.2ï¿½ï¿½ ï¿½Ì»ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ OnSwithPlayerHold È£ï¿½ï¿½
 
         inputActions.UI.SwitchHold.canceled -= OnSwitchPlayerCancled;
 
-        inputActions.UI.SelectPlayer.performed -= ChangeSelectPlayer;// ¼±ÅÃ ¿Ï·áÇÏ¸é È£Ãâ
+        inputActions.UI.SelectPlayer.performed -= ChangeSelectPlayer;// ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½ï¿½Ï¸ï¿½ È£ï¿½ï¿½
         inputActions.UI.Disable();
     }
 
     private void ChangeSelectPlayer(InputAction.CallbackContext context)
     {
-        // ¼±ÅÃÃ¢ È°¼ºÈ­µÈ »óÅÂ¿¡¼­¸¸ ¼±ÅÃÀÌ °¡´É
+        // ï¿½ï¿½ï¿½ï¿½Ã¢ È°ï¿½ï¿½È­ï¿½ï¿½ ï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (!isSelectUIActive) return;
 
         Vector2 inputVector = context.ReadValue<Vector2>();
@@ -111,7 +111,7 @@ public class PlayerManager : MonoBehaviour
             selectPlayer = 3;
         }
 
-        HighLightSelectPlayer(highlightPlayer,selectPlayer);
+        HighLightSelectPlayer(highlightPlayer, selectPlayer);
         highlightPlayer = selectPlayer;
 
     }
@@ -143,7 +143,7 @@ public class PlayerManager : MonoBehaviour
         }
         pannelActive = StartCoroutine(ScaleOverTime());
         selectPlayerPanel.SetActive(true);
-        isSelectUIActive = true;  // UI°¡ ÇöÀç È°¼ºÈ­µÇ¾î ÀÖ´ÂÁö ¿©ºÎ
+        isSelectUIActive = true;  // UIï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È°ï¿½ï¿½È­ï¿½Ç¾ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     }
 
     private void DeActiveSelectUI()
@@ -164,11 +164,11 @@ public class PlayerManager : MonoBehaviour
 
         if (context.phase == InputActionPhase.Performed)
         {
-            // ¼±ÅÃ UI°¡ È°¼ºÈ­ µÇÁö ¾Ê¾ÒÀ¸¸é
+            // ï¿½ï¿½ï¿½ï¿½ UIï¿½ï¿½ È°ï¿½ï¿½È­ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½
             if (!isSelectUIActive)
             {
                 IsHold = true;
-                // 0.2ÃÊ ÀÌ»ó È¦µå Å°¸¦ ´­·¶À» ¶§, ¼±ÅÃ UI È°¼ºÈ­
+                // 0.2ï¿½ï¿½ ï¿½Ì»ï¿½ È¦ï¿½ï¿½ Å°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ UI È°ï¿½ï¿½È­
                 AcitveSelectUI();
             }
         }
@@ -176,45 +176,45 @@ public class PlayerManager : MonoBehaviour
 
     public void OnSwitchPlayerCancled(InputAction.CallbackContext context)
     {
-        // ¼±ÅÃÃ¢ÀÌ È°¼ºÈ­ µÈ »óÅÂ¿´´Ù¸é
+        // ï¿½ï¿½ï¿½ï¿½Ã¢ï¿½ï¿½ È°ï¿½ï¿½È­ ï¿½ï¿½ ï¿½ï¿½ï¿½Â¿ï¿½ï¿½Ù¸ï¿½
         if (isSelectUIActive)
         {
-            //¼±ÅÃ UIºñÈ°¼ºÈ­
+            //ï¿½ï¿½ï¿½ï¿½ UIï¿½ï¿½È°ï¿½ï¿½È­
             DeActiveSelectUI();
-            // Ä³¸¯ÅÍ º¯°æ
+            // Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             ActiveSelectPlayer(currentPlayer, selectPlayer);
         }
     }
 
     public void OnPlayerDead()
     {
-        // ¼±ÅÃÃ¢ÀÌ È°¼ºÈ­ µÈ »óÅÂ¿´´Ù¸é
+        // ï¿½ï¿½ï¿½ï¿½Ã¢ï¿½ï¿½ È°ï¿½ï¿½È­ ï¿½ï¿½ ï¿½ï¿½ï¿½Â¿ï¿½ï¿½Ù¸ï¿½
         if (isSelectUIActive)
         {
-            //¼±ÅÃ UIºñÈ°¼ºÈ­
+            //ï¿½ï¿½ï¿½ï¿½ UIï¿½ï¿½È°ï¿½ï¿½È­
             DeActiveSelectUI();
             ActiveSelectPlayer(currentPlayer, selectPlayer);
         }
     }
 
-/*    private void QuickSwitchPlayerRight(InputAction.CallbackContext context)
-    {
-        // ¼±ÅÃÃ¢ È°¼ºÈ­µÈ »óÅÂ¸é º¯°æ ºÒ°¡´É
-        if (IsHold) return;
-        // ÇöÀç ÇÃ·¹ÀÌ¾î ÀÎµ¦½º¸¦ 1 Áõ°¡½ÃÅ°°í, ÇÃ·¹ÀÌ¾î ¼ö ÀÌ»óÀÌ¸é 0À¸·Î ¼øÈ¯
-        selectPlayer = (currentPlayer + 1) % players.Count;
+    /*    private void QuickSwitchPlayerRight(InputAction.CallbackContext context)
+            {
+                // ï¿½ï¿½ï¿½ï¿½Ã¢ È°ï¿½ï¿½È­ï¿½ï¿½ ï¿½ï¿½ï¿½Â¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ò°ï¿½ï¿½ï¿½
+                if (IsHold) return;
+                // ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½Îµï¿½ï¿½ï¿½ï¿½ï¿½ 1 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å°ï¿½ï¿½, ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ ï¿½Ì»ï¿½ï¿½Ì¸ï¿½ 0ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯
+                selectPlayer = (currentPlayer + 1) % players.Count;
 
-        ActiveSelectPlayer(currentPlayer, selectPlayer);
-    }
-    private void QuickSwitchPlayerLeft(InputAction.CallbackContext context)
-    {
-        // ¼±ÅÃÃ¢ È°¼ºÈ­µÈ »óÅÂ¸é º¯°æ ºÒ°¡´É
-        if (IsHold) return;
+                ActiveSelectPlayer(currentPlayer, selectPlayer);
+            }
+            private void QuickSwitchPlayerLeft(InputAction.CallbackContext context)
+            {
+                // ï¿½ï¿½ï¿½ï¿½Ã¢ È°ï¿½ï¿½È­ï¿½ï¿½ ï¿½ï¿½ï¿½Â¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ò°ï¿½ï¿½ï¿½
+                if (IsHold) return;
 
-        // ÇöÀç ÇÃ·¹ÀÌ¾î ÀÎµ¦½º¸¦ 1 °¨¼Ò½ÃÅ°°í, 0 ¹Ì¸¸ÀÌ¸é ¸¶Áö¸· ÀÎµ¦½º·Î ¼øÈ¯
-        selectPlayer = (currentPlayer - 1 + players.Count) % players.Count;
-        ActiveSelectPlayer(currentPlayer, selectPlayer);
-    }*/
+                // ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½Îµï¿½ï¿½ï¿½ï¿½ï¿½ 1 ï¿½ï¿½ï¿½Ò½ï¿½Å°ï¿½ï¿½, 0 ï¿½Ì¸ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯
+                selectPlayer = (currentPlayer - 1 + players.Count) % players.Count;
+                ActiveSelectPlayer(currentPlayer, selectPlayer);
+            }*/
 
     private void HighLightSelectPlayer(int oldPlayer, int newPlayer)
     {
@@ -225,7 +225,7 @@ public class PlayerManager : MonoBehaviour
     {
         _currentPlayerPrefab = players[starstPlayer];
         _currentPlayerPrefab.SetActive(true);
-        currentPlayer = selectPlayer; // ÀÎµ¦½º µ¿±âÈ­
+        currentPlayer = selectPlayer; // ï¿½Îµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½È­
     }
 
     public void PlayerSetActive(bool isAcitve)
@@ -236,9 +236,11 @@ public class PlayerManager : MonoBehaviour
     {
         OriginalTimeScale();
 
-        // °°Àº Ä³¸¯ÅÍ·Î¹Ù²Ù·Á¸é return
+        // ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½Í·Î¹Ù²Ù·ï¿½ï¿½ï¿½ return
         //if (oldPlayer == newPlayer) return;
         HighLightSelectPlayer(oldPlayer, newPlayer);
+        if (oldPlayer == 2 && newPlayer == 2) return;
+        // print($"{oldPlayer}, {newPlayer}");
 
         GameObject oldPlayerPrefab = players[oldPlayer];
         Transform lastPos = oldPlayerPrefab.transform;
@@ -250,7 +252,7 @@ public class PlayerManager : MonoBehaviour
         _currentPlayerPrefab.SetActive(true);
         _currentPlayerPrefab.GetComponent<IPlayerController>().OnEnableSetVelocity(lastVelocity.x, lastVelocity.y);
 
-        currentPlayer = selectPlayer; // ÀÎµ¦½º µ¿±âÈ­
+        currentPlayer = selectPlayer; // ï¿½Îµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½È­
         highlightPlayer = currentPlayer;
     }
 
@@ -262,25 +264,25 @@ public class PlayerManager : MonoBehaviour
         Vector3 initialScale = selectPlayerPanel.transform.localScale;
         float elapsedTime = 0f;
 
-        // °æ°ú ½Ã°£ÀÌ ¼³Á¤µÈ Áö¼Ó ½Ã°£º¸´Ù ÀÛÀ» ¶§±îÁö ¹Ýº¹
+        // ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ýºï¿½
         while (elapsedTime < _selectPanelSpeed)
         {
-            // ¸Å ÇÁ·¹ÀÓ¸¶´Ù ÇöÀç ÇÃ·¹ÀÌ¾îÀÇ À§Ä¡¸¦ ÃßÀû
+            // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ó¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             selectPlayerPanel.transform.position = _currentPlayerPrefab.transform.position;
 
-            // Time.deltaTimeÀ» »ç¿ëÇÏ¿© °æ°ú ½Ã°£ °è»ê (Time.timeScale¿¡ ¿µÇâ ¹ÞÀ½)
+            // Time.deltaTimeï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ (Time.timeScaleï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
             elapsedTime += Time.deltaTime;
 
-            // ÁøÇà·üÀ» 0.0¿¡¼­ 1.0 »çÀÌ·Î °è»ê
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 0.0ï¿½ï¿½ï¿½ï¿½ 1.0 ï¿½ï¿½ï¿½Ì·ï¿½ ï¿½ï¿½ï¿½
             float t = Mathf.Clamp01(elapsedTime / _selectPanelSpeed);
 
-            // Lerp ÇÔ¼ö·Î Å©±â¸¦ ºÎµå·´°Ô º¸°£
+            // Lerp ï¿½Ô¼ï¿½ï¿½ï¿½ Å©ï¿½â¸¦ ï¿½Îµå·´ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             selectPlayerPanel.transform.localScale = Vector3.Lerp(initialScale, _MaxScale, t);
 
-            // ´ÙÀ½ ÇÁ·¹ÀÓ±îÁö ´ë±â
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ó±ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
             yield return null;
         }
-        // ÀÌ ½ÃÁ¡ºÎÅÍ´Â ÆÐ³ÎÀÇ À§Ä¡¸¸ ÃßÀûÇÏ°í Å©±â ¾Ö´Ï¸ÞÀÌ¼ÇÀº Á¾·á
+        // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í´ï¿½ ï¿½Ð³ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ Å©ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         while (true)
         {
             selectPlayerPanel.transform.position = _currentPlayerPrefab.transform.position;

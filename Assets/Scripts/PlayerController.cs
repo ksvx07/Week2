@@ -143,7 +143,8 @@ public class PlayerController : MonoBehaviour, IPlayerController
         if (IsGrounded)
         {
             coyoteTimeCounter = coyoteTime;
-            dashCount = maxDashCount;
+            if (!isDashing)
+                dashCount = maxDashCount;
         }
 
         else
