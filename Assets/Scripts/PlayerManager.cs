@@ -226,7 +226,7 @@ public class PlayerManager : MonoBehaviour
         OriginalTimeScale();
 
         // 같은 캐릭터로바꾸려면 return
-        if (oldPlayer == newPlayer) return;
+        //if (oldPlayer == newPlayer) return;
         HighLightSelectPlayer(oldPlayer, newPlayer);
 
         GameObject oldPlayerPrefab = players[oldPlayer];
