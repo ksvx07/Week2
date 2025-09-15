@@ -1,15 +1,15 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IPlayerController
 {
     private PlayerInput inputActions;
     private Vector2 moveInput;
     private Rigidbody2D rb;
     private BoxCollider2D col;
+    private SpriteRenderer spriteRenderer;
 
-    // Inspector Á¶Àı °¡´É º¯¼öµé
+    // Inspector ???? ???? ??????
     [Header("Move")]
     [SerializeField] private float maxSpeed = 5f;
     [SerializeField] private float speedAcceleration = 5f;
@@ -21,22 +21,31 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float maxGravity = 5f;
     [SerializeField] private float gravityAcceleration = 5f;
     [SerializeField] private float maxDownSpeed = 5f;
-    [SerializeField] private float coyoteTime = 0.1f;       // ÄÚ¿äÅ× Å¸ÀÓ ±æÀÌ
-    [SerializeField] private float jumpBufferTime = 0.1f;   // Á¡ÇÁ ¹öÆÛ ±æÀÌ
+    [SerializeField] private float coyoteTime = 0.1f;       // ????? ??? ????
+    [SerializeField] private float jumpBufferTime = 0.1f;   // ???? ???? ????
+    [SerializeField] private float cornerRayPosX = 0.3f;
+    [SerializeField] private float cornerRayOffsetX = 0.1f;
+    [SerializeField] private float cornerRayLength = 0.1f;
+
 
     [Header("Wall Jump")]
     [SerializeField] private float wallCheckDistance = 0.4f;
     [SerializeField] private float wallJumpXSpeed = 5f;
     [SerializeField] private float wallJumpYSpeed = 5f;
     [SerializeField] private float wallSlideMaxSpeed = 5f;
-    [SerializeField] private float wallSlideDecceleration = 5f;
 
     [Header("Dash")]
     [SerializeField] private float dashSpeed = 5f;
     [SerializeField] private float dashTime = 0.5f;
+    [SerializeField] private float dashCooldown = 0.1f;
     [SerializeField] private float maxSpeedAfterDashX = 5f;
     [SerializeField] private float maxSpeedAfterDashUp = 5f;
     [SerializeField] private int maxDashCount = 1;
+    [SerializeField] private GameObject afterImagePrefab; // ì”ìƒ í”„ë¦¬íŒ¹
+    [SerializeField] private float afterImageLifetime = 0.3f; // ì”ìƒ ì§€ì† ì‹œê°„
+    [SerializeField] private float afterImageSpawnRate = 0.05f; // ì”ìƒ ìƒì„± ê°„ê²©
+    private float afterImageTimer; // ì”ìƒ ìƒì„± íƒ€ì´ë¨¸
+
 
     [Header("AirTimeMultiplier")]
     [SerializeField] private float airAccelMulti = 0.65f;
@@ -45,35 +54,47 @@ public class PlayerController : MonoBehaviour
     private LayerMask wallLayer;
 
     private float currentGravity;
-    private float coyoteTimeCounter; // ¶¥À» ¶°³­ ÈÄ ³²Àº Á¡ÇÁ °¡´É ½Ã°£
-    private float jumpBufferCounter; // Á¡ÇÁ ÀÔ·Â À¯Áö ½Ã°£
+    private float coyoteTimeCounter; // ???? ???? ?? ???? ???? ???? ?ï¿½ï¿½?
+    private float jumpBufferCounter; // ???? ??? ???? ?ï¿½ï¿½?
     private float dashTimeCounter;
-    // ³»ºÎ »óÅÂ
-    private bool isGrounded;
-    private bool isJumping;
-    private bool isTouchingWall;
+    private float dashCooldownCounter;
+    // ???? ????
+    public bool IsGrounded { get; private set; }
+    public bool IsJumping { get; private set; }
+    private bool isTouchingWallRight;
+    private bool isTouchingWallLeft;
     private bool isDashing;
     private int dashCount;
+    private bool isFastFalling;
+    private int facingDirection = 1; // 1: ?ï¿½ï¿½ë¥¸ìª½, -1: ?ï¿½ï¿½ï¿½?
+    private Vector3 originalScale; // ?ï¿½ï¿½ï¿½? ?ï¿½ï¿½ï¿½? ????ï¿½ï¿½
 
     private void Awake()
     {
         inputActions = new PlayerInput();
         col = GetComponent<BoxCollider2D>();
         rb = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         currentGravity = jumpDcceleration;
         wallLayer = LayerMask.GetMask("Ground");
         dashCount = maxDashCount;
 
-        // Rigidbody ¼³Á¤
+        // ?ï¿½ï¿½ï¿½? ?ï¿½ï¿½ï¿½? ????ï¿½ï¿½
+        originalScale = transform.localScale;
+
+        // ?ï¿½ï¿½ï¿½? ?ï¿½ï¿½ï¿½? ????ï¿½ï¿½
+        originalScale = transform.localScale;
+
+        // Rigidbody ????
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-        rb.gravityScale = 0f; // Áß·ÂÀº Á÷Á¢ Ã³¸®
+        rb.gravityScale = 0f; // ????? ???? ???
     }
 
     private void OnEnable()
     {
         inputActions.Player.Enable();
-        inputActions.Player.Move.performed += OnMove;
         inputActions.Player.Move.canceled += OnMove;
+        inputActions.Player.Move.performed += OnMove;
         inputActions.Player.Jump.started += OnJump;
         inputActions.Player.Jump.canceled += OffJump;
         inputActions.Player.Dash.performed += OnDash;
@@ -81,22 +102,26 @@ public class PlayerController : MonoBehaviour
 
     private void OnDisable()
     {
-        inputActions.Player.Move.performed -= OnMove;
         inputActions.Player.Move.canceled -= OnMove;
+        inputActions.Player.Move.performed -= OnMove;
         inputActions.Player.Jump.started -= OnJump;
         inputActions.Player.Jump.canceled -= OffJump;
         inputActions.Player.Dash.performed -= OnDash;
         inputActions.Player.Disable();
+        moveInput = Vector2.zero;
+        IsGrounded = false;
     }
 
     private void OnMove(InputAction.CallbackContext ctx)
     {
+        if (PlayerManager.Instance.IsHold) return;
         moveInput = ctx.ReadValue<Vector2>();
     }
 
     private void OnJump(InputAction.CallbackContext ctx)
     {
         jumpBufferCounter = jumpBufferTime;
+        isFastFalling = false;
     }
 
     private void OffJump(InputAction.CallbackContext ctx)
@@ -111,24 +136,45 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        TimeCounters();
+    }
+
+    // ?ï¿½ï¿½? ??????
+    private void TimeCounters()
+    {
+        // ???? ???? (????) & ????? ???
         jumpBufferCounter -= Time.deltaTime;
-        if (isGrounded)
+        if (jumpBufferCounter < 0)
+            isFastFalling = false;
+        if (IsGrounded)
         {
             coyoteTimeCounter = coyoteTime;
-            dashCount = maxDashCount;
+            if (!isDashing)
+                dashCount = maxDashCount;
         }
-            
         else
             coyoteTimeCounter -= Time.deltaTime;
+
+        // ???? ?ï¿½ï¿½? ?????, ??? ?????? Damping ??
         if (isDashing)
         {
             dashTimeCounter -= Time.deltaTime;
+
             if (dashTimeCounter < 0)
             {
                 isDashing = false;
                 dampAfterDash();
             }
-        } 
+
+            // ì”ìƒ íš¨ê³¼ ìƒì„±
+            afterImageTimer -= Time.deltaTime;
+            if (afterImageTimer <= 0)
+            {
+                CreateAfterImage();
+                afterImageTimer = afterImageSpawnRate;
+            }
+        }
+        dashCooldownCounter -= Time.deltaTime;
     }
 
     private void FixedUpdate()
@@ -138,6 +184,7 @@ public class PlayerController : MonoBehaviour
         if (!isDashing)
         {
             Jump();
+            CornerCorrection();
             WallJump();
             ApplyGravity();
             Move();
@@ -147,45 +194,62 @@ public class PlayerController : MonoBehaviour
         //Debug.Log($"x: {rb.linearVelocity.x:F2}, y: {rb.linearVelocity.y:F2}");
     }
 
-    //private void Move()
-    //{
-    //    // ¸ñÇ¥ ¼Óµµ (ÀÔ·Â ¡¿ ÃÖ´ë ¼Óµµ)
-    //    float targetSpeed = moveInput.x * maxSpeed;
 
-    //    // ÇöÀç °¡¼Ó/°¨¼Ó °è¼ö °áÁ¤
-    //    float accel = speedAcceleration;
-    //    float decel = SpeedDeceleration;
 
-    //    if (!isGrounded) // °øÁßÀÌ¸é ¹è¼ö Àû¿ë
-    //    {
-    //        accel *= airAccelMulti;
-    //        decel *= airDecelMulti;
-    //    }
+    private void CornerCorrection()
+    {
+        RaycastHit2D CornerHitRight = Physics2D.Raycast(transform.position + new Vector3(cornerRayPosX, 0, 0), Vector2.up, cornerRayLength, wallLayer);
+        RaycastHit2D CornerHitRightOffset = Physics2D.Raycast(transform.position + new Vector3(cornerRayPosX + cornerRayOffsetX, 0, 0), Vector2.up, cornerRayLength, wallLayer);
+        RaycastHit2D CornerHitLeft = Physics2D.Raycast(transform.position + new Vector3(-cornerRayPosX, 0, 0), Vector2.up, cornerRayLength, wallLayer);
+        RaycastHit2D CornerHitLeftOffset = Physics2D.Raycast(transform.position + new Vector3(-cornerRayPosX - cornerRayOffsetX, 0, 0), Vector2.up, cornerRayLength, wallLayer);
+        Debug.DrawRay(transform.position + new Vector3(cornerRayPosX, 0, 0), Vector2.up * cornerRayLength, Color.red);
+        Debug.DrawRay(transform.position + new Vector3(cornerRayPosX + cornerRayOffsetX, 0, 0), Vector2.up * cornerRayLength, Color.red);
+        Debug.DrawRay(transform.position + new Vector3(-cornerRayPosX, 0, 0), Vector2.up * cornerRayLength, Color.red);
+        Debug.DrawRay(transform.position + new Vector3(-cornerRayPosX - cornerRayOffsetX, 0, 0), Vector2.up * cornerRayLength, Color.red);
 
-    //    // Lerp ºñÀ² °è»ê (°¡¼Ó°ú °¨¼Ó ±¸ºĞ)
-    //    float lerpFactor = (Mathf.Abs(moveInput.x) > 0.01f) ? accel : decel;
+        if (!CornerHitRight && CornerHitRightOffset && moveInput.x <= 0)
+        {
+            rb.MovePosition(rb.position + new Vector2(-cornerRayPosX + cornerRayOffsetX, 0));
+        }
+        else if (!CornerHitLeft && CornerHitLeftOffset && moveInput.x >= 0)
+        {
+            rb.MovePosition(rb.position + new Vector2(cornerRayPosX - cornerRayOffsetX, 0));
+        }
+    }
 
-    //    // ¼Óµµ º¸°£
-    //    targetSpeed = Mathf.Lerp(rb.linearVelocity.x, targetSpeed, lerpFactor * Time.fixedDeltaTime);
 
-    //    // y¼Óµµ À¯Áö
-    //    rb.linearVelocity = new Vector2(targetSpeed, rb.linearVelocity.y);
-    //}
-
-    private void Move() 
+    // ???
+    private void Move()
     {
         float accel = speedAcceleration;
         float decel = SpeedDeceleration;
-        if (!isGrounded) // °øÁßÀÌ¸é ¹è¼ö Àû¿ë
+        if (!IsGrounded) // ??????? ??? ????
         {
             accel *= airAccelMulti;
             decel *= airDecelMulti;
         }
-        float targetX = moveInput.x * maxSpeed; 
-        float newX = Mathf.MoveTowards(rb.linearVelocity.x, targetX, (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime); // ±âÁ¸ y ¼Óµµ À¯Áö
-        rb.linearVelocity = new Vector2(newX, rb.linearVelocity.y); 
+        // ë°”ë¼ë³´ëŠ” ë°©í–¥ ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ ï¿½? ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½
+        if (moveInput.x > 0)
+        {
+            facingDirection = 1;
+            transform.localScale = originalScale; // ?ï¿½ï¿½ë¥¸ìª½
+        }
+        else if (moveInput.x < 0)
+        {
+            facingDirection = -1;
+            Vector3 flippedScale = originalScale;
+            flippedScale.x = -originalScale.x;
+            transform.localScale = flippedScale; // ?ï¿½ï¿½ï¿½? (Xï¿½? ë°˜ì „)
+        }
+
+        float targetX = moveInput.x * maxSpeed;
+        float lerpAmount = (moveInput.x != 0 ? accel : decel) * Time.fixedDeltaTime;
+        // ?ï¿½ï¿½?ï¿½ï¿½ ë°©í–¥?ï¿½ï¿½ ?ï¿½ï¿½ï¿½? ?ï¿½ï¿½ë¡œìš´ Xï¿½? ?ï¿½ï¿½?ï¿½ï¿½ ê³„ì‚°
+        float newX = Mathf.Lerp(rb.linearVelocity.x, targetX, lerpAmount);
+        rb.linearVelocityX = newX;
     }
 
+    // ??? ???? (BoxCast)
     private void DetectGround()
     {
         Bounds bounds = col.bounds;
@@ -194,25 +258,29 @@ public class PlayerController : MonoBehaviour
         RaycastHit2D hit = Physics2D.BoxCast(bounds.center, bounds.size, 0f, Vector2.down,
             extraHeight, wallLayer);
 
-        isGrounded = hit.collider != null;
-        
+        IsGrounded = hit.collider != null;
 
-        if (isJumping && rb.linearVelocity.y <= 0)
+
+        if (IsJumping && rb.linearVelocity.y <= 0)
         {
-            isJumping = false;
+            IsJumping = false;
             currentGravity = jumpDcceleration;
         }
     }
 
+    // ???
     private void ApplyGravity()
     {
         float newY;
-        if (isJumping)
+        if (IsJumping)
         {
+            // ???? ?? ???(??? ??)
             newY = rb.linearVelocity.y - jumpDcceleration * Time.fixedDeltaTime;
         }
         else
         {
+            // ???? ?? ???(?????? ??)
+            // ???? ?? ???(????)???? ???? ?? ???(????)???? ?????????? ????
             if (currentGravity < maxGravity)
                 currentGravity += gravityAcceleration * Time.fixedDeltaTime;
             else
@@ -221,76 +289,94 @@ public class PlayerController : MonoBehaviour
             newY = rb.linearVelocity.y - currentGravity * Time.fixedDeltaTime;
         }
 
-        if (isTouchingWall)
+        // ????? ?????? ??? ????
+        if (isTouchingWallRight || isTouchingWallLeft)
             if (newY < -wallSlideMaxSpeed)
                 newY = -wallSlideMaxSpeed;
 
+        // y?? ??? ???
         newY = Mathf.Clamp(newY, -maxDownSpeed, maxJumpSpeed);
 
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, newY);
     }
 
+    // ????
     private void Jump()
     {
         if (jumpBufferCounter > 0 && coyoteTimeCounter > 0)
         {
+            // +y?? linearVelocity ????
             Debug.Log("Jump!");
-            isJumping = true;
+            IsJumping = true;
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, maxJumpSpeed);
             jumpBufferCounter = 0;
             coyoteTimeCounter = 0;
+            if (isFastFalling)
+                IsJumping = false;
         }
     }
 
+    // ???? ? ???? isJumping = false -> ??? ?????? -> ???? ??????
     private void FastFall()
     {
-        if (isJumping)
+        if (IsJumping)
         {
-            isJumping = false;
-            //rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
+            IsJumping = false;
         }
+        if (jumpBufferCounter > 0)
+            isFastFalling = true;
+
     }
 
-
+    // ?? ???? (Raycast)
     private void WallCheck()
     {
         Vector2 origin = transform.position;
-        RaycastHit2D hitWall = new RaycastHit2D(); // ±âº»°ªÀ¸·Î ÃÊ±âÈ­
+        RaycastHit2D hitWallRight = new RaycastHit2D(); // ???????? ????
+        RaycastHit2D hitWallLeft = new RaycastHit2D(); // ???????? ????
+        hitWallRight = Physics2D.Raycast(origin, Vector2.right, wallCheckDistance, wallLayer);
+        Debug.DrawRay(origin, Vector2.right * wallCheckDistance, Color.red);
+        hitWallLeft = Physics2D.Raycast(origin, Vector2.left, wallCheckDistance, wallLayer);
+        Debug.DrawRay(origin, Vector2.left * wallCheckDistance, Color.red);
 
-        if (moveInput.x > 0)
-        {
-            hitWall = Physics2D.Raycast(origin, Vector2.right, wallCheckDistance, wallLayer);
-            Debug.DrawRay(origin, Vector2.right * wallCheckDistance, Color.red);
-        }
-        else if (moveInput.x < 0)
-        {
-            hitWall = Physics2D.Raycast(origin, Vector2.left, wallCheckDistance, wallLayer);
-            Debug.DrawRay(origin, Vector2.left * wallCheckDistance, Color.red);
-        }
 
-        isTouchingWall = hitWall.collider != null;
+        isTouchingWallRight = hitWallRight.collider != null;
+        isTouchingWallLeft = hitWallLeft.collider != null;
+
     }
 
+    // ?????? ? ??? ??? ???? linearVelocity ????
     private void WallJump()
     {
-        if (isTouchingWall && jumpBufferCounter > 0 && !isGrounded)
+        if ((isTouchingWallRight || isTouchingWallLeft) && jumpBufferCounter > 0 && !IsGrounded)
         {
-            isJumping = true;
-            rb.linearVelocity = new Vector2(wallJumpXSpeed * -Mathf.Sign(moveInput.x), wallJumpYSpeed);
+            int wallJumpDir;
+            if (isTouchingWallRight)
+                wallJumpDir = -1;
+            else
+                wallJumpDir = 1;
+
+            IsJumping = true;
+            rb.linearVelocity = new Vector2(wallJumpXSpeed * wallJumpDir, wallJumpYSpeed);
             Debug.Log("Wall Jump");
         }
     }
 
+    // ???, ??? ?? ??? ???? ??????? linearVelocity?? ?????? moveInput.normalized * dashSpeed??.
     private void Dash()
     {
-        if (moveInput == Vector2.zero) return;
         if (dashCount <= 0) return;
+        if (dashCooldownCounter > 0) return;
         isDashing = true;
         dashCount -= 1;
         dashTimeCounter = dashTime;
-        rb.linearVelocity = moveInput.normalized * dashSpeed;
+        dashCooldownCounter = dashCooldown;
+
+        // ?ï¿½ï¿½?ï¿½ï¿½ ë°”ë¼ë³´ëŠ” ë°©í–¥?ï¿½ï¿½ï¿½? ????ï¿½ï¿½
+        rb.linearVelocity = new Vector2(facingDirection * dashSpeed, 0);
     }
 
+    // ??? ?? ????, ??? ?????? ????? ????
     private void dampAfterDash()
     {
         float dampedSpeedX = rb.linearVelocity.x;
@@ -299,4 +385,63 @@ public class PlayerController : MonoBehaviour
         dampedSpeedY = Mathf.Min(dampedSpeedY, maxSpeedAfterDashUp);
         rb.linearVelocity = new Vector2(dampedSpeedX, dampedSpeedY);
     }
+
+    public void OnEnableSetVelocity(float newVelX, float newVelY)
+    {
+        col = GetComponent<BoxCollider2D>();
+        rb = GetComponent<Rigidbody2D>();
+        currentGravity = jumpDcceleration;
+        wallLayer = LayerMask.GetMask("Ground");
+        dashCount = maxDashCount;
+
+        // Rigidbody ????
+        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        rb.gravityScale = 0f; // ????? ???? ???
+
+        rb.linearVelocity = new Vector2(newVelX, newVelY);
+    }
+
+    #region ì”ìƒ íš¨ê³¼
+    private void CreateAfterImage()
+    {
+        GameObject afterImage = new GameObject("AfterImage");
+        afterImage.transform.position = transform.position;
+        afterImage.transform.rotation = transform.rotation;
+        afterImage.transform.localScale = transform.localScale;
+
+        SpriteRenderer afterImageSR = afterImage.AddComponent<SpriteRenderer>();
+        afterImageSR.sprite = spriteRenderer.sprite;
+        afterImageSR.color = new Color(1f, 1f, 1f, 0.5f); // ë°˜íˆ¬ëª…
+        afterImageSR.sortingLayerName = spriteRenderer.sortingLayerName;
+        afterImageSR.sortingOrder = spriteRenderer.sortingOrder - 1;
+
+        // ì•ˆì „ì¥ì¹˜: afterImageLifetime * 2 ì‹œê°„ í›„ ê°•ì œ ì‚­ì œ
+        Destroy(afterImage, afterImageLifetime * 2f);
+
+        // ì”ìƒ í˜ì´ë“œì•„ì›ƒ ì½”ë£¨í‹´ ì‹œì‘
+        StartCoroutine(FadeOutAfterImage(afterImageSR, afterImage));
+    }
+
+    private System.Collections.IEnumerator FadeOutAfterImage(SpriteRenderer sr, GameObject obj)
+    {
+        if (sr == null || obj == null) yield break; // null ì²´í¬
+
+        float elapsed = 0f;
+        Color originalColor = sr.color;
+
+        while (elapsed < afterImageLifetime && sr != null && obj != null)
+        {
+            elapsed += Time.deltaTime;
+            float alpha = Mathf.Lerp(originalColor.a, 0f, elapsed / afterImageLifetime);
+            sr.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
+            yield return null;
+        }
+
+        // ì˜¤ë¸Œì íŠ¸ê°€ ì—¬ì „íˆ ì¡´ì¬í•œë‹¤ë©´ ì‚­ì œ
+        if (obj != null)
+        {
+            Destroy(obj);
+        }
+    }
+    #endregion
 }
