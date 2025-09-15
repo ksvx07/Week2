@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4861976979833243412}
   - component: {fileID: 4036118882144611155}
   - component: {fileID: 6596122640943017051}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Triangle (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -151,7 +151,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f63ecef4b75749248a4d349eccbc56d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playDeathSound: 1
   respawnDelay: 0.5
 --- !u!1 &7142994643101639499
 GameObject:
@@ -163,7 +162,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7664280408074721054}
   - component: {fileID: -4419962875952838256}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Spike
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -227,7 +226,7 @@ GameObject:
   - component: {fileID: 5021298138750313247}
   - component: {fileID: 6457690644408693014}
   - component: {fileID: 3430712174900871659}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Triangle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -366,7 +365,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f63ecef4b75749248a4d349eccbc56d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playDeathSound: 1
   respawnDelay: 0.5
 --- !u!1 &9017581280367109317
 GameObject:
@@ -380,7 +378,7 @@ GameObject:
   - component: {fileID: 4187274532186366922}
   - component: {fileID: 6930953903802222775}
   - component: {fileID: 4011163697919497936}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Triangle (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -519,5 +517,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f63ecef4b75749248a4d349eccbc56d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playDeathSound: 1
   respawnDelay: 0.5

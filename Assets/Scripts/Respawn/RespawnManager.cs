@@ -10,6 +10,7 @@ public class RespawnManager : MonoBehaviour
     #region Checkpoint System
     [Header("Checkpoint System")]
     [SerializeField] private Transform defaultSpawn;
+    [SerializeField] private float respawnTime;
 
     private Transform player => PlayerManager.Instance?._currentPlayerPrefab?.transform;
     private int currentCheckpointId = 0;
@@ -80,15 +81,21 @@ public class RespawnManager : MonoBehaviour
         }
     }
 
-    public void RespawnPlayer()
+    public void PlayerDead()
     {
         if (!ValidatePlayer()) return;
-        
+        PlayerManager.Instance.PlayerSetActive(false);
+        Invoke("RespawnPlayer", respawnTime);
+    }
+
+    private void RespawnPlayer()
+    {
         ResetPlayerPhysics();
         SpawnPlayerAtCheckpoint();
-        
+        PlayerManager.Instance.PlayerSetActive(true); // 상태 초기화를 위한 껐다 켜기
         Debug.Log($"[RespawnManager] Player respawned at checkpoint {currentCheckpointId}: {currentSpawnPosition}");
     }
+
 
     private bool ValidatePlayer()
     {
