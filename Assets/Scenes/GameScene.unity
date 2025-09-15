@@ -12584,8 +12584,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b610bbba012944c48939c176fc5c74fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  endingGameUI: {fileID: 0}
-  quitBtn: {fileID: 0}
+  endingGameUI: {fileID: 240955450}
+  quitBtn: {fileID: 1864799151}
 --- !u!1001 &957714125
 PrefabInstance:
   m_ObjectHideFlags: 0
