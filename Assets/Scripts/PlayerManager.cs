@@ -90,30 +90,41 @@ public class PlayerManager : MonoBehaviour
 
     private void ChangeSelectPlayer(InputAction.CallbackContext context)
     {
-        // ����â Ȱ��ȭ�� ���¿����� ������ ����
         if (!isSelectUIActive) return;
 
         Vector2 inputVector = context.ReadValue<Vector2>();
-        if (inputVector == Vector2.up)         // W (Up)
+
+        // 입력이 너무 작으면 무시 (데드존)
+        if (inputVector.magnitude < 0.5f) return;
+
+        // 가장 강한 축을 기준으로 방향 결정
+        if (Mathf.Abs(inputVector.y) > Mathf.Abs(inputVector.x))
         {
-            selectPlayer = 0;
+            // 세로 축이 더 강함
+            if (inputVector.y > 0) // 위쪽
+            {
+                selectPlayer = 0;
+            }
+            else // 아래쪽
+            {
+                selectPlayer = 2;
+            }
         }
-        else if (inputVector == Vector2.right) // D (Right) // A (Left)
+        else
         {
-            selectPlayer = 1;
-        }
-        else if (inputVector == Vector2.down)  // S (Down)
-        {
-            selectPlayer = 2;
-        }
-        else if (inputVector == Vector2.left)// A (Left)
-        {
-            selectPlayer = 3;
+            // 가로 축이 더 강함
+            if (inputVector.x > 0) // 오른쪽
+            {
+                selectPlayer = 1;
+            }
+            else // 왼쪽
+            {
+                selectPlayer = 3;
+            }
         }
 
         HighLightSelectPlayer(highlightPlayer, selectPlayer);
         highlightPlayer = selectPlayer;
-
     }
 
     private void SlowTimeScale()
