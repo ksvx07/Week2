@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
     private Vector2 moveInput;
     private Rigidbody2D rb;
     private BoxCollider2D col;
+    private SpriteRenderer spriteRenderer;
 
     // Inspector ???? ???? ??????
     [Header("Move")]
@@ -40,6 +41,10 @@ public class PlayerController : MonoBehaviour, IPlayerController
     [SerializeField] private float maxSpeedAfterDashX = 5f;
     [SerializeField] private float maxSpeedAfterDashUp = 5f;
     [SerializeField] private int maxDashCount = 1;
+    [SerializeField] private GameObject afterImagePrefab; // 잔상 프리팹
+    [SerializeField] private float afterImageLifetime = 0.3f; // 잔상 지속 시간
+    [SerializeField] private float afterImageSpawnRate = 0.05f; // 잔상 생성 간격
+    private float afterImageTimer; // 잔상 생성 타이머
 
 
     [Header("AirTimeMultiplier")]
@@ -69,6 +74,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
         inputActions = new PlayerInput();
         col = GetComponent<BoxCollider2D>();
         rb = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         currentGravity = jumpDcceleration;
         wallLayer = LayerMask.GetMask("Ground");
         dashCount = maxDashCount;
@@ -146,7 +152,6 @@ public class PlayerController : MonoBehaviour, IPlayerController
             if (!isDashing)
                 dashCount = maxDashCount;
         }
-
         else
             coyoteTimeCounter -= Time.deltaTime;
 
@@ -154,10 +159,19 @@ public class PlayerController : MonoBehaviour, IPlayerController
         if (isDashing)
         {
             dashTimeCounter -= Time.deltaTime;
+
             if (dashTimeCounter < 0)
             {
                 isDashing = false;
                 dampAfterDash();
+            }
+
+            // 잔상 효과 생성
+            afterImageTimer -= Time.deltaTime;
+            if (afterImageTimer <= 0)
+            {
+                CreateAfterImage();
+                afterImageTimer = afterImageSpawnRate;
             }
         }
         dashCooldownCounter -= Time.deltaTime;
@@ -386,4 +400,48 @@ public class PlayerController : MonoBehaviour, IPlayerController
 
         rb.linearVelocity = new Vector2(newVelX, newVelY);
     }
+
+    #region 잔상 효과
+    private void CreateAfterImage()
+    {
+        GameObject afterImage = new GameObject("AfterImage");
+        afterImage.transform.position = transform.position;
+        afterImage.transform.rotation = transform.rotation;
+        afterImage.transform.localScale = transform.localScale;
+
+        SpriteRenderer afterImageSR = afterImage.AddComponent<SpriteRenderer>();
+        afterImageSR.sprite = spriteRenderer.sprite;
+        afterImageSR.color = new Color(1f, 1f, 1f, 0.5f); // 반투명
+        afterImageSR.sortingLayerName = spriteRenderer.sortingLayerName;
+        afterImageSR.sortingOrder = spriteRenderer.sortingOrder - 1;
+
+        // 안전장치: afterImageLifetime * 2 시간 후 강제 삭제
+        Destroy(afterImage, afterImageLifetime * 2f);
+
+        // 잔상 페이드아웃 코루틴 시작
+        StartCoroutine(FadeOutAfterImage(afterImageSR, afterImage));
+    }
+
+    private System.Collections.IEnumerator FadeOutAfterImage(SpriteRenderer sr, GameObject obj)
+    {
+        if (sr == null || obj == null) yield break; // null 체크
+
+        float elapsed = 0f;
+        Color originalColor = sr.color;
+
+        while (elapsed < afterImageLifetime && sr != null && obj != null)
+        {
+            elapsed += Time.deltaTime;
+            float alpha = Mathf.Lerp(originalColor.a, 0f, elapsed / afterImageLifetime);
+            sr.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
+            yield return null;
+        }
+
+        // 오브젝트가 여전히 존재한다면 삭제
+        if (obj != null)
+        {
+            Destroy(obj);
+        }
+    }
+    #endregion
 }

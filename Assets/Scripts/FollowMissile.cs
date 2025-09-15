@@ -10,6 +10,12 @@ public class FollowMissile : MonoBehaviour
     private Transform _player => PlayerManager.Instance._currentPlayerPrefab.transform;
     private Rigidbody2D _rb;
 
+
+    private void Start()
+    {
+        RespawnManager.Instance.OnPlayerSpawned += PlayerSpawned;
+    }
+
     public void Init(MissileBodyController missileController)
     {
         _missileController = missileController;
@@ -19,7 +25,7 @@ public class FollowMissile : MonoBehaviour
         _rb.linearVelocity = Vector2.zero;
         _rb.angularVelocity = 0f;
 
-        if(_player != null)
+        if (_player != null)
         {
             Vector2 toTarget = (Vector2)_player.position - (Vector2)transform.position;
             float startAngle = Mathf.Atan2(toTarget.y, toTarget.x) * Mathf.Rad2Deg - 90f;
@@ -72,4 +78,11 @@ public class FollowMissile : MonoBehaviour
             GameManager.Instance.RespawnPlayer();
         }
     }
+
+    private void PlayerSpawned(Vector3 _noNeed)
+    {
+        gameObject.SetActive(false);
+    }
+
+
 }

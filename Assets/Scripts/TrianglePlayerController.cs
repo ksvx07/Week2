@@ -457,7 +457,7 @@ public class TrianglePlayerController : MonoBehaviour, IPlayerController
         if (isDashing && other.CompareTag("Enemy"))
         {
             // 적을 파괴
-            Destroy(other.gameObject);
+            other.gameObject.SetActive(false);
             Debug.Log("Enemy destroyed by triangle dash!");
         }
     }
