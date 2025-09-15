@@ -10,11 +10,11 @@ public enum SwitchDirection
 
 public class StageSwitch : MonoBehaviour
 {
-    [SerializeField] private CameraClamp Clamp;
     [SerializeField] private int BeforeId;
     [SerializeField] private int AfterId;
     [SerializeField] private SwitchDirection direction;
 
+    private CameraClamp Clamp => CameraController.Instance.Clamp;
     private Transform Player => PlayerManager.Instance._currentPlayerPrefab.transform;
 
     void Update()

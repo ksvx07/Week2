@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Stage ID 4
   m_EditorClassIdentifier: 
   Id: 4
-  minX: -16.06
-  maxX: 59.9
-  minY: -6.9
-  maxY: 14.4
+  minX: 55.3
+  maxX: 133.9
+  minY: -23
+  maxY: -0.8
