@@ -82,6 +82,12 @@ public class FollowMissile : MonoBehaviour
     private void PlayerSpawned(Vector3 _noNeed)
     {
         gameObject.SetActive(false);
+        if (_missileController != null)
+        {
+            _missileController._missilePool.Enqueue(gameObject);
+            _missileController._activeMissiles.Remove(gameObject);
+        }
+        return;
     }
 
 

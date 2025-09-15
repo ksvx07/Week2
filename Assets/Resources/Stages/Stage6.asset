@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Stage6
   m_EditorClassIdentifier: 
   Id: 6
-  minX: 241.1
-  maxX: 276.9
-  minY: 2
-  maxY: 16.02
+  minX: 461.33875
+  maxX: 497.13873
+  minY: -2.853696
+  maxY: 11.166309
