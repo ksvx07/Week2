@@ -1,7 +1,10 @@
 using UnityEngine;
 
 public class BreakableObject : MonoBehaviour
-{    private void Start()
+{
+    [SerializeField] private GameObject particleEffect;
+
+    private void Start()
     {
         RespawnManager.Instance.OnPlayerSpawned += PlayerSpawned;
     }
@@ -10,7 +13,7 @@ public class BreakableObject : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             KirbyController turboMode = collision.GetComponent<KirbyController>();
-            if(turboMode != null)
+            if (turboMode != null)
             {
                 if (turboMode.TurboMode)
                 {
@@ -27,6 +30,10 @@ public class BreakableObject : MonoBehaviour
 
     public void TurbomodeDestoy()
     {
+        if (particleEffect != null)
+        {
+            Instantiate(particleEffect, transform.position, Quaternion.identity, null);
+        }
         gameObject.SetActive(false);
     }
 }

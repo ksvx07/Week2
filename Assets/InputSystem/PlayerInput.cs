@@ -299,17 +299,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""58bd4922-75f1-4fa8-b41a-ec09cb0bb8f2"",
-                    ""path"": ""<Keyboard>/a"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SwitchHold"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""b21e2380-60f1-4e8a-acff-c6821f7fb5a2"",
                     ""path"": ""<Gamepad>/leftShoulder"",
                     ""interactions"": """",
@@ -404,17 +393,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""QuickSwitchRight"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""e7dab9f2-61b2-4547-992e-2e2353b51933"",
-                    ""path"": ""<Keyboard>/a"",
-                    ""interactions"": ""Tap"",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""QuickSwitchLeft"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }

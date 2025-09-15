@@ -19197,6 +19197,14 @@ PrefabInstance:
       propertyPath: m_ColliderPaths.Array.data[0].m_ColliderPaths.Array.data[3].Array.data[11].Y
       value: -90000000
       objectReference: {fileID: 0}
+    - target: {fileID: 8432157012128351815, guid: 422e850a0a2265244ae866682fa651ec, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 11.67
+      objectReference: {fileID: 0}
+    - target: {fileID: 8432157012128351815, guid: 422e850a0a2265244ae866682fa651ec, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.23
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 3395751080237844180, guid: 422e850a0a2265244ae866682fa651ec, type: 3}
