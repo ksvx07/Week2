@@ -104,6 +104,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _shootingSpeed: 2
   _rotateSpeed: 200
+  particleEffect: {fileID: 1465222328860342214, guid: 260c06a1907bf524fb3ee780c0d0bb88, type: 3}
 --- !u!50 &2875502104070621072
 Rigidbody2D:
   serializedVersion: 5
