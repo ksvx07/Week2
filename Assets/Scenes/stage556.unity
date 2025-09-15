@@ -756,6 +756,14 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8692969605352230766, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
+      propertyPath: afterImagePrefab
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8692969605352230766, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
+      propertyPath: afterImageSpawnRate
+      value: 0.03
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
