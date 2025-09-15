@@ -139,6 +139,7 @@ MonoBehaviour:
   enemyMaxSpeed: 3
   enemyAccel: 5
   enemyDecel: 5
+  particleEffect: {fileID: 297575260763845972, guid: 741d1de67e56a5847b5ba206d0001b7a, type: 3}
 --- !u!61 &4840283980013670351
 BoxCollider2D:
   m_ObjectHideFlags: 0

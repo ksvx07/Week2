@@ -9,6 +9,8 @@ public class PatrolEnemy : MonoBehaviour
     [SerializeField] private float enemyMaxSpeed = 3f;
     [SerializeField] private float enemyAccel = 3f;
     [SerializeField] private float enemyDecel = 3f;
+
+    [SerializeField] private GameObject particleEffect;
     private LayerMask groundLayer;
 
     private bool goForward;
@@ -73,6 +75,8 @@ public class PatrolEnemy : MonoBehaviour
             if (triangle != null && triangle.IsDownDash)
             {
                 gameObject.SetActive(false);
+                Instantiate(particleEffect, transform.position, Quaternion.identity);
+
                 return;
             }
 

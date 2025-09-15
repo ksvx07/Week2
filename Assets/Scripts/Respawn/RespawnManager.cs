@@ -11,6 +11,9 @@ public class RespawnManager : MonoBehaviour
     [Header("Checkpoint System")]
     [SerializeField] private Transform defaultSpawn;
     [SerializeField] private float respawnTime;
+    [SerializeField] private GameObject playerParticleEffect;
+    [SerializeField] private GameObject checkPointparticleEffect;
+
 
     private Transform player => PlayerManager.Instance?._currentPlayerPrefab?.transform;
     private int currentCheckpointId = 0;
@@ -71,8 +74,13 @@ public class RespawnManager : MonoBehaviour
         {
             currentCheckpointId = checkpointId;
             currentSpawnPosition = checkpoints[checkpointId];
-            
+
             OnCheckpointReached?.Invoke(checkpointId, currentSpawnPosition);
+
+            if (checkPointparticleEffect != null && ValidatePlayer())
+            {
+                Instantiate(checkPointparticleEffect, player.position, Quaternion.identity);
+            }
             Debug.Log($"[RespawnManager] Checkpoint {checkpointId} activated at {currentSpawnPosition}");
         }
         else
@@ -86,6 +94,10 @@ public class RespawnManager : MonoBehaviour
         if (!ValidatePlayer()) return;
         PlayerManager.Instance.PlayerSetActive(false);
         PlayerManager.Instance.OnPlayerDead();
+        if (playerParticleEffect != null)
+        {
+            Instantiate(playerParticleEffect, player.position, Quaternion.identity);
+        }
         Invoke("RespawnPlayer", respawnTime);
     }
 
@@ -93,7 +105,7 @@ public class RespawnManager : MonoBehaviour
     {
         ResetPlayerPhysics();
         SpawnPlayerAtCheckpoint();
-        PlayerManager.Instance.PlayerSetActive(true); // »óÅÂ ÃÊ±âÈ­¸¦ À§ÇÑ ²°´Ù ÄÑ±â
+        PlayerManager.Instance.PlayerSetActive(true); // ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ±ï¿½
         Debug.Log($"[RespawnManager] Player respawned at checkpoint {currentCheckpointId}: {currentSpawnPosition}");
     }
 
@@ -120,9 +132,9 @@ public class RespawnManager : MonoBehaviour
     private void SpawnPlayerAtCheckpoint()
     {
         if (!ValidatePlayer()) return;
-        
+
         player.position = currentSpawnPosition;
-        CameraController.Instance.Cam.transform.position = currentSpawnPosition + new Vector3(0,0,-10f);
+        CameraController.Instance.Cam.transform.position = currentSpawnPosition + new Vector3(0, 0, -10f);
         OnPlayerSpawned?.Invoke(currentSpawnPosition);
     }
 

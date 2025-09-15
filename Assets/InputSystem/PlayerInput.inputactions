@@ -290,6 +290,28 @@
                 },
                 {
                     "name": "",
+                    "id": "6f447466-fac1-474a-bc91-9c12de2debe6",
+                    "path": "<Gamepad>/leftStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SelectPlayer",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "97732997-ee5c-4c93-8977-1ee5ca310361",
+                    "path": "<Gamepad>/dpad",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SelectPlayer",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "86700d91-9702-4eb5-93b5-00002e6152fe",
                     "path": "<Keyboard>/d",
                     "interactions": "Tap",
