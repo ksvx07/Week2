@@ -23661,10 +23661,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cam: {fileID: 1318149771}
   SwitchSpeed: 5
-  _minX: 57
-  _maxX: 133.9
-  _minY: -23
-  _maxY: -0.8
+  _minX: -15.8
+  _maxX: 55.4
+  _minY: -7
+  _maxY: 14.87
   _defaultStageId: 1
 --- !u!114 &1318149768
 MonoBehaviour:
@@ -23800,7 +23800,7 @@ Transform:
   m_GameObject: {fileID: 1318149766}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 552.3, y: 1, z: -10}
+  m_LocalPosition: {x: -7.9, y: 1, z: -10}
   m_LocalScale: {x: 1.9742513, y: 1.3977, z: 1.3977}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -26184,11 +26184,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 165907923382301145, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 124.8
+      value: -8.4
       objectReference: {fileID: 0}
     - target: {fileID: 165907923382301145, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -18.5
+      value: 1.6
       objectReference: {fileID: 0}
     - target: {fileID: 165907923382301145, guid: 26fb14a1aedbc894a87698ada2ef42fc, type: 3}
       propertyPath: m_LocalPosition.z
