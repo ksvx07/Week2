@@ -186,6 +186,17 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
+    public void OnPlayerDead()
+    {
+        // 선택창이 활성화 된 상태였다면
+        if (isSelectUIActive)
+        {
+            //선택 UI비활성화
+            DeActiveSelectUI();
+            ActiveSelectPlayer(currentPlayer, selectPlayer);
+        }
+    }
+
 /*    private void QuickSwitchPlayerRight(InputAction.CallbackContext context)
     {
         // 선택창 활성화된 상태면 변경 불가능
@@ -226,7 +237,7 @@ public class PlayerManager : MonoBehaviour
         OriginalTimeScale();
 
         // 같은 캐릭터로바꾸려면 return
-        if (oldPlayer == newPlayer) return;
+        //if (oldPlayer == newPlayer) return;
         HighLightSelectPlayer(oldPlayer, newPlayer);
 
         GameObject oldPlayerPrefab = players[oldPlayer];

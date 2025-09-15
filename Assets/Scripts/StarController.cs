@@ -44,6 +44,9 @@ public class StarController : MonoBehaviour, IPlayerController
     [SerializeField] private float starNormalairAccelMulti = 0.05f;
     [SerializeField] private float starNormalairDecelMulti = 0.1f;
 
+    [SerializeField] private GameObject abilityOnObject;
+    [SerializeField] private GameObject abilityOffObject;
+
     private LayerMask wallLayer;
 
     int rayCount = 60;
@@ -121,9 +124,19 @@ public class StarController : MonoBehaviour, IPlayerController
     private void OnDash(InputAction.CallbackContext ctx)
     {
         if (isActiveAbility)
+        {
             isActiveAbility = false;
+            abilityOffObject.SetActive(true);
+            abilityOnObject.SetActive(false);
+        }
+
         else
+        {
             isActiveAbility = true;
+            abilityOffObject.SetActive(false);
+            abilityOnObject.SetActive(true);
+        }
+
     }
 
     private void Update()
