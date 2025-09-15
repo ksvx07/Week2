@@ -5,6 +5,7 @@ public class FollowMissile : MonoBehaviour
 {
     [SerializeField] private float _shootingSpeed = 8f;
     [SerializeField] private float _rotateSpeed = 150f;
+    [SerializeField] private GameObject particleEffect;
 
     private MissileBodyController _missileController;
     private Transform _player => PlayerManager.Instance._currentPlayerPrefab.transform;
@@ -66,6 +67,7 @@ public class FollowMissile : MonoBehaviour
             if (triangle != null && triangle.IsDownDash)
             {
                 gameObject.SetActive(false);
+                Instantiate(particleEffect, transform.position, Quaternion.identity);
                 if (_missileController != null)
                 {
                     _missileController._missilePool.Enqueue(gameObject);
