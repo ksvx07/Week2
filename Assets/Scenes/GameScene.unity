@@ -16416,7 +16416,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultSpawn: {fileID: 1998001958}
-  respawnTime: 0.2
+  respawnTime: 1
   playerParticleEffect: {fileID: 6652016746359257598, guid: 2bf653da47a57f44c9d691f2dadf31ea, type: 3}
   checkPointparticleEffect: {fileID: 4070845227085174312, guid: d684009b45e27a9469ecf74ed123b351, type: 3}
 --- !u!4 &1779215590
